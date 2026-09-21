@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>高校受験カウントダウン 2027</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;background:#f5f7fb;color:#20242b}
+.wrap{max-width:760px;margin:auto;padding:32px 18px 60px}
+.hero{background:linear-gradient(135deg,#273b8f,#596ee8);color:white;border-radius:24px;padding:30px 24px;margin-bottom:20px;box-shadow:0 12px 35px #273b8f22}
+h1{margin:0 0 8px;font-size:clamp(25px,6vw,40px)} .sub{opacity:.9}
+.card{background:white;border-radius:20px;padding:22px;margin:16px 0;box-shadow:0 7px 24px #1c27400d}
+label{font-weight:700;display:block;margin-bottom:8px} select{width:100%;padding:14px;border:1px solid #d7dbe5;border-radius:12px;font-size:16px;background:white}
+.result{text-align:center;padding:10px}.pref{font-size:20px;font-weight:800}.days{font-size:58px;font-weight:900;line-height:1;margin:12px 0 6px}.unit{font-size:18px}.date{color:#687080;margin-top:12px}.note{font-size:13px;color:#737b89;line-height:1.7}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#eef1ff;color:#384ba6;font-size:12px;font-weight:700}
+.error{color:#b42318;background:#fff1f0;border-radius:12px;padding:12px}
+footer{font-size:12px;color:#7a8190;text-align:center;margin-top:22px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="badge">2027年度・令和9年度</div>
+    <h1>🎓 高校受験<br>カウントダウン</h1>
+    <div class="sub">都道府県を選ぶと、公立高校入試までの残り日数を表示します。</div>
+  </section>
+
+  <section class="card">
+    <label for="pref">都道府県を選択</label>
+    <select id="pref"></select>
+  </section>
+
+  <section class="card" id="result">
+    <div class="note">都道府県を選択してください</div>
+  </section>
+
+  <section class="card">
+    <b>⚠️ このサイトについて</b>
+    <p class="note">2027年度の公立高校入試を対象にした試作版です。都道府県によって選抜区分・日程が異なります。日程は必ず各都道府県教育委員会の最新発表を確認してください。</p>
+  </section>
+  <footer>受験生向け企画用・Countdown Prototype</footer>
+</div>
+
+<script>
+const exams = {
+"北海道":["2027-03-02","一般入学者選抜"],
+"青森県":["2027-02-24","一般選抜・特色化選抜"],
+"岩手県":["2027-03-03","一次募集"],
+"宮城県":["2027-03-02","第一次募集"],
+"秋田県":[null,"一般選抜（公式日程確認中）"],
+"山形県":["2027-03-06","後期（一般）選抜"],
+"福島県":[null,"一般選抜（公式日程確認中）"],
+"茨城県":["2027-02-24","一般入学"],
+"栃木県":["2027-02-23","全日制・定時制"],
+"群馬県":["2027-02-15","全日制等選抜"],
+"埼玉県":["2027-02-24","一般募集"],
+"千葉県":["2027-02-15","一般入学者選抜等"],
+"東京都":["2027-02-21","第一次募集・分割前期募集"],
+"神奈川県":["2027-02-15","共通選抜"],
+"新潟県":["2027-02-24","一般選抜"],
+"富山県":["2027-03-08","一般入学者選抜"],
+"石川県":["2027-03-08","一般入学"],
+"福井県":["2027-03-08","一般入学者選抜"],
+"山梨県":["2027-03-02","後期募集"],
+"長野県":["2027-03-08","後期選抜"],
+"岐阜県":["2027-03-02","第一次選抜"],
+"静岡県":["2027-03-02","一般選抜"],
+"愛知県":["2027-02-23","一般選抜"],
+"三重県":["2027-03-08","後期選抜"],
+"滋賀県":["2027-03-02","一次募集"],
+"京都府":["2027-02-17","前期選抜"],
+"大阪府":["2027-03-10","一般入学者選抜"],
+"兵庫県":["2027-03-10","一般学力検査"],
+"奈良県":["2027-02-23","一次選抜"],
+"和歌山県":["2027-03-09","一般選抜・スポーツ推薦"],
+"鳥取県":["2027-03-03","一般入学者選抜"],
+"島根県":["2027-03-02","一般選抜"],
+"岡山県":["2027-03-08","一般入学者選抜"],
+"広島県":["2027-02-23","一次選抜"],
+"山口県":["2027-03-08","第一次募集"],
+"徳島県":["2027-03-02","一般選抜"],
+"香川県":["2027-03-08","一般選抜"],
+"愛媛県":["2027-03-03","一般入学者選抜"],
+"高知県":["2027-01-13","A日程"],
+"福岡県":["2027-03-08","一般入学者選抜"],
+"佐賀県":["2027-03-01","一般選抜"],
+"長崎県":["2027-02-15","一般選抜"],
+"熊本県":["2027-03-03","後期（一般）選抜"],
+"大分県":["2027-03-02","一般入学者選抜"],
+"宮崎県":[null,"一般入学者選抜（公式日程確認中）"],
+"鹿児島県":["2027-03-02","一般入学者選抜"],
+"沖縄県":[null,"一般選抜（公式日程確認中）"]
+};
+
+const select=document.getElementById("pref");
+select.innerHTML='<option value="">選択してください</option>'+
+Object.keys(exams).map(p=>`<option>${p}</option>`).join("");
+
+function fmt(d){return new Intl.DateTimeFormat("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(d)}
+function update(){
+ const p=select.value, box=document.getElementById("result");
+ if(!p){box.innerHTML='<div class="note">都道府県を選択してください</div>';return}
+ const [iso,type]=exams[p];
+ if(!iso){box.innerHTML=`<div class="pref">${p}</div><div class="error">この選抜の日程は現在確認中です。公式発表をご確認ください。</div><div class="note">${type}</div>`;return}
+ const target=new Date(iso+"T00:00:00+09:00");
+ const now=new Date();
+ const today=new Date(now.toLocaleDateString("en-CA",{timeZone:"Asia/Tokyo"})+"T00:00:00+09:00");
+ const days=Math.ceil((target-today)/86400000);
+ const months=Math.floor(days/30);
+ const rest=days%30;
+ box.innerHTML=`<div class="pref">${p}</div>
+ <div class="note">${type}</div>
+ <div class="days">${Math.max(0,days)}</div>
+ <div class="unit">日</div>
+ <div class="date">📅 ${fmt(target)}</div>
+ <div class="note" style="margin-top:10px">約 ${Math.max(0,months)}ヶ月${rest ? `と${rest}日` : ""} ｜ 毎日自動更新</div>`;
+}
+select.addEventListener("change",update);
+update();
+</script>
+</body>
+</html>
