@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>高校受験カウントダウン 2027</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Yomogi&display=swap');
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;font-family:"Yomogi",cursive;color:#8f4966;background:#f39abd}
+.wrap{max-width:820px;margin:auto;padding:28px 16px 52px}
+.hero{text-align:center;color:#fff;padding:28px 12px 20px}
+.badge{display:inline-block;padding:6px 13px;border:1px solid rgba(255,255,255,.8);border-radius:999px;background:rgba(255,255,255,.2);font-size:12px;font-weight:800;letter-spacing:.08em}
+.community-title{font-family:"Yomogi",cursive;margin:18px auto 4px;font-size:clamp(18px,5vw,25px);font-weight:900;letter-spacing:.04em;color:#fff}
+h1{font-family:"Yomogi",cursive;margin:8px 0;font-size:clamp(32px,8vw,56px);line-height:1.15;letter-spacing:.05em}
+.sub{font-size:14px;line-height:1.8;color:#fff}
+.card{background:rgba(255,247,251,.9);border:1px solid rgba(255,255,255,.9);border-radius:24px;padding:22px;margin:16px 0;box-shadow:0 12px 35px rgba(151,65,101,.14)}
+label{font-weight:800;display:block;margin-bottom:9px;color:#a34e70}
+select{font-family:"Yomogi",cursive;width:100%;padding:15px 16px;border:2px solid #f2a2bf;border-radius:16px;font-size:16px;color:#8f4966;background:rgba(255,255,255,.95)}
+.result{text-align:center;padding:22px 10px}
+.pref{font-size:21px;font-weight:900;color:#b34f78}
+.days{font-size:clamp(58px,14vw,86px);font-weight:900;line-height:1;margin:12px 0 4px;color:#df5e91}
+.unit{font-size:18px;font-weight:800;color:#b85a7c}
+.date{color:#9c6a7d;margin-top:10px}
+.note{font-size:13px;color:#9b7081;line-height:1.75}
+.error{color:#b42318;background:#fff1f0;border-radius:14px;padding:12px}
+.info-title{color:#a94f73}.about-card{margin-top:70px}
+.other-schedules{margin:18px auto 4px;padding:12px 14px;max-width:420px;border-radius:16px;background:rgba(255,255,255,.55)}
+.other-title{font-weight:900;color:#b34f78;margin-bottom:5px}
+.extra-day{margin-top:5px;font-weight:700}
+footer{font-size:12px;color:#fff;text-align:center;margin-top:22px}
+@media(max-width:560px){.wrap{padding:18px 12px 40px}.hero{padding:22px 8px 14px}.card{padding:18px}h1{font-size:clamp(29px,10vw,42px)}}
+
+.no-repost{font-family:"Yomogi",cursive;text-align:center;margin-top:42px;font-size:12px;color:#fff;text-shadow:0 1px 7px rgba(119,42,77,.25)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="badge">2027年度・令和9年度</div>
+    <div class="community-title">高校受験生勉強会！！！</div>
+    <h1>高校受験まで<br>あと…</h1>
+    <div class="sub">都道府県を選ぶと、入試までの残り日数がわかります ☁️</div>
+  </section>
+
+  <section class="card">
+    <label for="pref">📍 都道府県を選択</label>
+    <select id="pref"></select>
+  </section>
+
+  <section class="card" id="result">
+    <div class="note">都道府県を選択してください</div>
+  </section>
+
+  <footer>―― 一歩ずつでいい。きっと大丈夫。 ――</footer>
+  <section class="card about-card">
+    <b class="info-title">☁️ このサイトについて</b>
+    <p class="note">このサイトは、オープンチャット「高校受験生勉強会！！！」が制作しています。<br><br>2027年度の公立高校入試を対象にしています。複数日にわたる入試は1日目までをカウントし、2日目・3日目がある場合は追加表示します。都道府県によって選抜区分・日程が異なるため、最新情報は各都道府県教育委員会の発表もご確認ください。</p>
+  </section>
+  <div class="no-repost">※ 無断転載禁止</div>
+</div>
+
+<script>
+const exams = {
+"北海道":{main:"2027-03-03",type:"一般入学者選抜"},
+"青森県":{main:"2027-03-04",type:"一般選抜"},
+"岩手県":{main:"2027-03-04",type:"一次募集",days:["2027-03-05"]},
+"宮城県":{main:"2027-03-03",type:"第一次募集"},
+"秋田県":{main:"2027-03-04",type:"一般選抜"},
+"山形県":{main:"2027-03-07",type:"一般選抜",other:[["A日程","2027-01-19"],["B日程","2027-02-02"]]},
+"福島県":{main:"2027-03-03",type:"一般選抜"},
+"茨城県":{main:"2027-02-25",type:"一般入学"},
+"栃木県":{main:"2027-02-24",type:"一般選抜"},
+"群馬県":{main:"2027-02-16",type:"全日制等選抜",days:["2027-02-17"]},
+"埼玉県":{main:"2027-02-25",type:"一般募集"},
+"千葉県":{main:"2027-02-16",type:"一般入学者選抜等",days:["2027-02-17"]},
+"東京都":{main:"2027-02-21",type:"第一次募集・分割前期募集"},
+"神奈川県":{main:"2027-02-16",type:"共通選抜"},
+"新潟県":{main:"2027-02-25",type:"一般選抜"},
+"富山県":{main:"2027-03-09",type:"一般入学者選抜",days:["2027-03-10"]},
+"石川県":{main:"2027-03-09",type:"一般入学",days:["2027-03-10"]},
+"福井県":{main:"2027-02-18",type:"一般入学者選抜",days:["2027-02-19"]},
+"山梨県":{main:"2027-03-03",type:"後期募集",days:["2027-03-04"]},
+"長野県":{main:"2027-03-09",type:"後期選抜"},
+"岐阜県":{main:"2027-03-03",type:"第一次選抜"},
+"静岡県":{main:"2027-03-03",type:"一般選抜"},
+"愛知県":{main:"2027-02-24",type:"一般選抜"},
+"三重県":{main:"2027-03-09",type:"後期選抜"},
+"滋賀県":{main:"2027-03-03",type:"一次募集",days:["2027-03-04"]},
+"京都府":{main:"2027-02-18",type:"前期選抜",days:["2027-02-19"]},
+"大阪府":{main:"2027-03-10",type:"一般入学者選抜"},
+"兵庫県":{main:"2027-03-11",type:"一般学力検査"},
+"奈良県":{main:"2027-02-24",type:"一次選抜",days:["2027-02-25"]},
+"和歌山県":{main:"2027-03-10",type:"一般選抜"},
+"鳥取県":{main:"2027-03-04",type:"一般入学者選抜"},
+"島根県":{main:"2027-03-03",type:"一般選抜"},
+"岡山県":{main:"2027-03-09",type:"一般入学者選抜"},
+"広島県":{main:"2027-02-24",type:"一次選抜",days:["2027-02-25","2027-02-26"]},
+"山口県":{main:"2027-03-09",type:"第一次募集"},
+"徳島県":{main:"2027-03-03",type:"一般選抜"},
+"香川県":{main:"2027-03-09",type:"一般選抜"},
+"愛媛県":{main:"2027-03-04",type:"一般入学者選抜",days:["2027-03-05"]},
+"高知県":{main:"2027-03-03",type:"一般選抜",days:["2027-03-04"]},
+"福岡県":{main:"2027-03-09",type:"一般入学者選抜"},
+"佐賀県":{main:"2027-03-02",type:"一般選抜",days:["2027-03-03"]},
+"長崎県":{main:"2027-02-16",type:"一般選抜",days:["2027-02-17"]},
+"熊本県":{main:"2027-03-04",type:"後期（一般）選抜",days:["2027-03-05"]},
+"大分県":{main:"2027-03-03",type:"一般入学者選抜",days:["2027-03-04"]},
+"宮崎県":{main:"2027-03-03",type:"一般入学者選抜",days:["2027-03-04"]},
+"鹿児島県":{main:"2027-03-03",type:"一般入学者選抜",days:["2027-03-04"]},
+"沖縄県":{main:"2027-03-03",type:"一般選抜",days:["2027-03-04"]}
+};
+
+const select=document.getElementById("pref");
+select.innerHTML='<option value="">選択してください</option>'+
+Object.keys(exams).map(p=>`<option>${p}</option>`).join("");
+
+function fmt(d){return new Intl.DateTimeFormat("ja-JP",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(d)}
+function update(){
+ const p=select.value, box=document.getElementById("result");
+ if(!p){box.innerHTML='<div class="note">都道府県を選択してください</div>';return}
+ const exam=exams[p];
+ const target=new Date(exam.main+"T00:00:00+09:00");
+ const now=new Date();
+ const today=new Date(now.toLocaleDateString("en-CA",{timeZone:"Asia/Tokyo"})+"T00:00:00+09:00");
+ const days=Math.ceil((target-today)/86400000), safe=Math.max(0,days);
+ const months=Math.floor(safe/30), rest=safe%30;
+ const all=[exam.main,...(exam.days||[])];
+ const dateBlock=all.length===1
+   ? `<div class="date">📅 ${fmt(target)}</div>`
+   : all.map((iso,i)=>`<div class="date${i?' extra-day':''}">📅 ${i+1}日目：${fmt(new Date(iso+"T00:00:00+09:00"))}</div>`).join("");
+ const other=exam.other?.length
+   ? `<div class="other-schedules"><div class="other-title">その他の日程</div>${exam.other.map(([n,d])=>`<div class="date">${n}：${fmt(new Date(d+"T00:00:00+09:00"))}</div>`).join("")}</div>`
+   : "";
+ box.innerHTML=`<div class="pref">${p}</div>
+ <div class="note">${exam.type}</div>
+ <div class="days">${safe}</div><div class="unit">日</div>
+ ${dateBlock}${other}
+ <div class="note" style="margin-top:10px">約 ${months}ヶ月${rest?`と${rest}日`:""} ｜ 1日目までをカウント ｜ 毎日自動更新</div>`;
+}
+select.addEventListener("change",update);
+update();
+</script>
+</body>
+</html>
