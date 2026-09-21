@@ -39,6 +39,11 @@ select:focus{border-color:#df6f9c;box-shadow:0 0 0 4px rgba(223,111,156,.13)}
 .about-card{margin-top:70px}
 footer{font-size:12px;color:#fff;text-align:center;margin-top:22px;text-shadow:0 1px 7px rgba(119,42,77,.25)}
 @media(max-width:560px){.wrap{padding:18px 12px 40px}.hero{padding:22px 8px 14px}.card{padding:18px}h1{font-family:"Yomogi",cursive;font-size:clamp(29px,10vw,42px)}}
+
+.extra-day{margin-top:5px;font-weight:normal}
+.other-schedules{margin:18px auto 4px;padding:12px 14px;max-width:420px;border-radius:16px;background:rgba(255,255,255,.55)}
+.other-title{font-weight:900;color:#b34f78;margin-bottom:5px}
+
 </style>
 </head>
 <body>
@@ -68,53 +73,53 @@ footer{font-size:12px;color:#fff;text-align:center;margin-top:22px;text-shadow:0
 
 <script>
 const exams = {
-"北海道":["2027-03-03","一般入学者選抜（学力検査）",null],
-"青森県":["2027-02-24","一般選抜",null],
-"岩手県":["2027-03-04","一次募集（一般入試等）","2027-03-05"],
-"宮城県":["2027-03-03","第一次募集",null],
-"秋田県":[null,"一般選抜（公式日程を最終確認中）",null],
-"山形県":["2027-03-06","後期（一般）選抜",null],
-"福島県":["2027-03-03","一般選抜",null],
-"茨城県":["2027-02-25","一般入学・学力検査",null],
-"栃木県":["2027-02-23","一般選抜",null],
-"群馬県":["2027-02-16","全日制等選抜","2027-02-17"],
-"埼玉県":["2027-02-25","一般募集・学力検査",null],
-"千葉県":["2027-02-16","一般入学者選抜等","2027-02-17"],
-"東京都":["2027-02-21","第一次募集・分割前期募集",null],
-"神奈川県":["2027-03-15","共通選抜（共通検査）",null],
-"新潟県":["2027-02-24","一般選抜",null],
-"富山県":["2027-03-08","一般入学者選抜",null],
-"石川県":["2027-03-08","一般入学",null],
-"福井県":["2027-03-08","一般入学者選抜",null],
-"山梨県":["2027-03-02","後期募集",null],
-"長野県":["2027-03-08","後期選抜",null],
-"岐阜県":["2027-03-03","第一次選抜",null],
-"静岡県":["2027-03-02","一般選抜",null],
-"愛知県":["2027-02-23","一般選抜",null],
-"三重県":["2027-03-08","後期選抜",null],
-"滋賀県":["2027-03-02","一次募集","2027-03-03"],
-"京都府":["2027-02-17","前期選抜","2027-02-18"],
-"大阪府":["2027-03-10","一般入学者選抜",null],
-"兵庫県":["2027-03-10","一般学力検査",null],
-"奈良県":["2027-02-23","一次選抜","2027-02-24"],
-"和歌山県":["2027-03-09","一般選抜・スポーツ推薦","2027-03-10"],
-"鳥取県":["2027-03-03","一般入学者選抜","2027-03-04"],
-"島根県":["2027-03-02","一般選抜","2027-03-03"],
-"岡山県":["2027-03-08","一般入学者選抜","2027-03-09"],
-"広島県":["2027-02-23","一次選抜","2027-02-24"],
-"山口県":["2027-03-08","第一次募集",null],
-"徳島県":["2027-03-02","一般選抜","2027-03-03"],
-"香川県":["2027-03-08","一般選抜","2027-03-09"],
-"愛媛県":["2027-03-03","一般入学者選抜","2027-03-04"],
-"高知県":["2027-01-13","A日程",null],
-"福岡県":["2027-03-09","一般入学者選抜・学力検査",null],
-"佐賀県":["2027-03-01","一般選抜","2027-03-02"],
-"長崎県":["2027-02-15","一般選抜","2027-02-16"],
-"熊本県":["2027-03-03","後期（一般）選抜","2027-03-04"],
-"大分県":["2027-03-02","一般入学者選抜","2027-03-03"],
-"宮崎県":["2027-03-03","一般入学者選抜","2027-03-04"],
-"鹿児島県":["2027-03-03","一般入学者選抜","2027-03-04"],
-"沖縄県":["2027-03-03","一般選抜","2027-03-04"]
+"北海道":{main:"2027-03-03",type:"一般入学者選抜"},
+"青森県":{main:"2027-03-04",type:"一般選抜"},
+"岩手県":{main:"2027-03-04",type:"一次募集",days:["2027-03-05"]},
+"宮城県":{main:"2027-03-03",type:"第一次募集"},
+"秋田県":{main:"2027-03-04",type:"一般選抜"},
+"山形県":{main:"2027-03-07",type:"一般選抜",other:[["A日程","2027-01-19"],["B日程","2027-02-02"]]},
+"福島県":{main:"2027-03-03",type:"一般選抜"},
+"茨城県":{main:"2027-02-25",type:"一般入学"},
+"栃木県":{main:"2027-02-24",type:"一般選抜"},
+"群馬県":{main:"2027-02-16",type:"全日制等選抜",days:["2027-02-17"]},
+"埼玉県":{main:"2027-02-25",type:"一般募集"},
+"千葉県":{main:"2027-02-16",type:"一般入学者選抜等",days:["2027-02-17"]},
+"東京都":{main:"2027-02-21",type:"第一次募集・分割前期募集"},
+"神奈川県":{main:"2027-02-16",type:"共通選抜"},
+"新潟県":{main:"2027-02-25",type:"一般選抜"},
+"富山県":{main:"2027-03-09",type:"一般入学者選抜",days:["2027-03-10"]},
+"石川県":{main:"2027-03-09",type:"一般入学",days:["2027-03-10"]},
+"福井県":{main:"2027-02-18",type:"一般入学者選抜",days:["2027-02-19"]},
+"山梨県":{main:"2027-03-03",type:"後期募集",days:["2027-03-04"]},
+"長野県":{main:"2027-03-09",type:"後期選抜"},
+"岐阜県":{main:"2027-03-03",type:"第一次選抜"},
+"静岡県":{main:"2027-03-03",type:"一般選抜"},
+"愛知県":{main:"2027-02-24",type:"一般選抜"},
+"三重県":{main:"2027-03-09",type:"後期選抜"},
+"滋賀県":{main:"2027-03-03",type:"一次募集",days:["2027-03-04"]},
+"京都府":{main:"2027-02-18",type:"前期選抜",days:["2027-02-19"]},
+"大阪府":{main:"2027-03-10",type:"一般入学者選抜"},
+"兵庫県":{main:"2027-03-11",type:"一般学力検査"},
+"奈良県":{main:"2027-02-24",type:"一次選抜",days:["2027-02-25"]},
+"和歌山県":{main:"2027-03-10",type:"一般選抜"},
+"鳥取県":{main:"2027-03-04",type:"一般入学者選抜"},
+"島根県":{main:"2027-03-03",type:"一般選抜"},
+"岡山県":{main:"2027-03-09",type:"一般入学者選抜"},
+"広島県":{main:"2027-02-24",type:"一次選抜",days:["2027-02-25","2027-02-26"]},
+"山口県":{main:"2027-03-09",type:"第一次募集"},
+"徳島県":{main:"2027-03-03",type:"一般選抜"},
+"香川県":{main:"2027-03-09",type:"一般選抜"},
+"愛媛県":{main:"2027-03-04",type:"一般入学者選抜",days:["2027-03-05"]},
+"高知県":{main:"2027-03-03",type:"一般選抜",days:["2027-03-04"]},
+"福岡県":{main:"2027-03-09",type:"一般入学者選抜"},
+"佐賀県":{main:"2027-03-02",type:"一般選抜",days:["2027-03-03"]},
+"長崎県":{main:"2027-02-16",type:"一般選抜",days:["2027-02-17"]},
+"熊本県":{main:"2027-03-04",type:"後期（一般）選抜",days:["2027-03-05"]},
+"大分県":{main:"2027-03-03",type:"一般入学者選抜",days:["2027-03-04"]},
+"宮崎県":{main:"2027-03-03",type:"一般入学者選抜",days:["2027-03-04"]},
+"鹿児島県":{main:"2027-03-03",type:"一般入学者選抜",days:["2027-03-04"]},
+"沖縄県":{main:"2027-03-03",type:"一般選抜",days:["2027-03-04"]}
 };
 
 const select=document.getElementById("pref");
@@ -125,24 +130,24 @@ function fmt(d){return new Intl.DateTimeFormat("ja-JP",{year:"numeric",month:"lo
 function update(){
  const p=select.value, box=document.getElementById("result");
  if(!p){box.innerHTML='<div class="note">都道府県を選択してください</div>';return}
- const [iso,type,iso2]=exams[p];
- if(!iso){box.innerHTML=`<div class="pref">${p}</div><div class="error">この選抜の日程は現在最終確認中です。公式発表をご確認ください。</div><div class="note">${type}</div>`;return}
- const target=new Date(iso+"T00:00:00+09:00");
- const target2=iso2 ? new Date(iso2+"T00:00:00+09:00") : null;
+ const exam=exams[p];
+ const target=new Date(exam.main+"T00:00:00+09:00");
  const now=new Date();
  const today=new Date(now.toLocaleDateString("en-CA",{timeZone:"Asia/Tokyo"})+"T00:00:00+09:00");
- const days=Math.ceil((target-today)/86400000);
- const months=Math.floor(Math.max(0,days)/30);
- const rest=Math.max(0,days)%30;
- const dateBlock = target2
-   ? `<div class="date">📅 1日目：${fmt(target)}</div><div class="date second-day">📅 2日目：${fmt(target2)}</div>`
-   : `<div class="date">📅 ${fmt(target)}</div>`;
+ const days=Math.ceil((target-today)/86400000), safe=Math.max(0,days);
+ const months=Math.floor(safe/30), rest=safe%30;
+ const all=[exam.main,...(exam.days||[])];
+ const dateBlock=all.length===1
+   ? `<div class="date">📅 ${fmt(target)}</div>`
+   : all.map((iso,i)=>`<div class="date${i?' extra-day':''}">📅 ${i+1}日目：${fmt(new Date(iso+"T00:00:00+09:00"))}</div>`).join("");
+ const other=exam.other?.length
+   ? `<div class="other-schedules"><div class="other-title">その他の日程</div>${exam.other.map(([n,d])=>`<div class="date">${n}：${fmt(new Date(d+"T00:00:00+09:00"))}</div>`).join("")}</div>`
+   : "";
  box.innerHTML=`<div class="pref">${p}</div>
- <div class="note">${type}</div>
- <div class="days">${Math.max(0,days)}</div>
- <div class="unit">日</div>
- ${dateBlock}
- <div class="note" style="margin-top:10px">約 ${months}ヶ月${rest ? `と${rest}日` : ""} ｜ 1日目までをカウント ｜ 毎日自動更新</div>`;
+ <div class="note">${exam.type}</div>
+ <div class="days">${safe}</div><div class="unit">日</div>
+ ${dateBlock}${other}
+ <div class="note" style="margin-top:10px">約 ${months}ヶ月${rest?`と${rest}日`:""} ｜ 1日目までをカウント ｜ 毎日自動更新</div>`;
 }
 select.addEventListener("change",update);
 update();
