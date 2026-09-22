@@ -23,7 +23,18 @@ body{
 .badge{display:inline-block;padding:6px 13px;border:1px solid rgba(255,255,255,.8);border-radius:999px;background:rgba(255,255,255,.2);font-size:12px;font-weight:800;letter-spacing:.08em}
 .community-title{font-family:"Yomogi",cursive;margin:18px auto 4px;font-size:clamp(18px,5vw,25px);font-weight:900;letter-spacing:.04em;color:#fff;text-shadow:0 2px 10px rgba(120,40,80,.2)}
 h1{font-family:"Yomogi",cursive;margin:8px 0 8px;font-size:clamp(32px,8vw,56px);line-height:1.15;letter-spacing:.05em;text-shadow:0 3px 12px rgba(120,40,80,.18)}
-.sub{font-size:14px;line-height:1.8;color:#fff}
+.sub{
+  display:inline-block;
+  margin-top:8px;
+  padding:7px 14px;
+  border-radius:999px;
+  background:rgba(165,72,108,.28);
+  color:#fff;
+  font-size:14px;
+  line-height:1.8;
+  font-weight:700;
+  text-shadow:0 1px 3px rgba(105,40,70,.45)
+}
 .card{background:rgba(255,247,251,.84);border:1px solid rgba(255,255,255,.9);border-radius:24px;padding:22px;margin:16px 0;box-shadow:0 12px 35px rgba(151,65,101,.14);backdrop-filter:blur(8px)}
 label{font-weight:800;display:block;margin-bottom:9px;color:#a34e70}
 select{font-family:"Yomogi",cursive;width:100%;padding:15px 16px;border:2px solid #f2a2bf;border-radius:16px;font-size:16px;color:#8f4966;background:rgba(255,255,255,.95);outline:none}
@@ -38,6 +49,17 @@ select:focus{border-color:#df6f9c;box-shadow:0 0 0 4px rgba(223,111,156,.13)}
 .info-title{color:#a94f73}
 .about-card{margin-top:70px}
 footer{font-size:12px;color:#fff;text-align:center;margin-top:22px;text-shadow:0 1px 7px rgba(119,42,77,.25)}
+
+/* 白文字を背景の上でも読みやすく */
+.hero, footer, .no-repost{
+  text-shadow:0 2px 4px rgba(130,55,85,.45),0 0 10px rgba(130,55,85,.20);
+}
+.hero h1{
+  text-shadow:0 3px 6px rgba(120,45,78,.52),0 0 14px rgba(120,45,78,.24);
+}
+.hero .community-title,.hero .sub,.hero .badge{
+  text-shadow:0 2px 4px rgba(130,55,85,.40),0 0 8px rgba(130,55,85,.18);
+}
 @media(max-width:560px){.wrap{padding:18px 12px 40px}.hero{padding:22px 8px 14px}.card{padding:18px}h1{font-family:"Yomogi",cursive;font-size:clamp(29px,10vw,42px)}}
 
 .extra-day{margin-top:5px;font-weight:normal}
