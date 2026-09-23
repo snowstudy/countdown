@@ -48,7 +48,17 @@ select:focus{border-color:#df6f9c;box-shadow:0 0 0 4px rgba(223,111,156,.13)}
 .error{color:#b42318;background:#fff1f0;border-radius:14px;padding:12px}
 .info-title{color:#a94f73}
 .about-card{margin-top:70px}
-footer{font-size:12px;color:#fff;text-align:center;margin-top:22px;text-shadow:0 1px 7px rgba(119,42,77,.25)}
+footer{
+  font-family:"Yomogi",cursive;
+  font-size:clamp(18px,4.8vw,25px);
+  font-weight:900;
+  line-height:1.7;
+  color:#fff;
+  text-align:center;
+  margin-top:34px;
+  padding:12px 10px;
+  text-shadow:0 2px 4px rgba(130,55,85,.55),0 0 12px rgba(130,55,85,.30)
+}
 
 /* 白文字を背景の上でも読みやすく */
 .hero, footer, .no-repost{
@@ -89,7 +99,7 @@ footer{font-size:12px;color:#fff;text-align:center;margin-top:22px;text-shadow:0
   </section>
 
   <section class="card" id="result">
-    <div class="note">都道府県を選択してください</div>
+    <div class="note">入試まであと…</div>
   </section>
   <section id="daily-message" class="card daily-card" style="display:none"></section>
 <footer>―― 一歩ずつでいい。きっと大丈夫。 ――</footer>
@@ -160,7 +170,7 @@ const dailyMessages = {"2026-09-22":"今日からまた一歩。入試までの�
 
 function update(){
  const p=select.value, box=document.getElementById("result");
- if(!p){box.innerHTML='<div class="note">都道府県を選択してください</div>';return}
+ if(!p){box.innerHTML='<div class="note">入試まであと…</div>';return}
  const exam=exams[p];
  const now=new Date();
  const todayISO=now.toLocaleDateString("en-CA",{timeZone:"Asia/Tokyo"});
@@ -190,8 +200,9 @@ function update(){
    mainDisplay=`<div class="days">${safe}</div><div class="unit">日</div>`;
  }
 
+ const dayCountNote = all.length > 1 ? " ｜ 1日目までをカウント" : "";
  const countdownNote=(!isExamDay && !isFinished)
-   ? `<div class="note" style="margin-top:10px">約 ${months}ヶ月${rest?`と${rest}日`:""} ｜ 1日目までをカウント ｜ 毎日自動更新</div>`
+   ? `<div class="note" style="margin-top:10px">約 ${months}ヶ月${rest?`と${rest}日`:""}${dayCountNote} ｜ 毎日自動更新</div>`
    : "";
 
  box.innerHTML=`<div class="pref">${p}</div>
