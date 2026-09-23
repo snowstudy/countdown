@@ -83,6 +83,32 @@ footer{
 .daily-label{font-weight:900;color:#b34f78;font-size:17px;margin-bottom:10px}
 .daily-text{font-size:18px;line-height:1.8;color:#8f4966}
 
+
+.quick-links{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+  width:min(100%,560px);margin:18px auto 0;
+}
+.quick-link{
+  display:flex;align-items:center;justify-content:center;
+  min-height:54px;padding:10px 12px;box-sizing:border-box;
+  border:1px solid rgba(255,255,255,.95);border-radius:18px;
+  background:rgba(255,247,251,.92);color:#a84d72;
+  font-family:"Yomogi",cursive;font-size:clamp(14px,3.7vw,18px);
+  font-weight:900;text-decoration:none;text-align:center;
+  box-shadow:0 7px 18px rgba(137,58,91,.16);
+  transition:transform .15s ease,box-shadow .15s ease,background .15s ease;
+}
+.quick-link:hover{
+  transform:translateY(-2px);
+  box-shadow:0 9px 22px rgba(137,58,91,.22);
+  background:rgba(255,255,255,.97);
+}
+.quick-link:active{transform:translateY(0)}
+@media(max-width:420px){
+  .quick-links{gap:9px}
+  .quick-link{min-height:50px;padding:9px 7px;font-size:13px;border-radius:16px}
+}
+
 </style>
 </head>
 <body>
@@ -103,6 +129,10 @@ footer{
     <div class="note">入試まであと…</div>
   </section>
   <section id="daily-message" class="card daily-card" style="display:none"></section>
+  <div class="quick-links">
+    <a class="quick-link" href="./schedule.html">入試日程一覧</a>
+    <a class="quick-link" href="./words.html">今日の英単語20</a>
+  </div>
 <footer>―― 1歩ずつでいい。きっと大丈夫。 ――</footer>
 
   <section class="card">
@@ -231,7 +261,9 @@ function updateDailyMessage(todayISO){
  if(!el)return;
  const msg=dailyMessages[todayISO];
  if(msg){
-   el.innerHTML=`<div class="daily-label">☁️ 今日のひとこと</div><div class="daily-text">${msg}</div>`;
+   el.innerHTML=`<div class="daily-label">☁️ 今日のひとこと</div>
+
+<div class="daily-text">${msg}</div>`;
    el.style.display="block";
  }else{
    el.style.display="none";
