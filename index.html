@@ -102,7 +102,7 @@ footer{
     <div class="note">入試まであと…</div>
   </section>
   <section id="daily-message" class="card daily-card" style="display:none"></section>
-<footer>―― 一歩ずつでいい。きっと大丈夫。 ――</footer>
+<footer>―― 1歩ずつでいい。きっと大丈夫。 ――</footer>
 
   <section class="card">
     <b class="info-title">☁️ このサイトについて</b>
@@ -180,7 +180,20 @@ function update(){
  const finalDate=new Date(all[all.length-1]+"T00:00:00+09:00");
  const days=Math.ceil((target-today)/86400000);
  const safe=Math.max(0,days);
- const months=Math.floor(safe/30), rest=safe%30;
+ function calendarDiff(from, to){
+   let months=(to.getFullYear()-from.getFullYear())*12+(to.getMonth()-from.getMonth());
+   let anchor=new Date(from);
+   anchor.setMonth(anchor.getMonth()+months);
+   if(anchor>to){
+     months--;
+     anchor=new Date(from);
+     anchor.setMonth(anchor.getMonth()+months);
+   }
+   const rest=Math.round((to-anchor)/86400000);
+   return {months,rest};
+ }
+ const cal=calendarDiff(today,target);
+ const months=Math.max(0,cal.months), rest=Math.max(0,cal.rest);
  const isExamDay=all.includes(todayISO);
  const isFinished=today>finalDate;
 
@@ -202,7 +215,7 @@ function update(){
 
  const dayCountNote = all.length > 1 ? " ｜ 1日目までをカウント" : "";
  const countdownNote=(!isExamDay && !isFinished)
-   ? `<div class="note" style="margin-top:10px">約 ${months}ヶ月${rest?`と${rest}日`:""}${dayCountNote} ｜ 毎日自動更新</div>`
+   ? `<div class="note" style="margin-top:10px">${months}ヶ月${rest?`と${rest}日`:""}${dayCountNote} ｜ 毎日自動更新</div>`
    : "";
 
  box.innerHTML=`<div class="pref">${p}</div>
