@@ -62,8 +62,8 @@ footer{font-size:clamp(14px,4.1vw,25px);font-weight:900;color:#fff;text-align:ce
 <section class="card">
 <div class="topline"><div class="date" id="today"></div><div class="progress" id="progress"></div></div>
 <div class="actions">
-      <button id="toggle">意味を隠す</button>
-      <button class="ghost" id="shuffle">並び替える</button>
+      <button class="ghost" id="toggle">意味を隠す</button>
+      <button class="ghost" id="shuffle">シャッフル</button>
     </div>
     <div class="mastery" id="mastery"></div>
 <div class="words" id="words"></div>
@@ -104,7 +104,7 @@ function render(){
  draw(current);
 }
 function draw(arr){document.getElementById("words").innerHTML=arr.map((x,i)=>`<div class="word"><div class="num">${i+1}</div><div class="en">${x.w}</div><div class="jp">${x.m}</div><div class="pos">${x.p}</div><label class="check"><input type="checkbox" data-word="${x.w}" ${isDone(x.w)?"checked":""}>覚えた！</label></div>`).join("");bindChecks()}
-document.getElementById("toggle").onclick=()=>{const w=document.getElementById("words");w.classList.toggle("hidden");document.getElementById("toggle").textContent=w.classList.contains("hidden")?"意味を表示":"意味を隠す"};
+document.getElementById("toggle").onclick=()=>{const w=document.getElementById("words"),b=document.getElementById("toggle");w.classList.toggle("hidden");const hidden=w.classList.contains("hidden");b.textContent=hidden?"意味を表示":"意味を隠す";b.classList.toggle("ghost",!hidden)};
 document.getElementById("shuffle").onclick=()=>{current=[...current].sort(()=>Math.random()-.5);draw(current)};
 render();
 
