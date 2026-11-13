@@ -7,14 +7,14 @@
 
 </style></head><body><main class="wrap">
 <header class="header"><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
-<section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" type="text" maxlength="24" placeholder="ニックネーム（管理者に表示されます）"><button id="saveName" class="btn">名前を保存</button></div><div id="snowVerify" class="hint" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button id="googleVerify" type="button" class="btn alt">Googleで本人確認する</button></div><div id="status" class="status">Firebaseに接続しています…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。管理者にはニックネームと勉強時間が表示されます。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
+<section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" type="text" maxlength="24" placeholder="ニックネーム（管理者に表示されます）"><button id="saveName" class="btn">名前を保存</button></div><div id="snowVerify" class="hint" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button id="googleVerify" type="button" class="btn alt">Googleで本人確認する</button></div><div id="status" class="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。管理者にはニックネームと勉強時間が表示されます。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
 <section class="panel"><h2>📚 勉強時間のまとめ</h2><div class="grid"><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section>
 <div class="subgrid"><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"></label><label>時間 <input id="hours" type="number" min="0" max="23" value="1" inputmode="numeric"></label><label>分 <input id="minutes" type="number" min="0" max="59" value="0" inputmode="numeric"></label></div><p><button id="addManual" class="btn">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
 <section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div id="timer" class="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button id="timerStart" class="btn">スタート</button><button id="timerPause" class="btn alt">一時停止</button><button id="timerSave" class="btn">記録して終了</button><button id="timerReset" class="btn danger">リセット</button></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section></div>
 <div class="subgrid"><section class="panel"><h2>🎯 大きな目標</h2><textarea id="goal" placeholder="例：苦手な数学を克服する！"></textarea><p><button id="saveGoal" class="btn alt">目標を保存</button></p><p class="muted">目標の文章はこの端末だけに保存されるよ。</p></section>
 <section class="panel"><h2>☑ 今日のToDo</h2><div class="formrow"><input id="newTodo" type="text" maxlength="120" placeholder="今日やること"><button id="addTodo" class="btn">追加</button></div><div id="todoList" style="margin-top:12px"></div><p id="todoProgress" class="muted">0 / 0 完了</p><div class="bar"><div id="todoBar"></div></div></section></div>
 <section class="panel"><h2>📝 今日の振り返り</h2><label>今日できたこと<textarea id="good" placeholder="今日頑張れたことを書こう"></textarea></label><label>反省・明日の改善<textarea id="improve" placeholder="明日は何を意識する？"></textarea></label><p><button id="saveReflection" class="btn alt">振り返りを保存</button></p><p class="muted">ToDoと振り返りはこの端末だけに保存されるよ。</p></section>
-<section class="panel"><h2>📅 勉強時間の履歴</h2><div id="history" class="muted">記録はまだありません。</div><p class="muted">時間の記録とニックネームはFirebaseに保存されます。</p></section>
+<section class="panel"><h2>📅 勉強時間の履歴</h2><div id="history" class="muted">記録はまだありません。</div></section>
 <footer class="footer"><a href="index.html">☁ カウントダウンに戻る</a></footer>
 </main>
 <script type="module">
@@ -31,14 +31,14 @@ let local=safeParse(localStorage.getItem(localKey),{goal:'',days:{}}),remote={da
 let pendingSnowLogin=false;
 function updateSnowVerify(){const name=$('nickname').value.normalize('NFKC').trim().toLowerCase();$('snowVerify').style.display=(!remote.nicknameLocked&&name==='snow')?'block':'none';$('googleVerify').style.display=(auth.currentUser&&!auth.currentUser.isAnonymous)?'none':'inline-block'}
 $('nickname').addEventListener('input',updateSnowVerify);
-$('googleVerify').onclick=async()=>{try{pendingSnowLogin=true;setStatus('Googleで本人確認中…');const credential=await signInWithPopup(auth,new GoogleAuthProvider());const a=await getDoc(doc(db,'admins',credential.user.uid));if(!a.exists()||a.data()?.enabled!==true){pendingSnowLogin=false;setStatus('このGoogleアカウントには管理者権限がないよ。Firebaseのadmins設定を確認してね。',true);return}$('nickname').value='snow';updateSnowVerify();setStatus('本人確認できたよ！「名前を保存」を押してね。')}catch(e){pendingSnowLogin=false;console.error(e);setStatus('Google認証に失敗したよ：'+e.message,true)}};
+$('googleVerify').onclick=async()=>{try{pendingSnowLogin=true;setStatus('Googleで本人確認中…');const credential=await signInWithPopup(auth,new GoogleAuthProvider());const a=await getDoc(doc(db,'admins',credential.user.uid));if(!a.exists()||a.data()?.enabled!==true){pendingSnowLogin=false;setStatus('このGoogleアカウントには管理者権限がないよ。',true);return}$('nickname').value='snow';updateSnowVerify();setStatus('本人確認できたよ！「名前を保存」を押してね。')}catch(e){pendingSnowLogin=false;console.error(e);setStatus('Google認証に失敗したよ：'+e.message,true)}};
 const getDay=(d)=>{local.days??={};local.days[d]??={todos:[],good:'',improve:''};return local.days[d]};
 const persist=()=>localStorage.setItem(localKey,JSON.stringify(local));
 const setStatus=(msg,error=false)=>{$('status').textContent=msg;$('status').className='status'+(error?' error':'')};
 const dateKey=today();$('manualDate').value=dateKey;
 function renderStats(){const days=remote.days||{},d=today(),now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),now.getDate());start.setDate(start.getDate()-((start.getDay()+6)%7));const weekStart=`${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}-${String(start.getDate()).padStart(2,'0')}`;const month=d.slice(0,7);$('todayTotal').textContent=fmt(days[d]);$('weekTotal').textContent=fmt(Object.entries(days).filter(([k])=>k>=weekStart&&k<=d).reduce((a,[,v])=>a+Number(v||0),0));$('monthTotal').textContent=fmt(Object.entries(days).filter(([k])=>k.startsWith(month)&&k<=d).reduce((a,[,v])=>a+Number(v||0),0));const rows=Object.entries(days).filter(([,v])=>Number(v)>0).sort(([a],[b])=>b.localeCompare(a)).slice(0,60);$('history').innerHTML=rows.length?`<table class="hist"><thead><tr><th>日付</th><th>勉強時間</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td>${k}</td><td>${fmt(v)}</td></tr>`).join('')}</tbody></table>`:'記録はまだありません。';}
 function renderLocal(){const d=getDay(today());$('goal').value=local.goal||'';$('good').value=d.good||'';$('improve').value=d.improve||'';const list=$('todoList');list.replaceChildren();d.todos.forEach((t,i)=>{const row=document.createElement('div');row.className='todo'+(t.done?' done':'');const check=document.createElement('input');check.type='checkbox';check.checked=!!t.done;check.addEventListener('change',()=>{t.done=check.checked;persist();renderLocal()});const span=document.createElement('span');span.textContent=t.text;const del=document.createElement('button');del.className='tiny';del.textContent='削除';del.addEventListener('click',()=>{d.todos.splice(i,1);persist();renderLocal()});row.append(check,span,del);list.append(row)});const done=d.todos.filter(t=>t.done).length;$('todoProgress').textContent=`${done} / ${d.todos.length} 完了`;$('todoBar').style.width=(d.todos.length?done/d.todos.length*100:0)+'%'}
-async function addTime(date,mins){if(!userRef)throw Error('Firebaseへの接続を待ってね');if(!remote.nicknameLocked)throw Error('先にニックネームを登録してね');if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isSafeInteger(mins)||mins<1||mins>1440)throw Error('時間は1分〜24時間で入力してね');await runTransaction(db,async tx=>{const snap=await tx.get(userRef);const data=snap.exists()?snap.data():{};const days={...(data.days||{})};days[date]=Math.min(1000000,Math.max(0,Math.floor(Number(days[date])||0))+mins);tx.set(userRef,{days},{merge:true})})}
+async function addTime(date,mins){if(!userRef)throw Error('準備ができるまで待ってね');if(!remote.nicknameLocked)throw Error('先にニックネームを登録してね');if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isSafeInteger(mins)||mins<1||mins>1440)throw Error('時間は1分〜24時間で入力してね');await runTransaction(db,async tx=>{const snap=await tx.get(userRef);const data=snap.exists()?snap.data():{};const days={...(data.days||{})};days[date]=Math.min(1000000,Math.max(0,Math.floor(Number(days[date])||0))+mins);tx.set(userRef,{days},{merge:true})})}
 async function guard(button,fn){if(busy)return;busy=true;button.disabled=true;try{await fn();setStatus('保存できたよ！ ☁')}catch(e){console.error(e);setStatus('保存できなかったよ：'+(e.message||'接続を確認してね'),true)}finally{busy=false;button.disabled=false}}
 $('saveName').onclick=()=>guard($('saveName'),async()=>{
  if(!userRef)throw Error('接続中だよ');
@@ -69,7 +69,7 @@ $('timerReset').onclick=()=>{if(!confirm('タイマーをリセットする？�
 $('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),mins=Math.round(ms/60000);if(mins<1)throw Error('1分以上計測してから保存してね');if(mins>1440)throw Error('24時間を超えたよ。タイマーを確認してね');if(timer.startedAt){timer.elapsed=ms;timer.startedAt=null;saveTimer()}await addTime(today(),mins);timer={elapsed:0,startedAt:null};saveTimer();drawTimer()});
 renderLocal();renderStats();
 onAuthStateChanged(auth,async u=>{
- if(!u){try{await signInAnonymously(auth)}catch(e){setStatus('匿名認証に失敗したよ。FirebaseのAuthentication設定を確認してね。',true)}return}
+ if(!u){try{await signInAnonymously(auth)}catch(e){setStatus('読み込みに失敗したよ。ページを再読み込みしてね。',true)}return}
  user=u;userRef=doc(db,'users',u.uid);
  if(unsubscribe)unsubscribe();
  unsubscribe=onSnapshot(userRef,async snap=>{
@@ -82,8 +82,8 @@ onAuthStateChanged(auth,async u=>{
   $('timerSave').disabled=!remote.nicknameLocked;
   $('adminLink').style.display='none';
   renderStats();
-  if(remote.nicknameLocked){setStatus('Firebaseに接続できたよ！ ☁')}else{setStatus('最初にニックネームを登録してね！')}
-  if(remote.nicknameLocked&&remote.nickname==='snow'){
+  if(remote.nicknameLocked){setStatus('準備ができたよ！ ☁')}else{setStatus('最初にニックネームを登録してね！')}
+  if(remote.nicknameLocked){
     try{const a=await getDoc(doc(db,'admins',u.uid));if(auth.currentUser?.uid===u.uid&&a.exists()&&a.data()?.enabled===true)$('adminLink').style.display='block'}catch(e){console.error(e)}
   }
  },err=>{console.error(err);setStatus('データの読み込みに失敗したよ。Firestoreのルールを確認してね。',true)});
