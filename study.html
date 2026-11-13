@@ -11,10 +11,24 @@
 .reflectionDateRow label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-weight:bold}
 .reflectionDateRow input[type=date]{font-family:inherit;max-width:210px;border:1px solid #e8a9c4;border-radius:12px;padding:8px 10px;color:#914d6a;background:white}
 .reflectionDateHint{font-size:13px;color:#a36b86;margin:0 0 12px}
-.returnCountdown{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none!important;font-weight:bold;background:linear-gradient(135deg,#f083b4,#d765a3);color:#fff!important;border:2px solid #fff4fb;border-radius:100px;box-shadow:0 5px 15px #9a47773b;padding:13px 24px;min-height:48px;transition:transform .15s,box-shadow .15s}
-.returnCountdown:hover,.returnCountdown:focus-visible{transform:translateY(-2px);box-shadow:0 8px 18px #9a47775c}
+/* Calm, understated navigation button */
+.topReturn{display:flex;justify-content:flex-start;max-width:960px;margin:0 auto 10px}
+.returnCountdown,.footer .returnCountdown{
+ display:inline-flex;align-items:center;justify-content:center;gap:6px;
+ background:rgba(255,255,255,.78);color:#a95c7c!important;
+ border:1px solid #e8b6cc;border-radius:999px;
+ box-shadow:0 2px 7px rgba(137,66,105,.08);
+ padding:8px 13px;min-height:36px;font-size:13px;font-weight:600;
+ text-decoration:none!important;text-shadow:none!important;
+ transition:background .16s ease,border-color .16s ease,transform .16s ease;
+}
+.returnCountdown:hover,.returnCountdown:focus-visible{background:#fff6fa;border-color:#d98cae;transform:translateY(-1px)}
+.returnCountdown:focus-visible{outline:2px solid #d98cae;outline-offset:3px}
+.footer{margin-top:30px}.footer .returnCountdown{width:auto}
+@media(max-width:650px){.topReturn{justify-content:flex-start}.returnCountdownTop{width:auto}}
 </style></head><body><main class="wrap">
-<header class="header"><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
+<header class="header">
+  <div class="topReturn"><a class="returnCountdown returnCountdownTop" href="index.html" aria-label="カウントダウンページへ戻る"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
 <section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" type="text" maxlength="24" placeholder="ニックネーム（管理者に表示されます）"><button id="saveName" class="btn">名前を保存</button></div><div id="snowVerify" class="hint" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button id="googleVerify" type="button" class="btn alt">Googleで本人確認する</button></div><div id="status" class="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。管理者にはニックネーム・勉強時間・大きな目標が表示されます。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
 <section class="panel"><h2>📚 勉強時間のまとめ</h2><div class="grid"><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section>
 <div class="subgrid"><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"></label><label>時間 <input id="hours" type="number" min="0" max="23" value="1" inputmode="numeric"></label><label>分 <input id="minutes" type="number" min="0" max="59" value="0" inputmode="numeric"></label></div><p><button id="addManual" class="btn">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
@@ -23,7 +37,7 @@
 <section class="panel"><h2>☑ 今日のToDo</h2><div class="formrow"><input id="newTodo" type="text" maxlength="120" placeholder="今日やること"><button id="addTodo" class="btn">追加</button></div><div id="todoList" style="margin-top:12px"></div><p id="todoProgress" class="muted">0 / 0 完了</p><div class="bar"><div id="todoBar"></div></div></section></div>
 <section class="panel"><h2>📝 今日の振り返り</h2><div class="reflectionDateRow"><label for="reflectionDate">📅 振り返る日付 <input id="reflectionDate" type="date" aria-label="振り返りを表示する日付"></label><button id="reflectionToday" class="btn alt" type="button">今日に戻す</button></div><p id="reflectionDateHint" class="reflectionDateHint">選択した日の記録を表示・編集できるよ。</p><label>今日できたこと<textarea id="good" placeholder="今日頑張れたことを書こう"></textarea></label><label>反省・明日の改善<textarea id="improve" placeholder="明日は何を意識する？"></textarea></label><p><button id="saveReflection" class="btn alt">振り返りを保存</button></p><p class="muted">振り返りは選択した日付ごとに、この端末内に保存されるよ。ToDoは今日の分を表示しているよ。</p></section>
 <section class="panel"><h2>📅 勉強時間の履歴</h2><div id="history" class="muted">記録はまだありません。</div></section>
-<footer class="footer"><a class="returnCountdown" href="index.html">☁ カウントダウンに戻る <span aria-hidden="true">→</span></a></footer>
+<footer class="footer"><a class="returnCountdown" href="index.html"><span aria-hidden="true">←</span> カウントダウンに戻る</a></footer>
 </main>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
