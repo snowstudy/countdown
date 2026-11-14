@@ -112,14 +112,19 @@ html,body{max-width:100%;overflow-x:clip}
 @media(max-width:380px){.adminStats{grid-template-columns:repeat(2,minmax(0,1fr))}.adminRankTime{font-size:12px}.adminTopNav{flex-wrap:wrap}.adminTopNav a{flex:1 1 100%}}
 </style><style>.adminTable{width:100%;border-collapse:collapse}.adminTable th,.adminTable td{padding:10px 8px;border-bottom:1px solid #f0c7d7;text-align:left}.adminTable th{color:#b34f78}.adminTable{font-size:14px}.adminTable td{word-break:break-word}#login,#signout{margin:10px 5px}#panel{display:none}#accessInfo{white-space:pre-wrap;word-break:break-all}a{color:#b34f78}.uidLabel{font-size:10px;color:#936e84;overflow-wrap:anywhere;display:block;margin-top:3px}.roleBtn{font-family:inherit;padding:6px 10px;border:1px solid #df9dbb;border-radius:12px;background:#fff2f8;color:#a34c72;cursor:pointer}.roleBtn:disabled{opacity:.5;cursor:not-allowed}.renameBtn{display:block;margin-top:6px;padding:4px 9px;font-size:12px;background:#fff8fb}
 .goalCell{min-width:170px;max-width:290px}.goalText{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;max-height:4.8em;overflow:hidden}.goalText.isOpen{max-height:none}.goalExpand{border:none;background:transparent;color:#a34c72;text-decoration:underline;cursor:pointer;font-family:inherit;margin-top:3px;padding:2px 0}.goalEmpty{font-size:12px;color:#9d8391}
-</style></head><body><main class="wrap"><header class="header">
+</style><style id="user-name-group-style">
+.userNameWithGroup{display:flex;align-items:center;flex-wrap:wrap;gap:6px;max-width:100%;min-width:0}
+.userNameText{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.userGroupMark{display:inline-flex;align-items:center;justify-content:center;flex:none;font-size:1.1em;line-height:1.3;vertical-align:middle}
+</style>
+</head><body><main class="wrap"><header class="header">
   <nav class="adminTopNav" aria-label="管理画面ナビゲーション"><a href="study.html" class="adminBackBtn">← Study Logへ戻る</a><a href="index.html" class="adminBackBtn secondary">☁ カウントダウンへ</a></nav><p>高校受験生勉強会！！！</p><h1>🔐 Study Log 管理</h1><p>みんなの頑張りを確認しよう！</p></header><section class="panel loginPanel" id="loginPanel"><h2>🔐 アクセス状況</h2><p class="muted">adminsに登録されたUIDなら、Google認証・匿名認証のどちらでも閲覧できます。副管理者はいつものブラウザで開いてね。</p><button id="login" class="btn">Googleで管理者ログイン</button><button id="signout" class="btn alt" style="display:none">ログアウト</button><div id="status" class="status">ログイン状態を確認中…</div><div id="accessInfo" class="muted"></div><p class="muted" id="helpText">匿名認証で権限を付けてもらう場合は、いつも使っているLINE内ブラウザからStudy Logの管理者ページを開いてね。</p></section><div id="panel"><section class="panel summaryPanel" id="summarySection"><div class="sectionHeading"><div><p class="eyebrow">OVERVIEW</p><h2>📊 みんなの学習状況</h2></div><span class="smallNote">勉強時間のまとめ</span></div><div class="grid adminStats"><div class="stat">登録人数<strong id="numUsers">0人</strong></div><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section><section class="panel" id="groupAdminPanel"><div class="sectionHeading"><div><p class="eyebrow">OPEN CHAT</p><h2>🏷 オプチャの管理</h2></div><span class="smallNote">管理者・副管理者が追加可能</span></div><p class="muted">名前と絵文字を登録すると、Study Logの所属先に表示されるよ。登録済みユーザーにも適用できるよ。</p><div class="groupAdminForm"><input id="newGroupEmoji" aria-label="新しいオプチャの絵文字" placeholder="🩷" maxlength="12"/><input id="newGroupName" aria-label="新しいオプチャの名前" placeholder="オプチャ名" maxlength="32"/><button class="btn" id="addGroup" type="button">＋ オプチャを追加</button></div><div id="groupAdminList" class="groupAdminList">読み込み中…</div></section><section class="panel usersPanel" id="usersSection"><div class="sectionHeading"><div><p class="eyebrow">STUDENTS</p><h2>👥 ユーザー一覧</h2></div><span class="smallNote" id="shownCount">登録者を表示</span></div><p class="muted">勉強時間と大きな目標は利用者本人が入力した内容です。ToDo文章・振り返りは表示されません。最高管理者のsnowだけが副管理者の設定とニックネーム変更を行えます。</p><div class="usersToolbar">
    <label class="searchField"><span aria-hidden="true">⌕</span><input id="userSearch" type="search" placeholder="名前・大きな目標で検索" aria-label="ユーザー名や大きな目標で検索"></label>
    <label class="filterField">表示 <select id="userFilter" aria-label="ユーザーの絞り込み"><option value="all">全員</option><option value="hasGoal">目標あり</option><option value="activeWeek">今週記録あり</option></select></label>
    <label class="filterField">所属 <select id="groupFilter" aria-label="所属オプチャで絞り込み"><option value="all">すべての所属</option></select></label>
  </div>
  <div id="groupUserSummary" class="groupUserSummary" aria-label="所属オプチャ別の登録人数"></div><div class="tableScroll"><table class="adminTable"><thead><tr><th>ニックネーム</th><th>所属オプチャ</th><th>今日</th><th>今週</th><th>今月</th><th>総計</th><th>🎯 大きな目標</th><th id="permissionHeader" style="display:none">副管理者権限</th></tr></thead><tbody id="rows"></tbody></table></div></section>
-<section class="panel" id="adminRanking"><div class="sectionHeading"><div><p class="eyebrow">WEEKLY RANKING</p><h2>🏆 週間勉強ランキング</h2></div><span class="smallNote">管理者専用</span></div>
+<section class="panel" id="adminRanking"><div class="sectionHeading"><div><p class="eyebrow">WEEKLY RANKING</p><h2>🏆 週間勉強ランキング</h2></div><span class="smallNote">みんなにも公開中</span></div>
 <p class="muted">月曜〜日曜の勉強時間を比較するよ。学習時間の記録を保存した人が対象だよ。</p>
 <div class="usersToolbar"><div class="adminRankNav"><button type="button" class="btn alt" id="rankPrev">← 前の週</button><strong id="rankPeriod">今週</strong><button type="button" class="btn alt" id="rankNext">次の週 →</button></div>
 <label class="filterField">所属 <select id="rankGroupFilter" aria-label="ランキングの所属絞り込み"><option value="all">すべての所属</option></select></label></div>
@@ -176,7 +181,15 @@ function draw(records){
    const g=groupById().get(x.groupId),key=g?.id||'unassigned';
    if(key!==currentGroup){currentGroup=key;const heading=document.createElement('tr');heading.className='groupDivider';const cell=document.createElement('td');cell.colSpan=owner?8:7;cell.textContent=g?`${g.emoji} ${g.label}（${ordered.filter(u=>u.groupId===x.groupId).length}人）`:`❔ 未設定・不明（${ordered.filter(u=>!groupById().has(u.groupId)).length}人）`;heading.append(cell);body.append(heading)}
    const tr=document.createElement('tr');
-  const tdName=document.createElement('td');tdName.textContent=x.name;
+  const tdName=document.createElement('td');tdName.dataset.label='ニックネーム';
+  const nameRow=document.createElement('div');nameRow.className='userNameWithGroup';
+  const nameText=document.createElement('span');nameText.className='userNameText';nameText.textContent=x.name;nameRow.append(nameText);
+  const userGroup=groupById().get(x.groupId);
+  const groupMark=document.createElement('span');groupMark.className='userGroupMark';
+  groupMark.textContent=userGroup?.emoji||'❔';
+  groupMark.title=userGroup?.label||'所属未設定・不明';
+  groupMark.setAttribute('aria-label','所属：'+(userGroup?.label||'未設定・不明'));
+  nameRow.append(groupMark);tdName.append(nameRow);
   if(owner){
     const uid=document.createElement('span');uid.className='uidLabel';uid.textContent='UID: '+x.uid;tdName.append(uid);
     if(x.uid!==auth.currentUser?.uid && x.name!=='snow'){
@@ -185,7 +198,10 @@ function draw(records){
      rename.onclick=()=>renameUser(x.uid,x.name,rename);tdName.append(rename);
     }
    }
-  tr.append(tdName);const tdGroup=document.createElement('td');tdGroup.dataset.label='所属オプチャ';const groupInfo=groupById().get(x.groupId);tdGroup.textContent=groupInfo?`${groupInfo.emoji} ${groupInfo.label}`:'未設定';tr.append(tdGroup);
+  tr.append(tdName);const tdGroup=document.createElement('td');tdGroup.dataset.label='所属オプチャ';const groupInfo=groupById().get(x.groupId);tdGroup.textContent=groupInfo?`${groupInfo.emoji} ${groupInfo.label}`:'未設定';
+  const changeGroup=document.createElement('button');changeGroup.type='button';changeGroup.className='roleBtn renameBtn';changeGroup.textContent='所属を変更';
+  changeGroup.setAttribute('aria-label',x.name+'さんの所属オプチャを変更');
+  changeGroup.onclick=()=>changeUserGroup(x.uid,x.name,x.groupId,changeGroup);tdGroup.append(changeGroup);tr.append(tdGroup);
   for(const [label,value] of [['今日',fmt(x.today)],['今週',fmt(x.week)],['今月',fmt(x.month)],['総計',fmt(x.total)]]){const td=document.createElement('td');td.dataset.label=label;td.textContent=value;tr.append(td)}
    const goalTd=document.createElement('td');goalTd.className='goalCell';goalTd.dataset.label='🎯 大きな目標';
    if(x.goal.trim()){
@@ -210,6 +226,23 @@ function draw(records){
   body.append(tr);
  }
  if(!visible.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=owner?8:7;td.textContent=summary.length?'条件に合うユーザーはいません。':'登録された記録はまだありません。';tr.append(td);body.append(tr)}
+}
+async function changeUserGroup(uid,name,current,btn){
+ if(!auth.currentUser||!groups.length)return;
+ const choices=groups.filter(g=>g.active!==false||g.id===current);
+ const description=choices.map((g,i)=>`${i+1}. ${g.emoji} ${g.label}`).join('\n');
+ const input=prompt(`${name} さんの所属先を番号で指定してね。\n\n${description}`,String(Math.max(1,choices.findIndex(g=>g.id===current)+1)));
+ if(input===null)return;
+ const index=Number(input)-1;
+ if(!Number.isInteger(index)||index<0||index>=choices.length){alert('表示されている番号を入力してね！');return}
+ const next=choices[index].id;if(next===current)return;
+ if(!confirm(`${name} さんの所属を ${choices[index].emoji} ${choices[index].label} に変更する？`))return;
+ btn.disabled=true;
+ try{
+  await setDoc(doc(db,'users',uid),{groupId:next},{merge:true});
+  status(`${name} さんの所属先を更新したよ！次に本人がStudy Logを開くとLIVEやランキングにも反映されるよ。`);
+ }catch(e){console.error(e);status('所属先を更新できなかったよ：'+(e.message||'Firestoreルールを確認してね'))}
+ finally{btn.disabled=false}
 }
 async function changeRole(uid,name,currentlyEnabled,btn){
  if(!owner || uid===auth.currentUser?.uid)return;
@@ -256,7 +289,7 @@ async function renameUser(uid,displayName,btn){
  finally{btn.disabled=false}
 }
 
- // Admin-only weekly leaderboard; data is never queried from the public Study Log.
+ // Weekly leaderboard is also visible on the public Study Log (only summary fields).
  let rankOffset=0,rankEntries=[],rankUnsub=null;
  function mondayOf(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());d.setDate(d.getDate()-(d.getDay()+6)%7);return dateStr(d)}
  function rankWeek(){const d=new Date();d.setDate(d.getDate()+rankOffset*7);return mondayOf(d)}

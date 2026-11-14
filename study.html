@@ -68,15 +68,34 @@ body[data-study-theme="other"]{background-color:#e9dff5!important;background-ima
 body[data-study-theme="other"] .panel h2,body[data-study-theme="other"] .panel h3{color:#8e6aac}
 body[data-study-theme="other"] .groupRegister select,body[data-study-theme="other"] input:focus-visible,body[data-study-theme="other"] textarea:focus-visible{border-color:#ac91c9}
 body[data-study-theme="other"] .groupEmoji{background:#f1e8fa}
+
+/* Registered blue OpenChat: blue text shadows across the heading and other emphasized text. */
+body[data-study-theme="blue"] .header,body[data-study-theme="blue"] .header h1,body[data-study-theme="blue"] .header p{color:#4e79aa;text-shadow:2px 3px 0 #d5ecff,0 4px 11px rgba(58,116,175,.3)!important}
+body[data-study-theme="blue"] .panel h2,body[data-study-theme="blue"] .panel h3,body[data-study-theme="blue"] .stat strong{color:#487eb1;text-shadow:1px 2px 2px rgba(100,159,214,.22)!important}
+body[data-study-theme="blue"] .footer,body[data-study-theme="blue"] .footer a{color:#557ead;text-shadow:1px 2px 2px rgba(90,150,205,.22)!important}
+body[data-study-theme="blue"] .returnCountdown{color:#557ead!important;border-color:#a9cde9}
+/* The leaderboard and the group dropdown fit narrow screens. */
+#publicRanking,#publicRanking *{min-width:0}#publicRanking .rankTools select{max-width:100%;font-family:inherit;border:1px solid #e7bfd3;border-radius:12px;padding:9px;background:#fff9fc;color:inherit}
+#publicRanking .rankRow{width:100%}#publicRanking .rankPerson{overflow-wrap:anywhere}
+@media(max-width:490px){#publicRanking .rankTools{justify-content:space-between;gap:7px}#publicRanking .rankTools select{width:100%;flex-basis:100%}}
 </style></head><body><main class="wrap">
 <header class="header">
   <div class="topReturn"><a class="returnCountdown returnCountdownTop" href="index.html" aria-label="カウントダウンページへ戻る"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
-<section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" type="text" maxlength="24" placeholder="ニックネーム（管理者に表示されます）"><button class="btn" id="saveName">名前を保存</button></div><div class="groupRegister"><label for="groupSelect">🏷 所属オプチャ</label><select id="groupSelect"><option value="">オプチャを読み込み中…</option></select><p class="muted" id="groupHint">登録時に所属オプチャを選んでね。あとから変更もできるよ！</p><button class="btn alt" id="groupSave" type="button" style="display:none">所属を変更</button></div><div id="snowVerify" class="hint" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button id="googleVerify" type="button" class="btn alt">Googleで本人確認する</button></div><div id="status" class="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。管理者にはニックネーム・勉強時間・大きな目標が表示されます。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
+<section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" type="text" maxlength="24" placeholder="ニックネーム（管理者に表示されます）"><button class="btn" id="saveName">名前を保存</button></div><div class="groupRegister"><label for="groupSelect">🏷 所属オプチャ</label><select id="groupSelect"><option value="">オプチャを読み込み中…</option></select><p class="muted" id="groupHint">所属オプチャは初回登録時に選んでね。登録後の変更は管理者へお願いしてね！</p></div><div id="snowVerify" class="hint" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button id="googleVerify" type="button" class="btn alt">Googleで本人確認する</button></div><div id="status" class="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。管理者にはニックネーム・勉強時間・大きな目標が表示されます。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
 <section class="panel"><h2>📚 勉強時間のまとめ</h2><div class="grid"><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section>
 <div class="subgrid"><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"></label><label class="manualUnit"><input id="hours" type="number" min="0" max="23" value="1" inputmode="numeric" aria-label="追加する時間"><span>時間</span></label><label class="manualUnit"><input id="minutes" type="number" min="0" max="59" value="0" inputmode="numeric" aria-label="追加する分"><span>分</span></label></div><p><button id="addManual" class="btn">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
 <section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div id="timer" class="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button id="timerStart" class="btn">スタート</button><button id="timerPause" class="btn alt">一時停止</button><button id="timerSave" class="btn">記録して終了</button><button id="timerReset" class="btn danger">リセット</button></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section></div>
 <section class="panel" id="livePanel" aria-label="みんなの勉強状況"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE</span></div><p class="liveIntro">タイマーを使っている人が表示されるよ！名前・所属オプチャの絵文字・計測時間が共有されるよ。</p><p id="liveCount" class="liveCount" aria-live="polite">確認中…</p><div id="liveMembers" class="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section>
 
+
+<section class="panel" id="publicRanking" aria-label="みんなの週間勉強ランキング">
+ <div class="liveHeader"><h2 style="margin:0">🏆 週間勉強ランキング</h2><span class="rankLabel">WEEKLY RANKING</span></div>
+ <p class="muted">月曜〜日曜の記録だよ！ニックネーム・所属の絵文字・合計勉強時間が表示されるよ。</p>
+ <div class="rankTools"><button id="rankPrev" type="button" class="btn alt">← 前の週</button><strong id="rankPeriod">今週</strong><button id="rankNext" type="button" class="btn alt">次の週 →</button>
+ <select id="rankGroupFilter" aria-label="所属オプチャでランキングを絞り込み"><option value="all">すべての所属</option></select></div>
+ <div id="rankRows" class="rankRows" aria-live="polite">ランキングを読み込み中…</div>
+ <p class="muted rankNote">※計測・手動入力で保存された時間を集計。記録した本人の入力内容に基づくランキングだよ。</p>
+</section>
 <section class="panel" id="goalPanel"><h2>🎯 大きな目標</h2><p class="muted">目指していることを書いておこう！目標は管理者にも表示されるよ。</p><textarea id="goal" maxlength="2000" placeholder="例：志望校に合格する！"></textarea><p><button class="btn alt" id="saveGoal" type="button">目標を保存</button></p></section>
 <div class="subgrid"><section class="panel"><h2>☑ 今日のToDo</h2><div class="formrow"><input id="newTodo" type="text" maxlength="120" placeholder="今日やること"><button id="addTodo" class="btn">追加</button></div><div id="todoList" style="margin-top:12px"></div><p id="todoProgress" class="muted">0 / 0 完了</p><div class="bar"><div id="todoBar"></div></div></section></div>
 <section class="panel"><h2>📝 今日の振り返り</h2><div class="reflectionDateRow"><label for="reflectionDate">📅 振り返る日付 <input id="reflectionDate" type="date" aria-label="振り返りを表示する日付"></label><button id="reflectionToday" class="btn alt" type="button">今日に戻す</button></div><p id="reflectionDateHint" class="reflectionDateHint">選択した日の記録を表示・編集できるよ。</p><label>今日できたこと<textarea id="good" placeholder="今日頑張れたことを書こう"></textarea></label><label>反省・明日の改善<textarea id="improve" placeholder="明日は何を意識する？"></textarea></label><p><button id="saveReflection" class="btn alt">振り返りを保存</button></p><p class="muted">振り返りは選択した日付ごとに、この端末内に保存されるよ。ToDoは今日の分を表示しているよ。</p></section>
@@ -102,24 +121,24 @@ function groupName(id){return groupMap().get(id)?.label||'未設定'}
 function applyGroupTheme(groupId){
  document.body.dataset.studyTheme=groupId==='blue'?'blue':groupId==='pink'||!groupId?'pink':'other';
 }
-$('groupSelect').addEventListener('change',()=>applyGroupTheme($('groupSelect').value));
+$('groupSelect').addEventListener('change',()=>{if(!remote.nicknameLocked)applyGroupTheme($('groupSelect').value)});
 function renderGroupSelect(){
- const s=$('groupSelect'),selected=s.value||remote.groupId||'';s.replaceChildren();
+ const s=$('groupSelect'),selected=remote.nicknameLocked?(remote.groupId||''):(s.value||remote.groupId||'');s.replaceChildren();
  const blank=document.createElement('option');blank.value='';blank.textContent='所属オプチャを選択';s.append(blank);
  for(const g of groupList.filter(g=>g.active!==false||g.id===remote.groupId)){const o=document.createElement('option');o.value=g.id;o.textContent=`${g.emoji} ${g.label}${g.active===false?'（以前の所属）':''}`;s.append(o)}
  s.value=Array.from(s.options).some(o=>o.value===selected)?selected:'';
  applyGroupTheme(s.value||remote.groupId||'');
-  $('groupSave').style.display=remote.nicknameLocked?'inline-flex':'none';
- $('groupHint').textContent=remote.nicknameLocked?'所属先を変更するとLIVEとランキングの表示にも反映されるよ！':'登録時に所属オプチャを選んでね。';
+  s.disabled=!!remote.nicknameLocked;
+ $('groupHint').textContent=remote.nicknameLocked?'所属は初回登録時に確定するよ。変更したいときは管理者に連絡してね！':'登録時に所属オプチャを選んでね。';
 }
-function startGroups(){if(groupUnsub)groupUnsub();groupUnsub=onSnapshot(collection(db,'studyGroups'),snap=>{groupList=snap.docs.map(x=>({id:x.id,...x.data()})).filter(g=>typeof g.label==='string'&&typeof g.emoji==='string').sort((a,b)=>(a.order||999)-(b.order||999));renderGroupSelect();renderLive()},e=>{console.error('所属オプチャ読み込み',e);$('groupHint').textContent='オプチャを読み込めません。もう一度ページを開いてね。'});}
+function startGroups(){if(groupUnsub)groupUnsub();groupUnsub=onSnapshot(collection(db,'studyGroups'),snap=>{groupList=snap.docs.map(x=>({id:x.id,...x.data()})).filter(g=>typeof g.label==='string'&&typeof g.emoji==='string').sort((a,b)=>(a.order||999)-(b.order||999));renderGroupSelect();renderLive();renderRankGroupOptions()},e=>{console.error('所属オプチャ読み込み',e);$('groupHint').textContent='オプチャを読み込めません。もう一度ページを開いてね。'});}
 function mondayOf(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());d.setDate(d.getDate()-(d.getDay()+6)%7);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function parseLocalDay(key){const [y,m,d]=key.split('-').map(Number);return new Date(y,m-1,d)}
 function rankMinutes(days,week){return Object.entries(days||{}).filter(([d])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&mondayOf(parseLocalDay(d))===week).reduce((sum,[,v])=>sum+(Number.isFinite(Number(v))?Math.max(0,Number(v)):0),0)}
 function syncRankForWeek(week){
  if(!user?.uid||!remote.nicknameLocked||!remote.nickname)return Promise.resolve();
  const uid=user.uid,nickname=remote.nickname,groupId=remote.groupId||'',minutes=rankMinutes(remote.days||{},week);
- // Scoreboard is viewable by admins only; clients submit their own limited weekly totals.
+ // Public leaderboard exposes only nickname, group and aggregated study minutes.
  const ref=doc(db,'weeklyRankings',week+'_'+uid);
  rankSyncChain=rankSyncChain.catch(()=>{}).then(()=>setDoc(ref,{uid,nickname,groupId,weekStart:week,minutes})).catch(e=>{console.error('ランキング保存',e)});
  return rankSyncChain;
@@ -128,6 +147,38 @@ function syncRecentRankings(){if(!user?.uid||!remote.nicknameLocked)return;const
  for(const d of Object.keys(remote.days||{})){if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const dt=parseLocalDay(d);if(Date.now()-dt.getTime()<56*86400000)weeks.add(mondayOf(dt))}}
  for(const week of weeks){const fingerprint=[user.uid,week,remote.nickname,remote.groupId,rankMinutes(remote.days,week)].join('|');if(rankSynced.has(fingerprint))continue;rankSynced.add(fingerprint);void syncRankForWeek(week)}
 }
+// Public weekly leaderboard: only nickname, group ID and aggregate minutes are read.
+let rankOffset=0,rankEntries=[],rankUnsub=null;
+function rankWeek(){const d=new Date();d.setDate(d.getDate()+7*rankOffset);return mondayOf(d)}
+function renderRankGroupOptions(){
+ const el=$('rankGroupFilter'),old=el.value;el.replaceChildren();
+ const all=document.createElement('option');all.value='all';all.textContent='すべての所属';el.append(all);
+ for(const g of groupList){const opt=document.createElement('option');opt.value=g.id;opt.textContent=`${g.emoji} ${g.label}`;el.append(opt)}
+ el.value=Array.from(el.options).some(o=>o.value===old)?old:'all';renderPublicRanking();
+}
+function renderPublicRanking(){
+ const week=rankWeek(),end=parseLocalDay(week);end.setDate(end.getDate()+6);
+ $('rankPeriod').textContent=`${week.slice(5).replace('-','/')}〜${String(end.getMonth()+1).padStart(2,'0')}/${String(end.getDate()).padStart(2,'0')}`;
+ $('rankPrev').disabled=rankOffset<=-52;$('rankNext').disabled=rankOffset>=0;
+ const host=$('rankRows');host.replaceChildren();
+ const g=$('rankGroupFilter').value;
+ const rows=rankEntries.filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(g==='all'||x.groupId===g)).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja'));
+ if(!rows.length){const p=document.createElement('div');p.className='rankEmpty';p.textContent='この週の勉強記録はまだないよ！';host.append(p);return}
+ rows.forEach((x,i)=>{const row=document.createElement('div');row.className='rankRow';
+ const pos=document.createElement('span');pos.className='rankPosition';pos.textContent=i<3?['🥇','🥈','🥉'][i]:`${i+1}位`;
+ const person=document.createElement('span');person.className='rankPerson';const g=groupMap().get(x.groupId);
+ const name=document.createElement('strong');name.textContent=`${g?.emoji||'📚'} ${String(x.nickname||'未設定')}`;
+ const sub=document.createElement('small');sub.textContent=g?.label||'所属未設定';person.append(name,sub);
+ const time=document.createElement('span');time.className='rankTime';time.textContent=fmt(Number(x.minutes)||0);row.append(pos,person,time);host.append(row)})
+}
+function attachPublicRanking(){
+ if(rankUnsub){rankUnsub();rankUnsub=null}rankEntries=[];renderPublicRanking();
+ if(!auth.currentUser)return;
+ rankUnsub=onSnapshot(query(collection(db,'weeklyRankings'),where('weekStart','==',rankWeek())),snap=>{rankEntries=snap.docs.map(d=>d.data());renderPublicRanking()},err=>{console.error('週間ランキング取得',err);$('rankRows').textContent='ランキングを取得できなかったよ。Firestoreルールを確認してね。'});
+}
+$('rankPrev').onclick=()=>{rankOffset=Math.max(-52,rankOffset-1);attachPublicRanking()};
+$('rankNext').onclick=()=>{rankOffset=Math.min(0,rankOffset+1);attachPublicRanking()};
+$('rankGroupFilter').onchange=renderPublicRanking;
 let local=safeParse(localStorage.getItem(localKey),{goal:'',days:{}}),remote={days:{},nickname:''},user=null,userRef=null,unsubscribe=null,busy=false;
 let pendingSnowLogin=false;
 function updateSnowVerify(){const name=$('nickname').value.normalize('NFKC').trim().toLowerCase();$('snowVerify').style.display=(!remote.nicknameLocked&&name==='snow')?'block':'none';$('googleVerify').style.display=(auth.currentUser&&!auth.currentUser.isAnonymous)?'none':'inline-block'}
@@ -158,7 +209,7 @@ $('saveName').onclick=()=>guard($('saveName'),async()=>{
  });
  $('nickname').value=name;pendingSnowLogin=false;updateSnowVerify();
 });
-$('groupSave').onclick=()=>guard($('groupSave'),async()=>{if(!userRef||!remote.nicknameLocked)throw Error('先にニックネームを登録してね');const groupId=$('groupSelect').value;if(!groupList.some(g=>g.id===groupId))throw Error('所属オプチャを選んでね');await setDoc(userRef,{groupId},{merge:true});});
+
 $('addManual').onclick=()=>guard($('addManual'),async()=>{const h=Number($('hours').value),m=Number($('minutes').value);if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||h>23||m<0||m>59||h*60+m===0)throw Error('0〜23時間、0〜59分で入力してね');await addTime($('manualDate').value,h*60+m)});
 $('saveGoal').onclick=()=>guard($('saveGoal'),async()=>{
  if(!userRef||!remote.nicknameLocked)throw Error('先にニックネームを登録してね');
@@ -242,7 +293,7 @@ $('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),min
 renderLocal();renderStats();
 onAuthStateChanged(auth,async u=>{
  if(!u){try{await signInAnonymously(auth)}catch(e){setStatus('読み込みに失敗したよ。ページを再読み込みしてね。',true)}return}
- user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener();startGroups()}
+ user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener();startGroups();attachPublicRanking()}
  if(unsubscribe)unsubscribe();
  unsubscribe=onSnapshot(userRef,async snap=>{
   remote=snap.exists()?snap.data():{days:{},nickname:''};remote.days??={};renderGroupSelect();syncRecentRankings();
