@@ -115,9 +115,9 @@ const localKey='snowstudy_log_private_v1',timerKey='snowstudy_log_timer_v1';
 // Public open-chat categories are curated by administrators.
 const DEFAULT_GROUPS=[{id:'pink',label:'高校受験生勉強会！！！',emoji:'🩷'},{id:'blue',label:'高校受験生勉強会！！！【中３受験生向け】',emoji:'💙'}];
 let groupList=[],groupUnsub=null,rankSynced=new Set(),rankSyncChain=Promise.resolve();
-const groupMap=()=>new Map(groupList.map(g=>[g.id,g]));
-function groupEmoji(id){return groupMap().get(id)?.emoji||'📚'}
-function groupName(id){return groupMap().get(id)?.label||'未設定'}
+const groupMap=()=>new Map([...DEFAULT_GROUPS,...groupList].map(g=>[g.id,g]));
+function groupEmoji(id){return groupMap().get(id)?.emoji||(id?'💜':'❔')}
+function groupName(id){return groupMap().get(id)?.label||(id?'その他・以前の所属':'未設定')}
 function applyGroupTheme(groupId){
  document.body.dataset.studyTheme=groupId==='blue'?'blue':groupId==='pink'||!groupId?'pink':'other';
 }
@@ -167,7 +167,7 @@ function renderPublicRanking(){
  rows.forEach((x,i)=>{const row=document.createElement('div');row.className='rankRow';
  const pos=document.createElement('span');pos.className='rankPosition';pos.textContent=i<3?['🥇','🥈','🥉'][i]:`${i+1}位`;
  const person=document.createElement('span');person.className='rankPerson';const g=groupMap().get(x.groupId);
- const name=document.createElement('strong');name.textContent=`${g?.emoji||'📚'} ${String(x.nickname||'未設定')}`;
+ const name=document.createElement('strong');name.textContent=`${groupEmoji(x.groupId)} ${String(x.nickname||'未設定')}`;
  const sub=document.createElement('small');sub.textContent=g?.label||'所属未設定';person.append(name,sub);
  const time=document.createElement('span');time.className='rankTime';time.textContent=fmt(Number(x.minutes)||0);row.append(pos,person,time);host.append(row)})
 }
