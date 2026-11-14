@@ -43,17 +43,32 @@
 .manualUnit{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
 .manualUnit input[type="number"]{width:76px;min-width:0}
 .manualUnit span{display:inline-block}
+
+/* Group picker and weekly leaderboard */
+.groupRegister{margin:12px 0 4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.groupRegister label{font-weight:700}.groupRegister select{min-width:170px;max-width:100%;padding:10px;border:1px solid #e6b8cf;border-radius:12px;background:#fff9fc;color:#8f4966}.groupRegister .muted{flex-basis:100%;margin:0;font-size:12px}.groupRegister button{white-space:nowrap}
+.groupEmoji{display:inline-flex;justify-content:center;align-items:center;min-width:27px;height:27px;background:#fff0f7;border-radius:9px;margin-right:6px;font-size:17px;flex:none}.liveNickname{display:flex;align-items:center;gap:4px}
+.rankLabel{font-size:11px;letter-spacing:.1em;color:#a45f85}.rankTools{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin:15px 0}.rankTools .btn{padding:8px 12px;font-size:13px}.rankRows{display:grid;gap:9px}.rankRow{display:flex;align-items:center;gap:10px;padding:12px;background:rgba(255,251,253,.94);border:1px solid #f1d5e3;border-radius:13px}.rankPosition{font-weight:bold;min-width:36px;color:#ad6285;text-align:center}.rankPerson{flex:1;min-width:0;overflow-wrap:anywhere}.rankPerson strong{display:block}.rankPerson small{font-size:11px;color:#a5768a}.rankTime{font-weight:bold;font-variant-numeric:tabular-nums;white-space:nowrap;color:#914c73}.rankNote{font-size:11px;margin-top:10px}.rankEmpty{text-align:center;color:#a5768a;padding:15px;border:1px dashed #ead3df;border-radius:12px}
+@media(max-width:600px){.rankTools{gap:6px}.rankTools .btn{padding:8px;font-size:12px}.rankPerson{font-size:13px}}
+
+/* Theme follows the registered OpenChat. Pink keeps the original cloud background. */
+body[data-study-theme="blue"]{background-color:#d8eafa!important;background-image:radial-gradient(ellipse at 14% 18%,#f5fbff 0%,transparent 42%),radial-gradient(ellipse at 86% 78%,#c2dff5 0%,transparent 46%),linear-gradient(150deg,#e2f5ff,#b9d5f0)!important;color:#567194}
+body[data-study-theme="other"]{background-color:#e7ddf4!important;background-image:radial-gradient(ellipse at 10% 15%,#fff8fc 0%,transparent 44%),radial-gradient(ellipse at 84% 85%,#d4f0e6 0%,transparent 48%),linear-gradient(150deg,#eee2f7,#d8eced)!important;color:#6f658b}
+body[data-study-theme="blue"] .panel{border-color:#cce2f4}
+body[data-study-theme="other"] .panel{border-color:#ded4eb}
+body[data-study-theme="blue"] .btn:not(.alt){background:#689bc7;border-color:#689bc7}
+body[data-study-theme="other"] .btn:not(.alt){background:#9e89c4;border-color:#9e89c4}
+body[data-study-theme="blue"] .liveMark{background:#e4f4ff;border-color:#c7e4f5;color:#527caa}
+body[data-study-theme="other"] .liveMark{background:#f0eafa;border-color:#d7cceb;color:#7769a6}
 </style></head><body><main class="wrap">
 <header class="header">
   <div class="topReturn"><a class="returnCountdown returnCountdownTop" href="index.html" aria-label="カウントダウンページへ戻る"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
-<section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" type="text" maxlength="24" placeholder="ニックネーム（管理者に表示されます）"><button id="saveName" class="btn">名前を保存</button></div><div id="snowVerify" class="hint" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button id="googleVerify" type="button" class="btn alt">Googleで本人確認する</button></div><div id="status" class="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。管理者にはニックネーム・勉強時間・大きな目標が表示されます。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
+<section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" type="text" maxlength="24" placeholder="ニックネーム（管理者に表示されます）"><button class="btn" id="saveName">名前を保存</button></div><div class="groupRegister"><label for="groupSelect">🏷 所属オプチャ</label><select id="groupSelect"><option value="">オプチャを読み込み中…</option></select><p class="muted" id="groupHint">登録時に所属オプチャを選んでね。あとから変更もできるよ！</p><button class="btn alt" id="groupSave" type="button" style="display:none">所属を変更</button></div><div id="snowVerify" class="hint" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button id="googleVerify" type="button" class="btn alt">Googleで本人確認する</button></div><div id="status" class="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。管理者にはニックネーム・勉強時間・大きな目標が表示されます。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
 <section class="panel"><h2>📚 勉強時間のまとめ</h2><div class="grid"><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section>
 <div class="subgrid"><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"></label><label class="manualUnit"><input id="hours" type="number" min="0" max="23" value="1" inputmode="numeric" aria-label="追加する時間"><span>時間</span></label><label class="manualUnit"><input id="minutes" type="number" min="0" max="59" value="0" inputmode="numeric" aria-label="追加する分"><span>分</span></label></div><p><button id="addManual" class="btn">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
 <section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div id="timer" class="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button id="timerStart" class="btn">スタート</button><button id="timerPause" class="btn alt">一時停止</button><button id="timerSave" class="btn">記録して終了</button><button id="timerReset" class="btn danger">リセット</button></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section></div>
-<section class="panel" id="livePanel" aria-label="みんなの勉強状況"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE</span></div><p class="liveIntro">タイマーを使っている人が表示されるよ！名前と計測時間だけを共有するよ。</p><p id="liveCount" class="liveCount" aria-live="polite">確認中…</p><div id="liveMembers" class="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section>
+<section class="panel" id="livePanel" aria-label="みんなの勉強状況"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE</span></div><p class="liveIntro">タイマーを使っている人が表示されるよ！名前・所属オプチャの絵文字・計測時間が共有されるよ。</p><p id="liveCount" class="liveCount" aria-live="polite">確認中…</p><div id="liveMembers" class="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section>
 
-<div class="subgrid"><section class="panel"><h2>🎯 大きな目標</h2><textarea id="goal" placeholder="例：苦手な数学を克服する！"></textarea><p><button id="saveGoal" class="btn alt">目標を保存</button></p><p class="muted">目標は学習記録と一緒に保存され、管理者・副管理者にも表示されるよ。以前の目標も「目標を保存」で共有できるよ。</p></section>
-<section class="panel"><h2>☑ 今日のToDo</h2><div class="formrow"><input id="newTodo" type="text" maxlength="120" placeholder="今日やること"><button id="addTodo" class="btn">追加</button></div><div id="todoList" style="margin-top:12px"></div><p id="todoProgress" class="muted">0 / 0 完了</p><div class="bar"><div id="todoBar"></div></div></section></div>
+<div class="subgrid"><section class="panel"><h2>☑ 今日のToDo</h2><div class="formrow"><input id="newTodo" type="text" maxlength="120" placeholder="今日やること"><button id="addTodo" class="btn">追加</button></div><div id="todoList" style="margin-top:12px"></div><p id="todoProgress" class="muted">0 / 0 完了</p><div class="bar"><div id="todoBar"></div></div></section></div>
 <section class="panel"><h2>📝 今日の振り返り</h2><div class="reflectionDateRow"><label for="reflectionDate">📅 振り返る日付 <input id="reflectionDate" type="date" aria-label="振り返りを表示する日付"></label><button id="reflectionToday" class="btn alt" type="button">今日に戻す</button></div><p id="reflectionDateHint" class="reflectionDateHint">選択した日の記録を表示・編集できるよ。</p><label>今日できたこと<textarea id="good" placeholder="今日頑張れたことを書こう"></textarea></label><label>反省・明日の改善<textarea id="improve" placeholder="明日は何を意識する？"></textarea></label><p><button id="saveReflection" class="btn alt">振り返りを保存</button></p><p class="muted">振り返りは選択した日付ごとに、この端末内に保存されるよ。ToDoは今日の分を表示しているよ。</p></section>
 <section class="panel"><h2>📅 勉強時間の履歴</h2><div id="history" class="muted">記録はまだありません。</div></section>
 <footer class="footer"><a class="returnCountdown" href="index.html"><span aria-hidden="true">←</span> カウントダウンに戻る</a></footer>
@@ -61,13 +76,48 @@
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, onSnapshot, runTransaction, setDoc, deleteDoc, collection, serverTimestamp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, onSnapshot, runTransaction, setDoc, deleteDoc, collection, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
 const firebaseConfig={apiKey:'AIzaSyDAfU0ISnB1aAAsrNeB1vKCflqIQ-MiiGk',authDomain:'snowstudy-3fd16.firebaseapp.com',projectId:'snowstudy-3fd16',storageBucket:'snowstudy-3fd16.firebasestorage.app',messagingSenderId:'253202554905',appId:'1:253202554905:web:dd812c84a34e8b369dca88',measurementId:'G-2995QPBZKF'};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id),today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const fmt=n=>{n=Math.max(0,Math.floor(n||0));return n>=60?`${Math.floor(n/60)}時間${n%60?`${n%60}分`:''}`:`${n}分`};
 const safeParse=(s,f)=>{try{return JSON.parse(s)??f}catch{return f}};
 const localKey='snowstudy_log_private_v1',timerKey='snowstudy_log_timer_v1';
+// Public open-chat categories are curated by administrators.
+const DEFAULT_GROUPS=[{id:'pink',label:'🩷 勉強オプチャ',emoji:'🩷'},{id:'blue',label:'💙 勉強オプチャ',emoji:'💙'},{id:'math',label:'📐 数学オプチャ',emoji:'📐'},{id:'university',label:'🎓 大学オプチャ',emoji:'🎓'}];
+let groupList=[],groupUnsub=null,rankSynced=new Set(),rankSyncChain=Promise.resolve();
+const groupMap=()=>new Map(groupList.map(g=>[g.id,g]));
+function groupEmoji(id){return groupMap().get(id)?.emoji||'📚'}
+function groupName(id){return groupMap().get(id)?.label||'未設定'}
+function applyGroupTheme(groupId){
+ document.body.dataset.studyTheme=groupId==='blue'?'blue':groupId==='pink'||!groupId?'pink':'other';
+}
+$('groupSelect').addEventListener('change',()=>applyGroupTheme($('groupSelect').value));
+function renderGroupSelect(){
+ const s=$('groupSelect'),selected=s.value||remote.groupId||'';s.replaceChildren();
+ const blank=document.createElement('option');blank.value='';blank.textContent='所属オプチャを選択';s.append(blank);
+ for(const g of groupList){const o=document.createElement('option');o.value=g.id;o.textContent=`${g.emoji} ${g.label}`;s.append(o)}
+ s.value=groupList.some(g=>g.id===selected)?selected:'';
+ applyGroupTheme(s.value||remote.groupId||'');
+  $('groupSave').style.display=remote.nicknameLocked?'inline-flex':'none';
+ $('groupHint').textContent=remote.nicknameLocked?'所属先を変更するとLIVEとランキングの表示にも反映されるよ！':'登録時に所属オプチャを選んでね。';
+}
+function startGroups(){if(groupUnsub)groupUnsub();groupUnsub=onSnapshot(collection(db,'studyGroups'),snap=>{groupList=snap.docs.map(x=>({id:x.id,...x.data()})).filter(g=>g.active===true&&typeof g.label==='string'&&typeof g.emoji==='string').sort((a,b)=>(a.order||999)-(b.order||999));renderGroupSelect();renderLive()},e=>{console.error('所属オプチャ読み込み',e);$('groupHint').textContent='オプチャを読み込めません。もう一度ページを開いてね。'});}
+function mondayOf(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());d.setDate(d.getDate()-(d.getDay()+6)%7);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function parseLocalDay(key){const [y,m,d]=key.split('-').map(Number);return new Date(y,m-1,d)}
+function rankMinutes(days,week){return Object.entries(days||{}).filter(([d])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&mondayOf(parseLocalDay(d))===week).reduce((sum,[,v])=>sum+(Number.isFinite(Number(v))?Math.max(0,Number(v)):0),0)}
+function syncRankForWeek(week){
+ if(!user?.uid||!remote.nicknameLocked||!remote.nickname)return Promise.resolve();
+ const uid=user.uid,nickname=remote.nickname,groupId=remote.groupId||'',minutes=rankMinutes(remote.days||{},week);
+ // Scoreboard is viewable by admins only; clients submit their own limited weekly totals.
+ const ref=doc(db,'weeklyRankings',week+'_'+uid);
+ rankSyncChain=rankSyncChain.catch(()=>{}).then(()=>setDoc(ref,{uid,nickname,groupId,weekStart:week,minutes})).catch(e=>{console.error('ランキング保存',e)});
+ return rankSyncChain;
+}
+function syncRecentRankings(){if(!user?.uid||!remote.nicknameLocked)return;const weeks=new Set([mondayOf(new Date())]);const recent=new Date();recent.setDate(recent.getDate()-7);weeks.add(mondayOf(recent));
+ for(const d of Object.keys(remote.days||{})){if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const dt=parseLocalDay(d);if(Date.now()-dt.getTime()<56*86400000)weeks.add(mondayOf(dt))}}
+ for(const week of weeks){const fingerprint=[user.uid,week,remote.nickname,remote.groupId,rankMinutes(remote.days,week)].join('|');if(rankSynced.has(fingerprint))continue;rankSynced.add(fingerprint);void syncRankForWeek(week)}
+}
 let local=safeParse(localStorage.getItem(localKey),{goal:'',days:{}}),remote={days:{},nickname:''},user=null,userRef=null,unsubscribe=null,busy=false;
 let pendingSnowLogin=false;
 function updateSnowVerify(){const name=$('nickname').value.normalize('NFKC').trim().toLowerCase();$('snowVerify').style.display=(!remote.nicknameLocked&&name==='snow')?'block':'none';$('googleVerify').style.display=(auth.currentUser&&!auth.currentUser.isAnonymous)?'none':'inline-block'}
@@ -85,6 +135,7 @@ $('saveName').onclick=()=>guard($('saveName'),async()=>{
  if(!userRef)throw Error('接続中だよ');
  const name=$('nickname').value.normalize('NFKC').trim().toLowerCase();
  if(!name||[...name].length>24||name.includes('/')||name==='.'||name==='..')throw Error('ニックネームは1〜24文字で入力してね（/ は使用不可）');
+ const groupId=$('groupSelect').value;if(!groupList.some(g=>g.id===groupId))throw Error('所属オプチャを選んでね');
  const isAdminName=name==='snow';
  if(isAdminName){if(user.isAnonymous)throw Error('snowの登録には、下の「Googleで本人確認する」を押してね');const check=await getDoc(doc(db,'admins',user.uid));if(!check.exists()||check.data()?.enabled!==true)throw Error('このGoogleアカウントにはsnowの登録権限がないよ');}
  await runTransaction(db,async tx=>{
@@ -93,10 +144,11 @@ $('saveName').onclick=()=>guard($('saveName'),async()=>{
   if(old.exists()&&old.data().nicknameLocked)throw Error('ニックネームは登録後に変更できないよ');
   if(taken.exists()&&taken.data().uid!==user.uid)throw Error('このニックネームはすでに使われているよ');
   if(!taken.exists())tx.set(nickRef,{uid:user.uid});
-  tx.set(userRef,{nickname:name,nicknameLocked:true,days:old.exists()?(old.data().days||{}):{}},{merge:true});
+  tx.set(userRef,{nickname:name,nicknameLocked:true,groupId,days:old.exists()?(old.data().days||{}):{}},{merge:true});
  });
  $('nickname').value=name;pendingSnowLogin=false;updateSnowVerify();
 });
+$('groupSave').onclick=()=>guard($('groupSave'),async()=>{if(!userRef||!remote.nicknameLocked)throw Error('先にニックネームを登録してね');const groupId=$('groupSelect').value;if(!groupList.some(g=>g.id===groupId))throw Error('所属オプチャを選んでね');await setDoc(userRef,{groupId},{merge:true});});
 $('addManual').onclick=()=>guard($('addManual'),async()=>{const h=Number($('hours').value),m=Number($('minutes').value);if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||h>23||m<0||m>59||h*60+m===0)throw Error('0〜23時間、0〜59分で入力してね');await addTime($('manualDate').value,h*60+m)});
 $('saveGoal').onclick=()=>guard($('saveGoal'),async()=>{
  if(!userRef||!remote.nicknameLocked)throw Error('先にニックネームを登録してね');
@@ -131,7 +183,7 @@ function renderLive(){
   const d=item.data, row=document.createElement('div');row.className='liveMember';
   const dot=document.createElement('span');dot.className='liveDot';dot.setAttribute('aria-hidden','true');
   const who=document.createElement('div');who.className='liveWho';
-  const name=document.createElement('div');name.className='liveNickname';name.textContent=d.nickname;
+  const name=document.createElement('div');name.className='liveNickname';const ge=document.createElement('span');ge.className='groupEmoji';ge.textContent=groupEmoji(d.groupId);ge.title=groupName(d.groupId);const nameText=document.createElement('span');nameText.textContent=d.nickname;name.append(ge,nameText);
   const detail=document.createElement('div');detail.className='liveSub';detail.textContent=item.id===auth.currentUser?.uid?'あなたも勉強中！':'勉強中';
   who.append(name,detail);
   const clock=document.createElement('span');clock.className='liveClock';
@@ -148,7 +200,7 @@ function publishLive(){
  if(!user?.uid || !remote.nicknameLocked || !remote.nickname || !timer.startedAt)return Promise.resolve();
  const uid=user.uid, name=remote.nickname, start=timer.startedAt, base=timer.elapsed;
  // serverTimestamp gives a trusted freshness marker; other viewers draw locally every second.
- return queueLiveWrite(()=>setDoc(doc(db,'liveStudy',uid),{nickname:name,startedAtMs:start,elapsedMs:Math.max(0,base),lastSeen:serverTimestamp()}));
+ return queueLiveWrite(()=>setDoc(doc(db,'liveStudy',uid),{nickname:name,groupId:remote.groupId||'',startedAtMs:start,elapsedMs:Math.max(0,base),lastSeen:serverTimestamp()}));
 }
 function stopLive(){
  if(!user?.uid)return Promise.resolve();
@@ -180,10 +232,10 @@ $('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),min
 renderLocal();renderStats();
 onAuthStateChanged(auth,async u=>{
  if(!u){try{await signInAnonymously(auth)}catch(e){setStatus('読み込みに失敗したよ。ページを再読み込みしてね。',true)}return}
- user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener()}
+ user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener();startGroups()}
  if(unsubscribe)unsubscribe();
  unsubscribe=onSnapshot(userRef,async snap=>{
-  remote=snap.exists()?snap.data():{days:{},nickname:''};remote.days??={};
+  remote=snap.exists()?snap.data():{days:{},nickname:''};remote.days??={};renderGroupSelect();syncRecentRankings();
   $('nickname').value=remote.nickname||(pendingSnowLogin?'snow':'');
   updateSnowVerify();
   $('nickname').readOnly=!!remote.nicknameLocked;

@@ -55,40 +55,91 @@
  .adminTable td:nth-child(6){grid-column:1/-1;background:#fffafd}.adminTable td:nth-child(7){grid-column:1/-1}
  .adminTable .goalCell{max-width:none}.adminTable .roleBtn{width:100%}.loginPanel.isVerified #signout{margin-left:0}
 }
+
+.groupAdminForm{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.groupAdminForm input{padding:10px 12px;border-radius:12px;border:1px solid #eac1d7;background:white;min-width:0}.groupAdminForm #newGroupEmoji{width:78px}.groupAdminForm #newGroupName{flex:1;min-width:150px}.groupAdminList{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.groupChip{border:1px solid #ebc6d9;padding:7px 11px;border-radius:999px;background:#fff5fa;color:#965270;font-size:13px}
+@media(max-width:720px){.adminTable td:nth-child(7){grid-column:1/-1;background:#fffafd}.adminTable td:nth-child(8){grid-column:1/-1}.adminTable td:nth-child(6){grid-column:auto;background:#fff}.groupAdminForm .btn{width:100%}}
+
+.groupUserSummary{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.groupCountChip{font:inherit;font-size:12px;padding:8px 11px;border-radius:999px;border:1px solid #e8c0d6;background:#fff8fc;color:#965373;cursor:pointer}
+.groupCountChip[aria-pressed="true"]{background:#fbdce9;border-color:#c879a2;font-weight:700}
+.adminTable .groupDivider td{background:#f8e9f2!important;color:#985477!important;font-size:13px!important;padding:9px 13px!important;white-space:normal!important}
+.adminTable .groupDivider td::before{display:none!important}
+.adminRankNav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.adminRankNav strong{font-size:14px;color:#965477}
+.adminRankRows{display:grid;gap:9px}
+.adminRankRow{display:flex;gap:12px;align-items:center;border:1px solid #f0d3e2;background:#fffafe;border-radius:13px;padding:12px 14px}
+.adminRankPosition{width:44px;flex:none;text-align:center;font-weight:700;color:#ae5681}
+.adminRankWho{display:flex;flex-direction:column;flex:1;gap:2px;min-width:0;overflow-wrap:anywhere}
+.adminRankWho small{font-size:11px;color:#ae8297}
+.adminRankTime{font-weight:700;white-space:nowrap;color:#984870}
+.adminRankEmpty{padding:18px;color:#a87990;border:1px dashed #efc9d9;border-radius:14px;text-align:center}
+@media(max-width:720px){.adminTable .groupDivider{display:block!important}.adminTable .groupDivider td{display:block!important}.adminRankNav{justify-content:center}.adminRankRow{gap:8px;padding:10px}}
 </style><style>.adminTable{width:100%;border-collapse:collapse}.adminTable th,.adminTable td{padding:10px 8px;border-bottom:1px solid #f0c7d7;text-align:left}.adminTable th{color:#b34f78}.adminTable{font-size:14px}.adminTable td{word-break:break-word}#login,#signout{margin:10px 5px}#panel{display:none}#accessInfo{white-space:pre-wrap;word-break:break-all}a{color:#b34f78}.uidLabel{font-size:10px;color:#936e84;overflow-wrap:anywhere;display:block;margin-top:3px}.roleBtn{font-family:inherit;padding:6px 10px;border:1px solid #df9dbb;border-radius:12px;background:#fff2f8;color:#a34c72;cursor:pointer}.roleBtn:disabled{opacity:.5;cursor:not-allowed}.renameBtn{display:block;margin-top:6px;padding:4px 9px;font-size:12px;background:#fff8fb}
 .goalCell{min-width:170px;max-width:290px}.goalText{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;max-height:4.8em;overflow:hidden}.goalText.isOpen{max-height:none}.goalExpand{border:none;background:transparent;color:#a34c72;text-decoration:underline;cursor:pointer;font-family:inherit;margin-top:3px;padding:2px 0}.goalEmpty{font-size:12px;color:#9d8391}
 </style></head><body><main class="wrap"><header class="header">
-  <nav class="adminTopNav" aria-label="管理画面ナビゲーション"><a href="study.html" class="adminBackBtn">← Study Logへ戻る</a><a href="index.html" class="adminBackBtn secondary">☁ カウントダウンへ</a></nav><p>高校受験生勉強会！！！</p><h1>🔐 Study Log 管理</h1><p>みんなの頑張りを確認しよう！</p></header><section class="panel loginPanel" id="loginPanel"><h2>🔐 アクセス状況</h2><p class="muted">adminsに登録されたUIDなら、Google認証・匿名認証のどちらでも閲覧できます。副管理者はいつものブラウザで開いてね。</p><button id="login" class="btn">Googleで管理者ログイン</button><button id="signout" class="btn alt" style="display:none">ログアウト</button><div id="status" class="status">ログイン状態を確認中…</div><div id="accessInfo" class="muted"></div><p class="muted" id="helpText">匿名認証で権限を付けてもらう場合は、いつも使っているLINE内ブラウザからStudy Logの管理者ページを開いてね。</p></section><div id="panel"><section class="panel summaryPanel" id="summarySection"><div class="sectionHeading"><div><p class="eyebrow">OVERVIEW</p><h2>📊 みんなの学習状況</h2></div><span class="smallNote">勉強時間のまとめ</span></div><div class="grid adminStats"><div class="stat">登録人数<strong id="numUsers">0人</strong></div><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section><section class="panel usersPanel" id="usersSection"><div class="sectionHeading"><div><p class="eyebrow">STUDENTS</p><h2>👥 ユーザー一覧</h2></div><span class="smallNote" id="shownCount">登録者を表示</span></div><p class="muted">勉強時間と大きな目標は利用者本人が入力した内容です。ToDo文章・振り返りは表示されません。最高管理者のsnowだけが副管理者の設定とニックネーム変更を行えます。</p><div class="usersToolbar">
+  <nav class="adminTopNav" aria-label="管理画面ナビゲーション"><a href="study.html" class="adminBackBtn">← Study Logへ戻る</a><a href="index.html" class="adminBackBtn secondary">☁ カウントダウンへ</a></nav><p>高校受験生勉強会！！！</p><h1>🔐 Study Log 管理</h1><p>みんなの頑張りを確認しよう！</p></header><section class="panel loginPanel" id="loginPanel"><h2>🔐 アクセス状況</h2><p class="muted">adminsに登録されたUIDなら、Google認証・匿名認証のどちらでも閲覧できます。副管理者はいつものブラウザで開いてね。</p><button id="login" class="btn">Googleで管理者ログイン</button><button id="signout" class="btn alt" style="display:none">ログアウト</button><div id="status" class="status">ログイン状態を確認中…</div><div id="accessInfo" class="muted"></div><p class="muted" id="helpText">匿名認証で権限を付けてもらう場合は、いつも使っているLINE内ブラウザからStudy Logの管理者ページを開いてね。</p></section><div id="panel"><section class="panel summaryPanel" id="summarySection"><div class="sectionHeading"><div><p class="eyebrow">OVERVIEW</p><h2>📊 みんなの学習状況</h2></div><span class="smallNote">勉強時間のまとめ</span></div><div class="grid adminStats"><div class="stat">登録人数<strong id="numUsers">0人</strong></div><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section><section class="panel" id="groupAdminPanel"><div class="sectionHeading"><div><p class="eyebrow">OPEN CHAT</p><h2>🏷 オプチャの管理</h2></div><span class="smallNote">管理者・副管理者が追加可能</span></div><p class="muted">名前と絵文字を登録すると、Study Logの所属先に表示されるよ。登録済みユーザーにも適用できるよ。</p><div class="groupAdminForm"><input id="newGroupEmoji" aria-label="新しいオプチャの絵文字" placeholder="🩷" maxlength="12"/><input id="newGroupName" aria-label="新しいオプチャの名前" placeholder="オプチャ名" maxlength="32"/><button class="btn" id="addGroup" type="button">＋ オプチャを追加</button></div><div id="groupAdminList" class="groupAdminList">読み込み中…</div></section><section class="panel usersPanel" id="usersSection"><div class="sectionHeading"><div><p class="eyebrow">STUDENTS</p><h2>👥 ユーザー一覧</h2></div><span class="smallNote" id="shownCount">登録者を表示</span></div><p class="muted">勉強時間と大きな目標は利用者本人が入力した内容です。ToDo文章・振り返りは表示されません。最高管理者のsnowだけが副管理者の設定とニックネーム変更を行えます。</p><div class="usersToolbar">
    <label class="searchField"><span aria-hidden="true">⌕</span><input id="userSearch" type="search" placeholder="名前・大きな目標で検索" aria-label="ユーザー名や大きな目標で検索"></label>
    <label class="filterField">表示 <select id="userFilter" aria-label="ユーザーの絞り込み"><option value="all">全員</option><option value="hasGoal">目標あり</option><option value="activeWeek">今週記録あり</option></select></label>
+   <label class="filterField">所属 <select id="groupFilter" aria-label="所属オプチャで絞り込み"><option value="all">すべての所属</option></select></label>
  </div>
- <div class="tableScroll"><table class="adminTable"><thead><tr><th>ニックネーム</th><th>今日</th><th>今週</th><th>今月</th><th>総計</th><th>🎯 大きな目標</th><th id="permissionHeader" style="display:none">副管理者権限</th></tr></thead><tbody id="rows"></tbody></table></div></section></div><footer class="footer"><a class="adminBackBtn footerBack" href="study.html">← Study Logへ戻る</a></footer></main><script type="module">
+ <div id="groupUserSummary" class="groupUserSummary" aria-label="所属オプチャ別の登録人数"></div><div class="tableScroll"><table class="adminTable"><thead><tr><th>ニックネーム</th><th>所属オプチャ</th><th>今日</th><th>今週</th><th>今月</th><th>総計</th><th>🎯 大きな目標</th><th id="permissionHeader" style="display:none">副管理者権限</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section class="panel" id="adminRanking"><div class="sectionHeading"><div><p class="eyebrow">WEEKLY RANKING</p><h2>🏆 週間勉強ランキング</h2></div><span class="smallNote">管理者専用</span></div>
+<p class="muted">月曜〜日曜の勉強時間を比較するよ。学習時間の記録を保存した人が対象だよ。</p>
+<div class="usersToolbar"><div class="adminRankNav"><button type="button" class="btn alt" id="rankPrev">← 前の週</button><strong id="rankPeriod">今週</strong><button type="button" class="btn alt" id="rankNext">次の週 →</button></div>
+<label class="filterField">所属 <select id="rankGroupFilter" aria-label="ランキングの所属絞り込み"><option value="all">すべての所属</option></select></label></div>
+<div class="adminRankRows" id="rankRows" aria-live="polite">読み込み中…</div>
+</section></div><footer class="footer"><a class="adminBackBtn footerBack" href="study.html">← Study Logへ戻る</a></footer></main><script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, collection, onSnapshot, setDoc, deleteDoc, runTransaction } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, setDoc, deleteDoc, runTransaction } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
 const firebaseConfig={apiKey:'AIzaSyDAfU0ISnB1aAAsrNeB1vKCflqIQ-MiiGk',authDomain:'snowstudy-3fd16.firebaseapp.com',projectId:'snowstudy-3fd16',storageBucket:'snowstudy-3fd16.firebasestorage.app',messagingSenderId:'253202554905',appId:'1:253202554905:web:dd812c84a34e8b369dca88',measurementId:'G-2995QPBZKF'};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const fmt=m=>{m=Math.floor(Number(m)||0);return m>=60?`${Math.floor(m/60)}時間${m%60?`${m%60}分`:''}`:`${m}分`};
 let unsub=null,unsubAdmins=null,sequence=0,owner=false,adminIds=new Set(),lastRecords=[];
+let groupsUnsub=null,groups=[],groupAdminLock=false;const groupById=()=>new Map(groups.map(g=>[g.id,g]));
+function paintGroups(){const host=$('groupAdminList');host.replaceChildren();for(const g of groups){const chip=document.createElement('span');chip.className='groupChip';chip.textContent=`${g.emoji} ${g.label}`;host.append(chip)}if(!groups.length)host.textContent='まだ登録されていないよ';updateGroupOptions();draw(lastRecords);renderAdminRanking()}
+function updateGroupOptions(){
+ for(const id of ['groupFilter','rankGroupFilter']){
+  const el=$(id),chosen=el.value;el.replaceChildren();const all=document.createElement('option');all.value='all';all.textContent='すべての所属';el.append(all);
+  for(const g of groups){const opt=document.createElement('option');opt.value=g.id;opt.textContent=`${g.emoji} ${g.label}`;el.append(opt)}
+  const unknown=document.createElement('option');unknown.value='unassigned';unknown.textContent='未設定・不明';el.append(unknown);
+  el.value=Array.from(el.options).some(o=>o.value===chosen)?chosen:'all';
+ }
+}
+function startGroupAdmin(){if(groupsUnsub)groupsUnsub();groupsUnsub=onSnapshot(collection(db,'studyGroups'),snap=>{groups=snap.docs.map(x=>({id:x.id,...x.data()})).filter(x=>x.active!==false).sort((a,b)=>(a.order||999)-(b.order||999));paintGroups()},e=>status('オプチャ一覧を取得できないよ：'+e.message))}
+$('addGroup').onclick=async()=>{if(groupAdminLock)return;const label=$('newGroupName').value.trim(),emoji=$('newGroupEmoji').value.trim();if(label.length<1||[...label].length>32||!emoji||[...emoji].length>8){alert('オプチャ名は1〜32文字、絵文字は8文字以内で入力してね');return}if(groups.some(g=>g.label===label)){alert('その名前のオプチャはすでにあるよ');return}groupAdminLock=true;$('addGroup').disabled=true;try{const ref=doc(collection(db,'studyGroups'));await setDoc(ref,{label,emoji,active:true,order:Date.now()});$('newGroupName').value='';$('newGroupEmoji').value='';status(label+' を追加したよ！')}catch(e){console.error(e);status('追加できなかったよ：'+e.message)}finally{groupAdminLock=false;$('addGroup').disabled=false}};
 function status(s){$('status').textContent=s}
 function dateStr(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function draw(records){
  const now=new Date(),date=today(),wk=new Date(now.getFullYear(),now.getMonth(),now.getDate());wk.setDate(wk.getDate()-((wk.getDay()+6)%7));const week=dateStr(wk),month=date.slice(0,7);
  const summary=records.map(d=>{const x=d.data(),days=x.days||{};const sum=filter=>Object.entries(days).filter(([k,v])=>filter(k)&&Number.isFinite(Number(v))).reduce((a,[,v])=>a+Math.max(0,Number(v)),0);
-  return {uid:d.id,name:String(x.nickname||'(未登録)'),goal:typeof x.goal==='string'?x.goal:'',today:sum(k=>k===date),week:sum(k=>k>=week&&k<=date),month:sum(k=>k.startsWith(month)&&k<=date),total:sum(()=>true)};
+  return {uid:d.id,name:String(x.nickname||'(未登録)'),groupId:x.groupId||'',goal:typeof x.goal==='string'?x.goal:'',today:sum(k=>k===date),week:sum(k=>k>=week&&k<=date),month:sum(k=>k.startsWith(month)&&k<=date),total:sum(()=>true)};
  }).filter(x=>x.name!=='(未登録)');
  $('numUsers').textContent=summary.length+'人';
  for(const [id,key] of [['todayTotal','today'],['weekTotal','week'],['monthTotal','month']])$(id).textContent=fmt(summary.reduce((a,x)=>a+x[key],0));
  summary.sort((a,b)=>b.week-a.week);
  const q=($('userSearch')?.value||'').normalize('NFKC').trim().toLowerCase();
- const filter=$('userFilter')?.value||'all';
- const visible=summary.filter(x=>(!q||(x.name+' '+x.goal).normalize('NFKC').toLowerCase().includes(q))&&(filter==='all'||(filter==='hasGoal'&&x.goal.trim())||(filter==='activeWeek'&&x.week>0)));
+ const filter=$('userFilter')?.value||'all',groupFilter=$('groupFilter')?.value||'all';
+  const groupOK=x=>groupFilter==='all'||(groupFilter==='unassigned'?!groupById().has(x.groupId):x.groupId===groupFilter);
+  const visible=summary.filter(x=>(!q||(x.name+' '+x.goal).normalize('NFKC').toLowerCase().includes(q))&&(filter==='all'||(filter==='hasGoal'&&x.goal.trim())||(filter==='activeWeek'&&x.week>0))&&groupOK(x));
+  const countHost=$('groupUserSummary');countHost.replaceChildren();
+  const counted=[{id:'all',label:'全員',emoji:'👥',count:summary.length},...groups.map(g=>({id:g.id,label:g.label,emoji:g.emoji,count:summary.filter(x=>x.groupId===g.id).length}))];
+  const unassigned=summary.filter(x=>!groupById().has(x.groupId)).length;
+  if(unassigned)counted.push({id:'unassigned',label:'未設定・不明',emoji:'❔',count:unassigned});
+  for(const g of counted){const chip=document.createElement('button');chip.type='button';chip.className='groupCountChip';chip.textContent=`${g.emoji} ${g.label} ${g.count}人`;chip.setAttribute('aria-pressed',String(groupFilter===g.id));chip.onclick=()=>{$('groupFilter').value=g.id;draw(lastRecords)};countHost.append(chip)}
  $('shownCount').textContent=`${visible.length} / ${summary.length} 人を表示`;
  const body=$('rows');body.replaceChildren();
- for(const x of visible){
-  const tr=document.createElement('tr');
+  const ordered=visible.slice().sort((a,b)=>{
+   const groupOrder=id=>{const ix=groups.findIndex(g=>g.id===id);return ix<0?999:ix};
+   return groupOrder(a.groupId)-groupOrder(b.groupId)||b.week-a.week||a.name.localeCompare(b.name,'ja');
+  });
+  let currentGroup=null;
+  for(const x of ordered){
+   const g=groupById().get(x.groupId),key=g?.id||'unassigned';
+   if(key!==currentGroup){currentGroup=key;const heading=document.createElement('tr');heading.className='groupDivider';const cell=document.createElement('td');cell.colSpan=owner?8:7;cell.textContent=g?`${g.emoji} ${g.label}（${ordered.filter(u=>u.groupId===x.groupId).length}人）`:`❔ 未設定・不明（${ordered.filter(u=>!groupById().has(u.groupId)).length}人）`;heading.append(cell);body.append(heading)}
+   const tr=document.createElement('tr');
   const tdName=document.createElement('td');tdName.textContent=x.name;
   if(owner){
     const uid=document.createElement('span');uid.className='uidLabel';uid.textContent='UID: '+x.uid;tdName.append(uid);
@@ -98,7 +149,7 @@ function draw(records){
      rename.onclick=()=>renameUser(x.uid,x.name,rename);tdName.append(rename);
     }
    }
-  tr.append(tdName);
+  tr.append(tdName);const tdGroup=document.createElement('td');tdGroup.dataset.label='所属オプチャ';const groupInfo=groupById().get(x.groupId);tdGroup.textContent=groupInfo?`${groupInfo.emoji} ${groupInfo.label}`:'未設定';tr.append(tdGroup);
   for(const [label,value] of [['今日',fmt(x.today)],['今週',fmt(x.week)],['今月',fmt(x.month)],['総計',fmt(x.total)]]){const td=document.createElement('td');td.dataset.label=label;td.textContent=value;tr.append(td)}
    const goalTd=document.createElement('td');goalTd.className='goalCell';goalTd.dataset.label='🎯 大きな目標';
    if(x.goal.trim()){
@@ -122,7 +173,7 @@ function draw(records){
   }
   body.append(tr);
  }
- if(!visible.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=owner?7:6;td.textContent=summary.length?'条件に合うユーザーはいません。':'登録された記録はまだありません。';tr.append(td);body.append(tr)}
+ if(!visible.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=owner?8:7;td.textContent=summary.length?'条件に合うユーザーはいません。':'登録された記録はまだありません。';tr.append(td);body.append(tr)}
 }
 async function changeRole(uid,name,currentlyEnabled,btn){
  if(!owner || uid===auth.currentUser?.uid)return;
@@ -168,8 +219,35 @@ async function renameUser(uid,displayName,btn){
  }catch(e){console.error(e);status('名前を変更できなかったよ：'+(e.message||'接続を確認してね'))}
  finally{btn.disabled=false}
 }
+
+ // Admin-only weekly leaderboard; data is never queried from the public Study Log.
+ let rankOffset=0,rankEntries=[],rankUnsub=null;
+ function mondayOf(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());d.setDate(d.getDate()-(d.getDay()+6)%7);return dateStr(d)}
+ function rankWeek(){const d=new Date();d.setDate(d.getDate()+rankOffset*7);return mondayOf(d)}
+ function renderAdminRanking(){
+  const week=rankWeek(),end=new Date(Number(week.slice(0,4)),Number(week.slice(5,7))-1,Number(week.slice(8,10)));end.setDate(end.getDate()+6);
+  $('rankPeriod').textContent=`${week.slice(5).replace('-','/')}〜${String(end.getMonth()+1).padStart(2,'0')}/${String(end.getDate()).padStart(2,'0')}`;
+  $('rankPrev').disabled=rankOffset<=-52;$('rankNext').disabled=rankOffset>=0;
+  const host=$('rankRows');host.replaceChildren();
+  const filter=$('rankGroupFilter').value;
+  const entries=rankEntries.filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(filter==='all'||(filter==='unassigned'?!groupById().has(x.groupId):x.groupId===filter))).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja'));
+  if(!entries.length){const empty=document.createElement('div');empty.className='adminRankEmpty';empty.textContent='この週・所属の勉強記録はまだないよ';host.append(empty);return}
+  entries.forEach((d,i)=>{
+   const row=document.createElement('div');row.className='adminRankRow';const pos=document.createElement('span');pos.className='adminRankPosition';pos.textContent=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}位`;
+   const who=document.createElement('span');who.className='adminRankWho';const name=document.createElement('strong');const g=groupById().get(d.groupId);name.textContent=`${g?.emoji||'📚'} ${String(d.nickname||'未設定')}`;
+   const sub=document.createElement('small');sub.textContent=g?.label||'所属未設定';who.append(name,sub);
+   const time=document.createElement('span');time.className='adminRankTime';time.textContent=fmt(d.minutes);row.append(pos,who,time);host.append(row);
+  });
+ }
+ function attachAdminRanking(){if(rankUnsub){rankUnsub();rankUnsub=null}rankEntries=[];renderAdminRanking();
+  const week=rankWeek();rankUnsub=onSnapshot(query(collection(db,'weeklyRankings'),where('weekStart','==',week)),snap=>{rankEntries=snap.docs.map(d=>d.data());renderAdminRanking()},e=>{console.error('ランキング取得',e);$('rankRows').textContent='ランキングを読み込めなかったよ。Firestoreルールを確認してね。'});
+ }
+ $('rankPrev').onclick=()=>{rankOffset=Math.max(-52,rankOffset-1);attachAdminRanking()};
+ $('rankNext').onclick=()=>{rankOffset=Math.min(0,rankOffset+1);attachAdminRanking()};
+ $('rankGroupFilter').onchange=renderAdminRanking;
 $('userSearch').addEventListener('input',()=>draw(lastRecords));
 $('userFilter').addEventListener('change',()=>draw(lastRecords));
+ $('groupFilter').addEventListener('change',()=>draw(lastRecords));
 $('login').onclick=async()=>{
  if(auth.currentUser?.isAnonymous&&!confirm('Google認証に切り替えると、今の匿名認証IDで記録したデータがこのブラウザから見えなくなる場合があるよ。Google認証へ切り替える？'))return;
  try{status('Googleアカウントを確認中…');await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){status('ログインできなかったよ：'+e.message)}
@@ -177,7 +255,7 @@ $('login').onclick=async()=>{
 $('signout').onclick=async()=>{if(!confirm('Googleアカウントからログアウトする？'))return;await signOut(auth);location.href='study.html'};
 onAuthStateChanged(auth,async u=>{
  const id=++sequence;
- if(unsub){unsub();unsub=null}if(unsubAdmins){unsubAdmins();unsubAdmins=null}
+ if(unsub){unsub();unsub=null}if(unsubAdmins){unsubAdmins();unsubAdmins=null}if(groupsUnsub){groupsUnsub();groupsUnsub=null}if(rankUnsub){rankUnsub();rankUnsub=null}
  $('loginPanel').classList.remove('isVerified');
  owner=false;adminIds=new Set();lastRecords=[];$('panel').style.display='none';$('accessInfo').textContent='';$('permissionHeader').style.display='none';
  $('login').style.display='none';$('signout').style.display=u&&!u.isAnonymous?'inline-block':'none';
@@ -193,7 +271,12 @@ onAuthStateChanged(auth,async u=>{
   const userSnap=await getDoc(doc(db,'users',u.uid));if(id!==sequence)return;
   owner=!u.isAnonymous&&u.providerData.some(p=>p.providerId==='google.com')&&userSnap.exists()&&userSnap.data()?.nickname==='snow';
   $('permissionHeader').style.display=owner?'':'none';
-  $('panel').style.display='block';
+  $('panel').style.display='block';startGroupAdmin();attachAdminRanking();
+  // Seed default OpenChats only once, as the owner; deputies can add later.
+  if(owner){for(const [id,label,emoji,order] of [['pink','勉強オプチャ（ピンク）','🩷',1],['blue','勉強オプチャ（ブルー）','💙',2],['math','数学オプチャ','📐',3],['university','大学オプチャ','🎓',4]]){
+    const r=doc(db,'studyGroups',id);getDoc(r).then(s=>{if(!s.exists())return setDoc(r,{label,emoji,active:true,order})}).catch(e=>console.error('初期オプチャ',e));
+  }}
+
   $('loginPanel').classList.add('isVerified');
   status(owner?'snow（最高管理者）としてログインできたよ！':'管理者としてログインできたよ！');
   unsub=onSnapshot(collection(db,'users'),snap=>{if(id===sequence){lastRecords=snap.docs;draw(lastRecords)}},err=>status('データを取得できません：'+err.message));
