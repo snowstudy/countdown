@@ -1,5 +1,6 @@
-<!doctype html>
-<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+
+<html lang="ja"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>Study Log｜高校受験生勉強会！！！</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Yomogi&display=swap');
@@ -83,28 +84,64 @@ body[data-study-theme="blue"] .returnCountdown{color:#557ead!important;border-co
 .timer-feedback{min-height:0;margin:10px auto 0;text-align:center;font-size:14px;font-weight:700;line-height:1.65;color:#8d5876;overflow-wrap:anywhere}
 .timer-feedback:empty{display:none}
 .timer-feedback.error{color:#b42342}
+
+/* Study Log buttons: white at rest, pink while pressed / focused. */
+main.wrap button.btn,
+main.wrap button.btn.alt,
+main.wrap button.btn.danger,
+body[data-study-theme="blue"] main.wrap button.btn,
+body[data-study-theme="other"] main.wrap button.btn {
+  background:#fff !important;
+  color:#ad5b81 !important;
+  border:1px solid #e7bfd2 !important;
+  box-shadow:0 2px 5px rgba(144,71,111,.08);
+  transition:background-color .14s ease,color .14s ease,border-color .14s ease,box-shadow .14s ease;
+}
+main.wrap button.btn:hover:not(:disabled){background:#fff7fb !important;border-color:#df98b9 !important}
+main.wrap button.btn:active:not(:disabled),
+main.wrap button.btn:focus:not(:disabled),
+main.wrap button.btn[aria-pressed="true"],
+body[data-study-theme="blue"] main.wrap button.btn:active:not(:disabled),
+body[data-study-theme="blue"] main.wrap button.btn:focus:not(:disabled),
+body[data-study-theme="other"] main.wrap button.btn:active:not(:disabled),
+body[data-study-theme="other"] main.wrap button.btn:focus:not(:disabled){
+  background:#e989b0 !important;color:white !important;border-color:#d873a0 !important;
+  box-shadow:0 2px 8px rgba(209,91,145,.18);
+}
+main.wrap button.btn:focus-visible{outline:2px solid #e989b0;outline-offset:2px}
+main.wrap button.btn:disabled{opacity:.5;box-shadow:none}
+/* One-shot actions return to white immediately after the click.
+   Start and pause retain their existing pressed/focused styling; save and reset return to white. */
+main.wrap button.btn:not(#timerStart):not(#timerPause):focus:not(:active),
+body[data-study-theme="blue"] main.wrap button.btn:not(#timerStart):not(#timerPause):focus:not(:active),
+body[data-study-theme="other"] main.wrap button.btn:not(#timerStart):not(#timerPause):focus:not(:active){
+  background:#fff !important;
+  color:#ad5b81 !important;
+  border-color:#e7bfd2 !important;
+  box-shadow:0 2px 5px rgba(144,71,111,.08);
+}
+/* Full-width timer and manual log below LIVE, with responsive controls. */
+#timerPanel, #timerPanel .formrow, main.wrap section:has(#addManual){min-width:0}
+#timerPanel .formrow{flex-wrap:wrap}
 </style></head><body><main class="wrap">
 <header class="header">
-  <div class="topReturn"><a class="returnCountdown returnCountdownTop" href="index.html" aria-label="カウントダウンページへ戻る"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
-<section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" type="text" maxlength="24" placeholder="ニックネーム（管理者に表示されます）"><button class="btn" id="saveName">名前を保存</button></div><div class="groupRegister"><label for="groupSelect">🏷 所属オプチャ</label><select id="groupSelect"><option value="">オプチャを読み込み中…</option></select><p class="muted" id="groupHint">所属オプチャは初回登録時に選んでね。登録後の変更は管理者へお願いしてね！</p></div><div id="snowVerify" class="hint" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button id="googleVerify" type="button" class="btn alt">Googleで本人確認する</button></div><div id="status" class="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
+<div class="topReturn"><a aria-label="カウントダウンページへ戻る" class="returnCountdown returnCountdownTop" href="index.html"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
+<section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" maxlength="24" placeholder="ニックネーム（管理者に表示されます）" type="text"/><button class="btn" id="saveName">名前を保存</button></div><div class="groupRegister"><label for="groupSelect">🏷 所属オプチャ</label><select id="groupSelect"><option value="">オプチャを読み込み中…</option></select><p class="muted" id="groupHint">所属オプチャは初回登録時に選んでね。登録後の変更は管理者へお願いしてね！</p></div><div class="hint" id="snowVerify" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button class="btn alt" id="googleVerify" type="button">Googleで本人確認する</button></div><div class="status" id="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
 <section class="panel"><h2>📚 勉強時間のまとめ</h2><div class="grid"><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section>
-<div class="subgrid"><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"></label><label class="manualUnit"><input id="hours" type="number" min="0" max="23" value="1" inputmode="numeric" aria-label="追加する時間"><span>時間</span></label><label class="manualUnit"><input id="minutes" type="number" min="0" max="59" value="0" inputmode="numeric" aria-label="追加する分"><span>分</span></label></div><p><button id="addManual" class="btn">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
-<section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div id="timer" class="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button id="timerStart" class="btn">スタート</button><button id="timerPause" class="btn alt">一時停止</button><button id="timerSave" class="btn">記録して終了</button><button id="timerReset" class="btn danger">リセット</button></div><div class="timer-feedback" id="timerFeedback" role="status" aria-live="polite"></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section></div>
-<section class="panel" id="livePanel" aria-label="みんなの勉強状況"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE</span></div><p class="liveIntro">タイマーを使っている人が表示されるよ！名前・所属オプチャの絵文字・計測時間が共有されるよ。</p><p id="liveCount" class="liveCount" aria-live="polite">確認中…</p><div id="liveMembers" class="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section>
 
-
-<section class="panel" id="publicRanking" aria-label="みんなの週間勉強ランキング">
- <div class="liveHeader"><h2 style="margin:0">🏆 週間勉強ランキング</h2><span class="rankLabel">WEEKLY RANKING</span></div>
- <p class="muted">月曜〜日曜の記録だよ！ニックネーム・所属の絵文字・合計勉強時間が表示されるよ。</p>
- <div class="rankTools"><button id="rankPrev" type="button" class="btn alt">← 前の週</button><strong id="rankPeriod">今週</strong><button id="rankNext" type="button" class="btn alt">次の週 →</button>
- <select id="rankGroupFilter" aria-label="所属オプチャでランキングを絞り込み"><option value="all">すべての所属</option></select></div>
- <div id="rankRows" class="rankRows" aria-live="polite">ランキングを読み込み中…</div>
- <p class="muted rankNote">※計測・手動入力で保存された時間を集計。記録した本人の入力内容に基づくランキングだよ。</p>
+<section aria-label="みんなの勉強状況" class="panel" id="livePanel"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE</span></div><p class="liveIntro">タイマーを使っている人が表示されるよ！名前・所属オプチャの絵文字・計測時間が共有されるよ。</p><p aria-live="polite" class="liveCount" id="liveCount">確認中…</p><div class="liveMembers" id="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section><section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div class="timer" id="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button class="btn" id="timerStart">スタート</button><button class="btn alt" id="timerPause">一時停止</button><button class="btn" id="timerSave">記録して終了</button><button class="btn danger" id="timerReset">リセット</button></div><div aria-live="polite" class="timer-feedback" id="timerFeedback" role="status"></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"/></label><label class="manualUnit"><input aria-label="追加する時間" id="hours" inputmode="numeric" max="23" min="0" type="number" value="1"/><span>時間</span></label><label class="manualUnit"><input aria-label="追加する分" id="minutes" inputmode="numeric" max="59" min="0" type="number" value="0"/><span>分</span></label></div><p><button class="btn" id="addManual">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
+<section aria-label="みんなの週間勉強ランキング" class="panel" id="publicRanking">
+<div class="liveHeader"><h2 style="margin:0">🏆 週間勉強ランキング</h2><span class="rankLabel">WEEKLY RANKING</span></div>
+<p class="muted">月曜〜日曜の記録だよ！ニックネーム・所属の絵文字・合計勉強時間が表示されるよ。</p>
+<div class="rankTools"><button class="btn alt" id="rankPrev" type="button">← 前の週</button><strong id="rankPeriod">今週</strong><button class="btn alt" id="rankNext" type="button">次の週 →</button>
+<select aria-label="所属オプチャでランキングを絞り込み" id="rankGroupFilter"><option value="all">すべての所属</option></select></div>
+<div aria-live="polite" class="rankRows" id="rankRows">ランキングを読み込み中…</div>
+<p class="muted rankNote">※計測・手動入力で保存された時間を集計。記録した本人の入力内容に基づくランキングだよ。</p>
 </section>
 <section class="panel" id="goalPanel"><h2>🎯 大きな目標</h2><p class="muted">目指していることを書いておこう！目標は管理者にも表示されるよ。</p><textarea id="goal" maxlength="2000" placeholder="例：志望校に合格する！"></textarea><p><button class="btn alt" id="saveGoal" type="button">目標を保存</button></p></section>
-<div class="subgrid"><section class="panel"><h2>☑ 今日のToDo</h2><div class="formrow"><input id="newTodo" type="text" maxlength="120" placeholder="今日やること"><button id="addTodo" class="btn">追加</button></div><div id="todoList" style="margin-top:12px"></div><p id="todoProgress" class="muted">0 / 0 完了</p><div class="bar"><div id="todoBar"></div></div></section></div>
-<section class="panel"><h2>📝 今日の振り返り</h2><div class="reflectionDateRow"><label for="reflectionDate">📅 振り返る日付 <input id="reflectionDate" type="date" aria-label="振り返りを表示する日付"></label><button id="reflectionToday" class="btn alt" type="button">今日に戻す</button></div><p id="reflectionDateHint" class="reflectionDateHint">選択した日の記録を表示・編集できるよ。</p><label>今日できたこと<textarea id="good" placeholder="今日頑張れたことを書こう"></textarea></label><label>反省・明日の改善<textarea id="improve" placeholder="明日は何を意識する？"></textarea></label><p><button id="saveReflection" class="btn alt">振り返りを保存</button></p><p class="muted">振り返りは選択した日付ごとに、この端末内に保存されるよ。ToDoは今日の分を表示しているよ。</p></section>
-<section class="panel"><h2>📅 勉強時間の履歴</h2><div id="history" class="muted">記録はまだありません。</div></section>
+<div class="subgrid"><section class="panel"><h2>☑ 今日のToDo</h2><div class="formrow"><input id="newTodo" maxlength="120" placeholder="今日やること" type="text"/><button class="btn" id="addTodo">追加</button></div><div id="todoList" style="margin-top:12px"></div><p class="muted" id="todoProgress">0 / 0 完了</p><div class="bar"><div id="todoBar"></div></div></section></div>
+<section class="panel"><h2>📝 今日の振り返り</h2><div class="reflectionDateRow"><label for="reflectionDate">📅 振り返る日付 <input aria-label="振り返りを表示する日付" id="reflectionDate" type="date"/></label><button class="btn alt" id="reflectionToday" type="button">今日に戻す</button></div><p class="reflectionDateHint" id="reflectionDateHint">選択した日の記録を表示・編集できるよ。</p><label>今日できたこと<textarea id="good" placeholder="今日頑張れたことを書こう"></textarea></label><label>反省・明日の改善<textarea id="improve" placeholder="明日は何を意識する？"></textarea></label><p><button class="btn alt" id="saveReflection">振り返りを保存</button></p><p class="muted">振り返りは選択した日付ごとに、この端末内に保存されるよ。ToDoは今日の分を表示しているよ。</p></section>
+<section class="panel"><h2>📅 勉強時間の履歴</h2><div class="muted" id="history">記録はまだありません。</div></section>
 <footer class="footer"><a class="returnCountdown" href="index.html"><span aria-hidden="true">←</span> カウントダウンに戻る</a></footer>
 </main>
 <script type="module">
