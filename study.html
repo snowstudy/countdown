@@ -26,13 +26,32 @@
 .returnCountdown:focus-visible{outline:2px solid #d98cae;outline-offset:3px}
 .footer{margin-top:30px}.footer .returnCountdown{width:auto}
 @media(max-width:650px){.topReturn{justify-content:flex-start}.returnCountdownTop{width:auto}}
+
+/* Realtime study status — lightweight, accessible and mobile-friendly. */
+.liveHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.liveMark{font-size:12px;font-weight:bold;color:#a04e73;background:#ffedf5;border:1px solid #ecc7d7;border-radius:999px;padding:5px 11px}
+.liveIntro{font-size:13px;color:#976c82;margin:5px 0 13px}
+.liveMembers{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:10px}
+.liveMember{display:flex;align-items:center;gap:10px;padding:12px;background:rgba(255,249,252,.88);border:1px solid #f1d6e2;border-radius:16px;min-width:0}
+.liveDot{width:9px;height:9px;border-radius:50%;background:#7cbb91;flex:none;box-shadow:0 0 0 4px #e3f4e9}
+.liveWho{min-width:0;flex:1}.liveNickname{font-weight:bold;overflow-wrap:anywhere;font-size:14px}.liveSub{color:#a2768e;font-size:11px}
+.liveClock{font-size:15px;font-weight:bold;white-space:nowrap;font-variant-numeric:tabular-nums;color:#864e72}
+.liveNone{border:1px dashed #e9c8d7;border-radius:14px;background:rgba(255,248,251,.6);padding:14px 12px;text-align:center;color:#986d83;font-size:14px}
+.liveCount{font-size:12px;color:#a26986}
+
+/* Manual time entry: show units after each input */
+.manualUnit{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.manualUnit input[type="number"]{width:76px;min-width:0}
+.manualUnit span{display:inline-block}
 </style></head><body><main class="wrap">
 <header class="header">
   <div class="topReturn"><a class="returnCountdown returnCountdownTop" href="index.html" aria-label="カウントダウンページへ戻る"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
 <section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" type="text" maxlength="24" placeholder="ニックネーム（管理者に表示されます）"><button id="saveName" class="btn">名前を保存</button></div><div id="snowVerify" class="hint" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button id="googleVerify" type="button" class="btn alt">Googleで本人確認する</button></div><div id="status" class="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。管理者にはニックネーム・勉強時間・大きな目標が表示されます。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
 <section class="panel"><h2>📚 勉強時間のまとめ</h2><div class="grid"><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section>
-<div class="subgrid"><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"></label><label>時間 <input id="hours" type="number" min="0" max="23" value="1" inputmode="numeric"></label><label>分 <input id="minutes" type="number" min="0" max="59" value="0" inputmode="numeric"></label></div><p><button id="addManual" class="btn">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
+<div class="subgrid"><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"></label><label class="manualUnit"><input id="hours" type="number" min="0" max="23" value="1" inputmode="numeric" aria-label="追加する時間"><span>時間</span></label><label class="manualUnit"><input id="minutes" type="number" min="0" max="59" value="0" inputmode="numeric" aria-label="追加する分"><span>分</span></label></div><p><button id="addManual" class="btn">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
 <section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div id="timer" class="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button id="timerStart" class="btn">スタート</button><button id="timerPause" class="btn alt">一時停止</button><button id="timerSave" class="btn">記録して終了</button><button id="timerReset" class="btn danger">リセット</button></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section></div>
+<section class="panel" id="livePanel" aria-label="みんなの勉強状況"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE</span></div><p class="liveIntro">タイマーを使っている人が表示されるよ！名前と計測時間だけを共有するよ。</p><p id="liveCount" class="liveCount" aria-live="polite">確認中…</p><div id="liveMembers" class="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section>
+
 <div class="subgrid"><section class="panel"><h2>🎯 大きな目標</h2><textarea id="goal" placeholder="例：苦手な数学を克服する！"></textarea><p><button id="saveGoal" class="btn alt">目標を保存</button></p><p class="muted">目標は学習記録と一緒に保存され、管理者・副管理者にも表示されるよ。以前の目標も「目標を保存」で共有できるよ。</p></section>
 <section class="panel"><h2>☑ 今日のToDo</h2><div class="formrow"><input id="newTodo" type="text" maxlength="120" placeholder="今日やること"><button id="addTodo" class="btn">追加</button></div><div id="todoList" style="margin-top:12px"></div><p id="todoProgress" class="muted">0 / 0 完了</p><div class="bar"><div id="todoBar"></div></div></section></div>
 <section class="panel"><h2>📝 今日の振り返り</h2><div class="reflectionDateRow"><label for="reflectionDate">📅 振り返る日付 <input id="reflectionDate" type="date" aria-label="振り返りを表示する日付"></label><button id="reflectionToday" class="btn alt" type="button">今日に戻す</button></div><p id="reflectionDateHint" class="reflectionDateHint">選択した日の記録を表示・編集できるよ。</p><label>今日できたこと<textarea id="good" placeholder="今日頑張れたことを書こう"></textarea></label><label>反省・明日の改善<textarea id="improve" placeholder="明日は何を意識する？"></textarea></label><p><button id="saveReflection" class="btn alt">振り返りを保存</button></p><p class="muted">振り返りは選択した日付ごとに、この端末内に保存されるよ。ToDoは今日の分を表示しているよ。</p></section>
@@ -42,7 +61,7 @@
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, onSnapshot, runTransaction, setDoc } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, onSnapshot, runTransaction, setDoc, deleteDoc, collection, serverTimestamp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
 const firebaseConfig={apiKey:'AIzaSyDAfU0ISnB1aAAsrNeB1vKCflqIQ-MiiGk',authDomain:'snowstudy-3fd16.firebaseapp.com',projectId:'snowstudy-3fd16',storageBucket:'snowstudy-3fd16.firebasestorage.app',messagingSenderId:'253202554905',appId:'1:253202554905:web:dd812c84a34e8b369dca88',measurementId:'G-2995QPBZKF'};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id),today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
@@ -94,16 +113,74 @@ $('reflectionToday').onclick=()=>{reflectionDate=today();$('reflectionDate').val
 $('saveReflection').onclick=()=>{const d=getDay(reflectionDate);d.good=$('good').value.slice(0,5000);d.improve=$('improve').value.slice(0,5000);persist();setStatus(reflectionDate+' の振り返りを保存したよ！')};
 $('addTodo').onclick=()=>{const v=$('newTodo').value.trim();if(!v)return;getDay(today()).todos.push({text:v.slice(0,120),done:false});$('newTodo').value='';persist();renderLocal()};$('newTodo').addEventListener('keydown',e=>{if(e.key==='Enter')$('addTodo').click()});
 
+// Share only timer presence (not goals, reflections or private study records).
+const LIVE_TTL_MS=90000, LIVE_PING_MS=30000;
+let liveEntries=[], liveUnsubscribe=null, liveUid=null, liveWriteChain=Promise.resolve(),livePingInFlight=false;
+const liveCollection=collection(db,'liveStudy');
+function formatLiveTime(ms){
+ const secs=Math.floor(Math.max(0,ms)/1000);
+ return [Math.floor(secs/3600),Math.floor(secs%3600/60),secs%60].map(n=>String(n).padStart(2,'0')).join(':');
+}
+function renderLive(){
+ const now=Date.now(), valid=liveEntries.filter(x=>x.data && typeof x.data.lastSeen?.toMillis==='function' && now-x.data.lastSeen.toMillis()<LIVE_TTL_MS && now-x.data.lastSeen.toMillis()>-30000 && typeof x.data.nickname==='string');
+ valid.sort((a,b)=>a.data.nickname.localeCompare(b.data.nickname,'ja'));
+ $('liveCount').textContent=`現在 ${valid.length} 人が勉強中！`;
+ const host=$('liveMembers');host.replaceChildren();
+ if(!valid.length){const empty=document.createElement('div');empty.className='liveNone';empty.textContent='いま勉強中の人はいないみたい。最初の一歩を踏み出そう！';host.append(empty);return}
+ for(const item of valid){
+  const d=item.data, row=document.createElement('div');row.className='liveMember';
+  const dot=document.createElement('span');dot.className='liveDot';dot.setAttribute('aria-hidden','true');
+  const who=document.createElement('div');who.className='liveWho';
+  const name=document.createElement('div');name.className='liveNickname';name.textContent=d.nickname;
+  const detail=document.createElement('div');detail.className='liveSub';detail.textContent=item.id===auth.currentUser?.uid?'あなたも勉強中！':'勉強中';
+  who.append(name,detail);
+  const clock=document.createElement('span');clock.className='liveClock';
+  const elapsedMs=Number(d.elapsedMs)||0,startedAtMs=Number(d.startedAtMs)||now;
+  clock.textContent=formatLiveTime(elapsedMs+Math.max(0,now-startedAtMs));
+  row.append(dot,who,clock);host.append(row);
+ }
+}
+function queueLiveWrite(write){
+ liveWriteChain=liveWriteChain.catch(()=>{}).then(write).catch(e=>{console.error('勉強中の共有に失敗',e)});
+ return liveWriteChain;
+}
+function publishLive(){
+ if(!user?.uid || !remote.nicknameLocked || !remote.nickname || !timer.startedAt)return Promise.resolve();
+ const uid=user.uid, name=remote.nickname, start=timer.startedAt, base=timer.elapsed;
+ // serverTimestamp gives a trusted freshness marker; other viewers draw locally every second.
+ return queueLiveWrite(()=>setDoc(doc(db,'liveStudy',uid),{nickname:name,startedAtMs:start,elapsedMs:Math.max(0,base),lastSeen:serverTimestamp()}));
+}
+function stopLive(){
+ if(!user?.uid)return Promise.resolve();
+ const uid=user.uid;
+ return queueLiveWrite(()=>deleteDoc(doc(db,'liveStudy',uid)));
+}
+function attachLiveListener(){
+ if(liveUnsubscribe)liveUnsubscribe();
+ liveUnsubscribe=onSnapshot(liveCollection,snapshot=>{
+   liveEntries=snapshot.docs.map(d=>({id:d.id,data:d.data()}));renderLive();
+ },e=>{
+   console.error('勉強中の表示を読み込めません',e);
+   $('liveCount').textContent='勉強中の人数を取得できなかったよ';
+   $('liveMembers').replaceChildren();
+   const note=document.createElement('div');note.className='liveNone';note.textContent='表示できない場合はFirestoreルールを確認してね。';$('liveMembers').append(note);
+ });
+}
+// Keep presence current without writing once per second.
+setInterval(()=>{if(timer.startedAt && user?.uid && remote.nicknameLocked)void publishLive()},LIVE_PING_MS);
+setInterval(renderLive,1000);
+window.addEventListener('focus',()=>{if(timer.startedAt)void publishLive()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden && timer.startedAt)void publishLive()});
 let timer=safeParse(localStorage.getItem(timerKey),{elapsed:0,startedAt:null});if(!Number.isFinite(timer.elapsed)||timer.elapsed<0)timer={elapsed:0,startedAt:null};const elapsed=()=>Math.max(0,timer.elapsed+(timer.startedAt?Date.now()-timer.startedAt:0));const saveTimer=()=>localStorage.setItem(timerKey,JSON.stringify(timer));const drawTimer=()=>{const secs=Math.floor(elapsed()/1000);$('timer').textContent=[Math.floor(secs/3600),Math.floor(secs%3600/60),secs%60].map(n=>String(n).padStart(2,'0')).join(':');$('timerStart').disabled=!!timer.startedAt;$('timerPause').disabled=!timer.startedAt};setInterval(drawTimer,1000);
 // The sky follows real local time whether the timer is running or paused.
 drawTimer();
-$('timerStart').onclick=()=>{if(timer.startedAt)return;timer.startedAt=Date.now();saveTimer();drawTimer()};$('timerPause').onclick=()=>{if(!timer.startedAt)return;timer.elapsed=elapsed();timer.startedAt=null;saveTimer();drawTimer()};
-$('timerReset').onclick=()=>{if(!confirm('タイマーをリセットする？まだ記録していない時間は消えるよ。'))return;timer={elapsed:0,startedAt:null};saveTimer();drawTimer()};
-$('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),mins=Math.round(ms/60000);if(mins<1)throw Error('1分以上計測してから保存してね');if(mins>1440)throw Error('24時間を超えたよ。タイマーを確認してね');if(timer.startedAt){timer.elapsed=ms;timer.startedAt=null;saveTimer()}await addTime(today(),mins);timer={elapsed:0,startedAt:null};saveTimer();drawTimer()});
+$('timerStart').onclick=()=>{if(timer.startedAt)return;timer.startedAt=Date.now();saveTimer();drawTimer();void publishLive()};$('timerPause').onclick=()=>{if(!timer.startedAt)return;timer.elapsed=elapsed();timer.startedAt=null;saveTimer();drawTimer();void stopLive()};
+$('timerReset').onclick=()=>{if(!confirm('タイマーをリセットする？まだ記録していない時間は消えるよ。'))return;timer={elapsed:0,startedAt:null};saveTimer();drawTimer();void stopLive()};
+$('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),mins=Math.round(ms/60000);if(mins<1)throw Error('1分以上計測してから保存してね');if(mins>1440)throw Error('24時間を超えたよ。タイマーを確認してね');if(timer.startedAt){timer.elapsed=ms;timer.startedAt=null;saveTimer()}await addTime(today(),mins);timer={elapsed:0,startedAt:null};saveTimer();drawTimer();void stopLive()});
 renderLocal();renderStats();
 onAuthStateChanged(auth,async u=>{
  if(!u){try{await signInAnonymously(auth)}catch(e){setStatus('読み込みに失敗したよ。ページを再読み込みしてね。',true)}return}
- user=u;userRef=doc(db,'users',u.uid);
+ user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener()}
  if(unsubscribe)unsubscribe();
  unsubscribe=onSnapshot(userRef,async snap=>{
   remote=snap.exists()?snap.data():{days:{},nickname:''};remote.days??={};
@@ -117,7 +194,7 @@ onAuthStateChanged(auth,async u=>{
    renderLocal();
   $('adminLink').style.display='none';
   renderStats();
-  if(remote.nicknameLocked){setStatus('準備ができたよ！ ☁')}else{setStatus('最初にニックネームを登録してね！')}
+  if(remote.nicknameLocked){setStatus('準備ができたよ！ ☁');if(timer.startedAt)void publishLive()}else{setStatus('最初にニックネームを登録してね！')}
   if(remote.nicknameLocked){
     try{const a=await getDoc(doc(db,'admins',u.uid));if(auth.currentUser?.uid===u.uid&&a.exists()&&a.data()?.enabled===true)$('adminLink').style.display='block'}catch(e){console.error(e)}
   }
