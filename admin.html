@@ -74,6 +74,42 @@
 .adminRankTime{font-weight:700;white-space:nowrap;color:#984870}
 .adminRankEmpty{padding:18px;color:#a87990;border:1px dashed #efc9d9;border-radius:14px;text-align:center}
 @media(max-width:720px){.adminTable .groupDivider{display:block!important}.adminTable .groupDivider td{display:block!important}.adminRankNav{justify-content:center}.adminRankRow{gap:8px;padding:10px}}
+
+/* Overflow hardening across desktop / narrow screens */
+html,body{max-width:100%;overflow-x:clip}
+.wrap{width:100%;max-width:1220px;margin-inline:auto;min-width:0}
+.wrap>.panel,.panel,.sectionHeading,.usersToolbar,.adminStats,.groupAdminForm,.adminRankNav,.adminRankRows,.groupUserSummary{min-width:0;max-width:100%}
+.panel{overflow-wrap:anywhere}
+.sectionHeading{flex-wrap:wrap;gap:10px}
+.usersToolbar>*{min-width:0;max-width:100%}
+.filterField{min-width:0;max-width:100%;flex-wrap:wrap}
+.filterField select{max-width:100%;min-width:0}
+.groupAdminForm input,.groupAdminForm button{max-width:100%}
+.tableScroll{min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.adminTable{max-width:none}
+.adminRankRow{min-width:0;max-width:100%}
+.adminRankWho{min-width:0;overflow-wrap:anywhere}
+.adminRankTime{flex:none}
+@media(max-width:720px){
+ .wrap{padding-inline:12px}
+ .panel{padding:17px 13px}
+ .tableScroll{overflow:visible}
+ .adminTable{width:100%;min-width:0;max-width:100%}
+ .adminTable tbody{width:100%;min-width:0}
+ .adminTable tr{width:100%;min-width:0;max-width:100%;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .adminTable td{min-width:0!important;max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+ .adminTable td:first-child{min-width:0!important}
+ .adminTable td .roleBtn,.adminTable td .renameBtn{min-width:0;max-width:100%;width:100%;white-space:normal;overflow-wrap:anywhere}
+ .adminTable .groupDivider{width:100%;max-width:100%}
+ .adminTable .groupDivider td{width:100%;max-width:100%}
+ .groupAdminForm #newGroupName{min-width:0;flex-basis:100%}
+ .groupAdminForm #newGroupEmoji{flex:0 0 78px}
+ .usersToolbar{width:100%}
+ .searchField{min-width:0;width:100%;flex:auto}
+ .adminRankRow{flex-wrap:wrap}
+ .adminRankWho{flex:1 1 130px}
+}
+@media(max-width:380px){.adminStats{grid-template-columns:repeat(2,minmax(0,1fr))}.adminRankTime{font-size:12px}.adminTopNav{flex-wrap:wrap}.adminTopNav a{flex:1 1 100%}}
 </style><style>.adminTable{width:100%;border-collapse:collapse}.adminTable th,.adminTable td{padding:10px 8px;border-bottom:1px solid #f0c7d7;text-align:left}.adminTable th{color:#b34f78}.adminTable{font-size:14px}.adminTable td{word-break:break-word}#login,#signout{margin:10px 5px}#panel{display:none}#accessInfo{white-space:pre-wrap;word-break:break-all}a{color:#b34f78}.uidLabel{font-size:10px;color:#936e84;overflow-wrap:anywhere;display:block;margin-top:3px}.roleBtn{font-family:inherit;padding:6px 10px;border:1px solid #df9dbb;border-radius:12px;background:#fff2f8;color:#a34c72;cursor:pointer}.roleBtn:disabled{opacity:.5;cursor:not-allowed}.renameBtn{display:block;margin-top:6px;padding:4px 9px;font-size:12px;background:#fff8fb}
 .goalCell{min-width:170px;max-width:290px}.goalText{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;max-height:4.8em;overflow:hidden}.goalText.isOpen{max-height:none}.goalExpand{border:none;background:transparent;color:#a34c72;text-decoration:underline;cursor:pointer;font-family:inherit;margin-top:3px;padding:2px 0}.goalEmpty{font-size:12px;color:#9d8391}
 </style></head><body><main class="wrap"><header class="header">
@@ -99,16 +135,16 @@ const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMon
 const fmt=m=>{m=Math.floor(Number(m)||0);return m>=60?`${Math.floor(m/60)}時間${m%60?`${m%60}分`:''}`:`${m}分`};
 let unsub=null,unsubAdmins=null,sequence=0,owner=false,adminIds=new Set(),lastRecords=[];
 let groupsUnsub=null,groups=[],groupAdminLock=false;const groupById=()=>new Map(groups.map(g=>[g.id,g]));
-function paintGroups(){const host=$('groupAdminList');host.replaceChildren();for(const g of groups){const chip=document.createElement('span');chip.className='groupChip';chip.textContent=`${g.emoji} ${g.label}`;host.append(chip)}if(!groups.length)host.textContent='まだ登録されていないよ';updateGroupOptions();draw(lastRecords);renderAdminRanking()}
+function paintGroups(){const host=$('groupAdminList');host.replaceChildren();for(const g of groups.filter(g=>g.active!==false)){const chip=document.createElement('span');chip.className='groupChip';chip.textContent=`${g.emoji} ${g.label}`;host.append(chip)}if(!groups.some(g=>g.active!==false))host.textContent='まだ登録されていないよ';updateGroupOptions();draw(lastRecords);renderAdminRanking()}
 function updateGroupOptions(){
  for(const id of ['groupFilter','rankGroupFilter']){
   const el=$(id),chosen=el.value;el.replaceChildren();const all=document.createElement('option');all.value='all';all.textContent='すべての所属';el.append(all);
-  for(const g of groups){const opt=document.createElement('option');opt.value=g.id;opt.textContent=`${g.emoji} ${g.label}`;el.append(opt)}
+  for(const g of groups){const opt=document.createElement('option');opt.value=g.id;opt.textContent=`${g.emoji} ${g.label}${g.active===false?'（旧所属）':''}`;el.append(opt)}
   const unknown=document.createElement('option');unknown.value='unassigned';unknown.textContent='未設定・不明';el.append(unknown);
   el.value=Array.from(el.options).some(o=>o.value===chosen)?chosen:'all';
  }
 }
-function startGroupAdmin(){if(groupsUnsub)groupsUnsub();groupsUnsub=onSnapshot(collection(db,'studyGroups'),snap=>{groups=snap.docs.map(x=>({id:x.id,...x.data()})).filter(x=>x.active!==false).sort((a,b)=>(a.order||999)-(b.order||999));paintGroups()},e=>status('オプチャ一覧を取得できないよ：'+e.message))}
+function startGroupAdmin(){if(groupsUnsub)groupsUnsub();groupsUnsub=onSnapshot(collection(db,'studyGroups'),snap=>{groups=snap.docs.map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.order||999)-(b.order||999));paintGroups()},e=>status('オプチャ一覧を取得できないよ：'+e.message))}
 $('addGroup').onclick=async()=>{if(groupAdminLock)return;const label=$('newGroupName').value.trim(),emoji=$('newGroupEmoji').value.trim();if(label.length<1||[...label].length>32||!emoji||[...emoji].length>8){alert('オプチャ名は1〜32文字、絵文字は8文字以内で入力してね');return}if(groups.some(g=>g.label===label)){alert('その名前のオプチャはすでにあるよ');return}groupAdminLock=true;$('addGroup').disabled=true;try{const ref=doc(collection(db,'studyGroups'));await setDoc(ref,{label,emoji,active:true,order:Date.now()});$('newGroupName').value='';$('newGroupEmoji').value='';status(label+' を追加したよ！')}catch(e){console.error(e);status('追加できなかったよ：'+e.message)}finally{groupAdminLock=false;$('addGroup').disabled=false}};
 function status(s){$('status').textContent=s}
 function dateStr(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
@@ -272,10 +308,24 @@ onAuthStateChanged(auth,async u=>{
   owner=!u.isAnonymous&&u.providerData.some(p=>p.providerId==='google.com')&&userSnap.exists()&&userSnap.data()?.nickname==='snow';
   $('permissionHeader').style.display=owner?'':'none';
   $('panel').style.display='block';startGroupAdmin();attachAdminRanking();
-  // Seed default OpenChats only once, as the owner; deputies can add later.
-  if(owner){for(const [id,label,emoji,order] of [['pink','勉強オプチャ（ピンク）','🩷',1],['blue','勉強オプチャ（ブルー）','💙',2],['math','数学オプチャ','📐',3],['university','大学オプチャ','🎓',4]]){
-    const r=doc(db,'studyGroups',id);getDoc(r).then(s=>{if(!s.exists())return setDoc(r,{label,emoji,active:true,order})}).catch(e=>console.error('初期オプチャ',e));
-  }}
+  // Synchronize the two official default OpenChats on owner login. Old demo groups are archived, not deleted.
+  if(owner){
+   for(const [groupId,label,emoji,order] of [['pink','高校受験生勉強会！！！','🩷',1],['blue','高校受験生勉強会！！！【中３受験生向け】','💙',2]]){
+    const groupRef=doc(db,'studyGroups',groupId);
+    getDoc(groupRef).then(snapshot=>{
+     if(!snapshot.exists()||snapshot.data().label!==label||snapshot.data().emoji!==emoji||snapshot.data().active!==true||snapshot.data().order!==order)
+       return setDoc(groupRef,{label,emoji,active:true,order});
+    }).catch(e=>console.error('初期所属の同期',e));
+   }
+   for(const [groupId,label] of [['math','数学オプチャ'],['university','大学オプチャ']]){
+    const groupRef=doc(db,'studyGroups',groupId);
+    getDoc(groupRef).then(snapshot=>{
+      const g=snapshot.data();
+      if(snapshot.exists()&&g.label===label&&g.active===true)
+        return setDoc(groupRef,{...g,active:false});
+    }).catch(e=>console.error('旧所属の整理',e));
+   }
+  }
 
   $('loginPanel').classList.add('isVerified');
   status(owner?'snow（最高管理者）としてログインできたよ！':'管理者としてログインできたよ！');

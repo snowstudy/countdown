@@ -59,6 +59,15 @@ body[data-study-theme="blue"] .btn:not(.alt){background:#689bc7;border-color:#68
 body[data-study-theme="other"] .btn:not(.alt){background:#9e89c4;border-color:#9e89c4}
 body[data-study-theme="blue"] .liveMark{background:#e4f4ff;border-color:#c7e4f5;color:#527caa}
 body[data-study-theme="other"] .liveMark{background:#f0eafa;border-color:#d7cceb;color:#7769a6}
+
+/* Explicit OpenChat themes: original cloud pink, blue and lavender for added groups */
+body[data-study-theme="blue"] .panel h2,body[data-study-theme="blue"] .panel h3{color:#4f83b4}
+body[data-study-theme="blue"] .groupRegister select,body[data-study-theme="blue"] input:focus-visible,body[data-study-theme="blue"] textarea:focus-visible{border-color:#78add7}
+body[data-study-theme="blue"] .groupEmoji{background:#e3f3ff}
+body[data-study-theme="other"]{background-color:#e9dff5!important;background-image:radial-gradient(ellipse at 15% 12%,#faf4ff 0%,transparent 43%),radial-gradient(ellipse at 83% 82%,#d9cbed 0%,transparent 48%),linear-gradient(145deg,#f1e8fc,#d9c8ef)!important;color:#75638d}
+body[data-study-theme="other"] .panel h2,body[data-study-theme="other"] .panel h3{color:#8e6aac}
+body[data-study-theme="other"] .groupRegister select,body[data-study-theme="other"] input:focus-visible,body[data-study-theme="other"] textarea:focus-visible{border-color:#ac91c9}
+body[data-study-theme="other"] .groupEmoji{background:#f1e8fa}
 </style></head><body><main class="wrap">
 <header class="header">
   <div class="topReturn"><a class="returnCountdown returnCountdownTop" href="index.html" aria-label="カウントダウンページへ戻る"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
@@ -85,7 +94,7 @@ const fmt=n=>{n=Math.max(0,Math.floor(n||0));return n>=60?`${Math.floor(n/60)}�
 const safeParse=(s,f)=>{try{return JSON.parse(s)??f}catch{return f}};
 const localKey='snowstudy_log_private_v1',timerKey='snowstudy_log_timer_v1';
 // Public open-chat categories are curated by administrators.
-const DEFAULT_GROUPS=[{id:'pink',label:'🩷 勉強オプチャ',emoji:'🩷'},{id:'blue',label:'💙 勉強オプチャ',emoji:'💙'},{id:'math',label:'📐 数学オプチャ',emoji:'📐'},{id:'university',label:'🎓 大学オプチャ',emoji:'🎓'}];
+const DEFAULT_GROUPS=[{id:'pink',label:'高校受験生勉強会！！！',emoji:'🩷'},{id:'blue',label:'高校受験生勉強会！！！【中３受験生向け】',emoji:'💙'}];
 let groupList=[],groupUnsub=null,rankSynced=new Set(),rankSyncChain=Promise.resolve();
 const groupMap=()=>new Map(groupList.map(g=>[g.id,g]));
 function groupEmoji(id){return groupMap().get(id)?.emoji||'📚'}
@@ -97,13 +106,13 @@ $('groupSelect').addEventListener('change',()=>applyGroupTheme($('groupSelect').
 function renderGroupSelect(){
  const s=$('groupSelect'),selected=s.value||remote.groupId||'';s.replaceChildren();
  const blank=document.createElement('option');blank.value='';blank.textContent='所属オプチャを選択';s.append(blank);
- for(const g of groupList){const o=document.createElement('option');o.value=g.id;o.textContent=`${g.emoji} ${g.label}`;s.append(o)}
- s.value=groupList.some(g=>g.id===selected)?selected:'';
+ for(const g of groupList.filter(g=>g.active!==false||g.id===remote.groupId)){const o=document.createElement('option');o.value=g.id;o.textContent=`${g.emoji} ${g.label}${g.active===false?'（以前の所属）':''}`;s.append(o)}
+ s.value=Array.from(s.options).some(o=>o.value===selected)?selected:'';
  applyGroupTheme(s.value||remote.groupId||'');
   $('groupSave').style.display=remote.nicknameLocked?'inline-flex':'none';
  $('groupHint').textContent=remote.nicknameLocked?'所属先を変更するとLIVEとランキングの表示にも反映されるよ！':'登録時に所属オプチャを選んでね。';
 }
-function startGroups(){if(groupUnsub)groupUnsub();groupUnsub=onSnapshot(collection(db,'studyGroups'),snap=>{groupList=snap.docs.map(x=>({id:x.id,...x.data()})).filter(g=>g.active===true&&typeof g.label==='string'&&typeof g.emoji==='string').sort((a,b)=>(a.order||999)-(b.order||999));renderGroupSelect();renderLive()},e=>{console.error('所属オプチャ読み込み',e);$('groupHint').textContent='オプチャを読み込めません。もう一度ページを開いてね。'});}
+function startGroups(){if(groupUnsub)groupUnsub();groupUnsub=onSnapshot(collection(db,'studyGroups'),snap=>{groupList=snap.docs.map(x=>({id:x.id,...x.data()})).filter(g=>typeof g.label==='string'&&typeof g.emoji==='string').sort((a,b)=>(a.order||999)-(b.order||999));renderGroupSelect();renderLive()},e=>{console.error('所属オプチャ読み込み',e);$('groupHint').textContent='オプチャを読み込めません。もう一度ページを開いてね。'});}
 function mondayOf(date){const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());d.setDate(d.getDate()-(d.getDay()+6)%7);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function parseLocalDay(key){const [y,m,d]=key.split('-').map(Number);return new Date(y,m-1,d)}
 function rankMinutes(days,week){return Object.entries(days||{}).filter(([d])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&mondayOf(parseLocalDay(d))===week).reduce((sum,[,v])=>sum+(Number.isFinite(Number(v))?Math.max(0,Number(v)):0),0)}
