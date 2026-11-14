@@ -118,6 +118,25 @@ let groupList=[],groupUnsub=null,rankSynced=new Set(),rankSyncChain=Promise.reso
 const groupMap=()=>new Map([...DEFAULT_GROUPS,...groupList].map(g=>[g.id,g]));
 function groupEmoji(id){return groupMap().get(id)?.emoji||(id?'💜':'❔')}
 function groupName(id){return groupMap().get(id)?.label||(id?'その他・以前の所属':'未設定')}
+// Minimal public identity map. The users collection stays private to administrators.
+let publicProfiles=new Map(),publicProfilesUnsub=null,profileSyncFingerprint='';
+function publicIdentity(uid,fallback){return publicProfiles.get(uid)||{nickname:fallback?.nickname||'',groupId:fallback?.groupId||''}}
+function attachPublicProfiles(){
+ if(publicProfilesUnsub){publicProfilesUnsub();publicProfilesUnsub=null}
+ publicProfilesUnsub=onSnapshot(collection(db,'publicProfiles'),snap=>{
+  publicProfiles=new Map(snap.docs.map(d=>[d.id,d.data()]));
+  renderLive();renderPublicRanking();
+ },e=>console.error('公開プロフィール取得',e));
+}
+function ensureOwnPublicProfile(){
+ if(!user?.uid||!remote.nicknameLocked||!remote.nickname)return;
+ const uid=user.uid,nickname=remote.nickname,groupId=remote.groupId||'';
+ const fingerprint=[uid,nickname,groupId].join('|');
+ if(profileSyncFingerprint===fingerprint)return;
+ profileSyncFingerprint=fingerprint;
+ setDoc(doc(db,'publicProfiles',uid),{nickname,groupId})
+  .catch(e=>{profileSyncFingerprint='';console.error('公開プロフィール同期',e)});
+}
 function applyGroupTheme(groupId){
  document.body.dataset.studyTheme=groupId==='blue'?'blue':groupId==='pink'||!groupId?'pink':'other';
 }
@@ -162,7 +181,7 @@ function renderPublicRanking(){
  $('rankPrev').disabled=rankOffset<=-52;$('rankNext').disabled=rankOffset>=0;
  const host=$('rankRows');host.replaceChildren();
  const g=$('rankGroupFilter').value;
- const rows=rankEntries.filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(g==='all'||x.groupId===g)).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja'));
+ const rows=rankEntries.map(x=>({...x,...publicIdentity(x.uid,x)})).filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(g==='all'||x.groupId===g)).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja'));
  if(!rows.length){const p=document.createElement('div');p.className='rankEmpty';p.textContent='この週の勉強記録はまだないよ！';host.append(p);return}
  rows.forEach((x,i)=>{const row=document.createElement('div');row.className='rankRow';
  const pos=document.createElement('span');pos.className='rankPosition';pos.textContent=i<3?['🥇','🥈','🥉'][i]:`${i+1}位`;
@@ -241,7 +260,7 @@ function renderLive(){
  const host=$('liveMembers');host.replaceChildren();
  if(!valid.length){const empty=document.createElement('div');empty.className='liveNone';empty.textContent='いま勉強中の人はいないみたい。最初の一歩を踏み出そう！';host.append(empty);return}
  for(const item of valid){
-  const d=item.data, row=document.createElement('div');row.className='liveMember';
+  const d={...item.data,...publicIdentity(item.id,item.data)}, row=document.createElement('div');row.className='liveMember';
   const dot=document.createElement('span');dot.className='liveDot';dot.setAttribute('aria-hidden','true');
   const who=document.createElement('div');who.className='liveWho';
   const name=document.createElement('div');name.className='liveNickname';const ge=document.createElement('span');ge.className='groupEmoji';ge.textContent=groupEmoji(d.groupId);ge.title=groupName(d.groupId);const nameText=document.createElement('span');nameText.textContent=d.nickname;name.append(ge,nameText);
@@ -293,10 +312,10 @@ $('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),min
 renderLocal();renderStats();
 onAuthStateChanged(auth,async u=>{
  if(!u){try{await signInAnonymously(auth)}catch(e){setStatus('読み込みに失敗したよ。ページを再読み込みしてね。',true)}return}
- user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener();startGroups();attachPublicRanking()}
+ user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener();startGroups();attachPublicProfiles();attachPublicRanking()}
  if(unsubscribe)unsubscribe();
  unsubscribe=onSnapshot(userRef,async snap=>{
-  remote=snap.exists()?snap.data():{days:{},nickname:''};remote.days??={};renderGroupSelect();syncRecentRankings();
+  remote=snap.exists()?snap.data():{days:{},nickname:''};remote.days??={};renderGroupSelect();ensureOwnPublicProfile();syncRecentRankings();
   $('nickname').value=remote.nickname||(pendingSnowLogin?'snow':'');
   updateSnowVerify();
   $('nickname').readOnly=!!remote.nicknameLocked;

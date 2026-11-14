@@ -167,6 +167,35 @@ const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMon
 const fmt=m=>{m=Math.floor(Number(m)||0);return m>=60?`${Math.floor(m/60)}時間${m%60?`${m%60}分`:''}`:`${m}分`};
 let unsub=null,unsubAdmins=null,sequence=0,owner=false,adminIds=new Set(),lastRecords=[];
 let groupsUnsub=null,groups=[],groupAdminLock=false;const groupById=()=>new Map(groups.map(g=>[g.id,g]));
+// Cache public display profiles so changes made by admins can be reflected immediately.
+let publicProfilesAdmin=new Map(),publicProfilesAdminUnsub=null,profileRepairRunning=false;
+function adminIdentity(uid,fallback){return publicProfilesAdmin.get(uid)||{nickname:fallback?.nickname||'',groupId:fallback?.groupId||''}}
+async function savePublicIdentity(uid,nickname,groupId){
+ await setDoc(doc(db,'publicProfiles',uid),{nickname,groupId});
+ publicProfilesAdmin.set(uid,{nickname,groupId});
+ renderAdminRanking();
+}
+// Rebuild missing public display labels after deployment or previous incomplete syncs.
+// Reads only the minimal public profiles. Each write is independent, so one rejected
+// user's record cannot stop the remaining ones.
+async function repairPublicProfiles(){
+ if(profileRepairRunning||!auth.currentUser||!lastRecords.length)return;
+ profileRepairRunning=true;
+ try{
+  const pending=lastRecords.filter(d=>{
+   const v=d.data(),p=publicProfilesAdmin.get(d.id);
+   return v.nicknameLocked===true && v.nickname && (!p||p.nickname!==v.nickname||p.groupId!==(v.groupId||''));
+  });
+  let failed=0;
+  for(const d of pending){
+   if(!auth.currentUser)break;
+   const v=d.data();
+   try{await savePublicIdentity(d.id,v.nickname,v.groupId||'')}catch(e){failed++;console.error('公開プロフィール修復',d.id,e)}
+  }
+  if(failed)status(`${failed}件の公開表示を同期できなかったよ。Firestoreルールを確認してね。`);
+ }finally{profileRepairRunning=false}
+}
+
 function paintGroups(){const host=$('groupAdminList');host.replaceChildren();for(const g of groups.filter(g=>g.active!==false)){const chip=document.createElement('span');chip.className='groupChip';chip.textContent=`${g.emoji} ${g.label}`;host.append(chip)}if(!groups.some(g=>g.active!==false))host.textContent='まだ登録されていないよ';updateGroupOptions();draw(lastRecords);renderAdminRanking()}
 function updateGroupOptions(){
  for(const id of ['groupFilter','rankGroupFilter']){
@@ -308,20 +337,19 @@ $('editUserSave').onclick=async()=>{
   $('editUserFeedback').textContent='保存できたよ！';
   $('editUserDialog').close();
   status(`${name} さんの${nameChanged?'名前':''}${nameChanged&&groupChanged?'・':''}${groupChanged?'所属':''}を変更したよ！`);
-  try{await syncPublicUserLabels(uid,actualName,actualGroup)}catch(e){console.error('公開表示の同期',e);status('登録情報は変更できたよ。ただしLIVE・ランキングの表示同期に失敗したため、本人がStudy Logを開いた時に更新されるよ：'+e.message)}
+  try{await savePublicIdentity(uid,actualName,actualGroup)}catch(e){console.error('公開プロフィール同期',e);status('登録情報は変更できたけど、ランキング・LIVE表示用データの保存に失敗したよ：'+e.message);return}
+  // Legacy denormalized entries are updated when possible; publicProfiles takes precedence.
+  try{await syncPublicUserLabels(uid,actualName,actualGroup)}catch(e){console.warn('過去のランキング表示キャッシュの同期は失敗（公開プロフィールは更新済み）',e)}
  }catch(e){console.error(e);$('editUserFeedback').textContent='保存できなかったよ：'+(e.message||'Firestoreルールを確認してね');status('ユーザー情報を変更できなかったよ：'+e.message)}
  finally{editorBusy=false;$('editUserSave').disabled=false;$('editUserCancel').disabled=false}
 };
 async function syncPublicUserLabels(uid,nickname,groupId){
- // Update only public nickname/group labels, never other users' study amounts or timer state.
- const refs=[doc(db,'liveStudy',uid)];
+ // Non-essential legacy fields: publicProfiles is now the source of truth.
  const ranks=await getDocs(query(collection(db,'weeklyRankings'),where('uid','==',uid)));
- for(const row of ranks.docs)refs.push(row.ref);
- for(let i=0;i<refs.length;i+=400){const batch=writeBatch(db);for(const ref of refs.slice(i,i+400)){
-  // Live status document may not exist; do not create a fake active timer.
-  if(ref.path==='liveStudy/'+uid){const snap=await getDoc(ref);if(!snap.exists())continue}
-  batch.update(ref,{nickname,groupId});
- }await batch.commit()}
+ const results=await Promise.allSettled(ranks.docs.map(d=>setDoc(d.ref,{nickname,groupId},{merge:true})));
+ const bad=results.filter(r=>r.status==='rejected');
+ if(bad.length)console.warn('旧ランキングレコード同期に失敗:',bad.length);
+ // LIVE timer is managed by its owner. Do not update or create fake active sessions.
 }
 async function changeUserGroup(uid,name,current,btn){
  if(!auth.currentUser||!groups.length)return;
@@ -395,7 +423,8 @@ async function renameUser(uid,displayName,btn){
   $('rankPrev').disabled=rankOffset<=-52;$('rankNext').disabled=rankOffset>=0;
   const host=$('rankRows');host.replaceChildren();
   const filter=$('rankGroupFilter').value;
-  const entries=rankEntries.filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(filter==='all'||(filter==='unassigned'?!groupById().has(x.groupId):x.groupId===filter))).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja'));
+  const userMap=new Map(lastRecords.map(d=>[d.id,d.data()]));
+   const entries=rankEntries.map(x=>({...x,...adminIdentity(x.uid,x),...(userMap.has(x.uid)?{nickname:userMap.get(x.uid).nickname,groupId:userMap.get(x.uid).groupId||''}:{})})).filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(filter==='all'||(filter==='unassigned'?!groupById().has(x.groupId):x.groupId===filter))).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja'));
   if(!entries.length){const empty=document.createElement('div');empty.className='adminRankEmpty';empty.textContent='この週・所属の勉強記録はまだないよ';host.append(empty);return}
   entries.forEach((d,i)=>{
    const row=document.createElement('div');row.className='adminRankRow';const pos=document.createElement('span');pos.className='adminRankPosition';pos.textContent=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}位`;
@@ -420,7 +449,7 @@ $('login').onclick=async()=>{
 $('signout').onclick=async()=>{if(!confirm('Googleアカウントからログアウトする？'))return;await signOut(auth);location.href='study.html'};
 onAuthStateChanged(auth,async u=>{
  const id=++sequence;
- if(unsub){unsub();unsub=null}if(unsubAdmins){unsubAdmins();unsubAdmins=null}if(groupsUnsub){groupsUnsub();groupsUnsub=null}if(rankUnsub){rankUnsub();rankUnsub=null}
+ if(unsub){unsub();unsub=null}if(unsubAdmins){unsubAdmins();unsubAdmins=null}if(groupsUnsub){groupsUnsub();groupsUnsub=null}if(rankUnsub){rankUnsub();rankUnsub=null}if(publicProfilesAdminUnsub){publicProfilesAdminUnsub();publicProfilesAdminUnsub=null}publicProfilesAdmin=new Map();
  $('loginPanel').classList.remove('isVerified');
  owner=false;adminIds=new Set();lastRecords=[];$('panel').style.display='none';$('accessInfo').textContent='';$('permissionHeader').style.display='none';
  $('login').style.display='none';$('signout').style.display=u&&!u.isAnonymous?'inline-block':'none';
@@ -437,6 +466,7 @@ onAuthStateChanged(auth,async u=>{
   owner=!u.isAnonymous&&u.providerData.some(p=>p.providerId==='google.com')&&userSnap.exists()&&userSnap.data()?.nickname==='snow';
   $('permissionHeader').style.display=owner?'':'none';
   $('panel').style.display='block';startGroupAdmin();attachAdminRanking();
+  publicProfilesAdminUnsub=onSnapshot(collection(db,'publicProfiles'),snap=>{if(id!==sequence)return;publicProfilesAdmin=new Map(snap.docs.map(d=>[d.id,d.data()]));renderAdminRanking();void repairPublicProfiles()},e=>console.error('公開プロフィール一覧',e));
   // Synchronize the two official default OpenChats on owner login. Old demo groups are archived, not deleted.
   if(owner){
    for(const [groupId,label,emoji,order] of [['pink','高校受験生勉強会！！！','🩷',1],['blue','高校受験生勉強会！！！【中３受験生向け】','💙',2]]){
@@ -458,7 +488,7 @@ onAuthStateChanged(auth,async u=>{
 
   $('loginPanel').classList.add('isVerified');
   status(owner?'snow（最高管理者）としてログインできたよ！':'管理者としてログインできたよ！');
-  unsub=onSnapshot(collection(db,'users'),snap=>{if(id===sequence){lastRecords=snap.docs;draw(lastRecords)}},err=>status('データを取得できません：'+err.message));
+  unsub=onSnapshot(collection(db,'users'),snap=>{if(id===sequence){lastRecords=snap.docs;draw(lastRecords);renderAdminRanking();void repairPublicProfiles()}},err=>status('データを取得できません：'+err.message));
   if(owner){unsubAdmins=onSnapshot(collection(db,'admins'),snap=>{if(id===sequence){adminIds=new Set(snap.docs.filter(d=>d.data()?.enabled===true).map(d=>d.id));draw(lastRecords)}},err=>status('管理者一覧を取得できないよ。Firestoreルールを確認してね：'+err.message))}
  }catch(e){status('権限を確認できません：'+e.message)}
 });
