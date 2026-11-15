@@ -150,6 +150,56 @@ html,body{max-width:100%;overflow-x:clip}
 .userStateBan{color:#b3386f;font-weight:700}
 .leanSelectBtn{white-space:nowrap}
 @media(max-width:680px){.selectedStudyStats{grid-template-columns:repeat(2,minmax(0,1fr))}.leanUserTable tbody tr{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* In-place user cards – no modal and no automatic all-user history reads. */
+.adminUserCards{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
+.adminUserCard{background:#fff;border:1.5px solid #efcadd;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px #bc779414;transition:border-color .15s,box-shadow .15s}
+.adminUserCard.isSelected{border-color:#d47bab;box-shadow:0 6px 20px #ca78a32b}
+.userCardToggle{display:flex;align-items:center;gap:12px;width:100%;min-height:74px;text-align:left;border:0;background:transparent;padding:15px 17px;color:#8f4966;cursor:pointer;font:inherit}
+.userCardToggle:hover,.userCardToggle:focus-visible{background:#fff5fa}
+.userCardText{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
+.userCardName{font-size:17px;font-weight:800;overflow-wrap:anywhere}
+.userCardGroup{font-size:12px;color:#a06b85;overflow-wrap:anywhere}
+.userCardState{font-size:12px;font-weight:700;color:#8a977c;background:#f1f8ed;border-radius:999px;padding:5px 9px;white-space:nowrap}
+.userCardState.isBanned{background:#ffe9f0;color:#b3386f}
+.userCardArrow{font-size:22px;color:#b37c99;line-height:1}
+.userCardContent{border-top:1px solid #f5dce8;background:#fffafd;min-width:0;padding:0 16px 16px}
+.userCardContent>.selectedUserPanel{padding:18px 0 0;margin:0;border:0;background:transparent;box-shadow:none;border-radius:0}
+.userCardContent .selectedUserPanel>.sectionHeading{margin-bottom:4px}
+.userCardContent .selectedUserPanel>.sectionHeading h2{font-size:18px}
+.userCardContent .selectedUserPanel>.sectionHeading .eyebrow{display:none}
+.userCardContent .selectedUserPanel>.muted{margin:6px 0}
+.userCardContent .uidLabel{max-width:100%;margin:2px 0 10px}
+.inlineEditSection{display:block;padding:17px 16px;margin:14px 0;border:1px solid #efd0df;border-radius:15px;background:#fff;min-width:0}
+.inlineEditSection[hidden]{display:none!important}
+.inlineEditSection .editUserModal{padding:0;margin:0;max-width:100%;min-width:0;background:transparent;box-shadow:none;border:0;width:100%}
+.inlineEditSection h2{font-size:16px!important;margin:0 0 6px!important}
+.inlineEditSection .editUserHelp{font-size:12px;line-height:1.7;margin:7px 0 12px;color:#9e7188}
+.inlineEditSection .editField{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#955477;margin:10px 0}
+.inlineEditSection .editField[hidden]{display:none!important}
+.inlineEditSection input,.inlineEditSection select{font:inherit;font-size:15px;background:#fff;border:1px solid #eac0d3;border-radius:10px;color:#7d4262;width:100%;padding:10px 12px;min-width:0;max-width:100%;box-sizing:border-box}
+.inlineEditSection input:focus-visible,.inlineEditSection select:focus-visible{outline:2px solid #da90b7;outline-offset:1px}
+.inlineEditSection input:disabled,.inlineEditSection select:disabled{background:#f5f1f3}
+.inlineEditSection .editUserActions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:12px}
+.inlineEditSection .roleBtn{width:auto;min-width:135px;margin:0;background:#fff;color:#995274;cursor:pointer}
+.inlineEditSection .roleBtn:last-child{background:#ffe3f0}
+.inlineEditSection .editUserFeedback{min-height:20px;margin:7px 0;font-size:12px;color:#a64578;line-height:1.5;overflow-wrap:anywhere}
+.inlineEditSection.isLoading{opacity:.75}
+.inlineEditSection.isLoading #editStudyTimeCurrent::after{content:'（記録を読み込み中）'}
+.userCardContent .selectedActions{display:flex;gap:9px;flex-wrap:wrap;margin:15px 0 7px}
+.userCardContent .selectedActions .btn{flex:0 1 auto}
+.userCardContent .selectedActions .selectedCloseBtn{margin-right:auto}
+.userCardsEmpty{padding:24px 12px;text-align:center}
+#panelParking[hidden]{display:none!important}
+@media(max-width:620px){
+ .userCardToggle{padding:13px 11px;gap:6px;min-height:67px}
+ .userCardName{font-size:15px}.userCardGroup{font-size:11px}
+ .userCardState{font-size:10px;padding:5px 7px}
+ .userCardContent{padding:0 12px 13px}
+ .inlineEditSection{padding:13px 10px}
+ .inlineEditSection .editUserActions .roleBtn{flex:1;min-width:0}
+ .userCardContent .selectedActions .btn{flex:1 1 100%}
+}
 </style><style>.adminTable{width:100%;border-collapse:collapse}.adminTable th,.adminTable td{padding:10px 8px;border-bottom:1px solid #f0c7d7;text-align:left}.adminTable th{color:#b34f78}.adminTable{font-size:14px}.adminTable td{word-break:break-word}#login,#signout{margin:10px 5px}#panel{display:none}#accessInfo{white-space:pre-wrap;word-break:break-all}a{color:#b34f78}.uidLabel{font-size:10px;color:#936e84;overflow-wrap:anywhere;display:block;margin-top:3px}.roleBtn{font-family:inherit;padding:6px 10px;border:1px solid #df9dbb;border-radius:12px;background:#fff2f8;color:#a34c72;cursor:pointer}.roleBtn:disabled{opacity:.5;cursor:not-allowed}.renameBtn{display:block;margin-top:6px;padding:4px 9px;font-size:12px;background:#fff8fb}
 .goalCell{min-width:170px;max-width:290px}.goalText{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;max-height:4.8em;overflow:hidden}.goalText.isOpen{max-height:none}.goalExpand{border:none;background:transparent;color:#a34c72;text-decoration:underline;cursor:pointer;font-family:inherit;margin-top:3px;padding:2px 0}.goalEmpty{font-size:12px;color:#9d8391}
 </style><style id="user-name-group-style">
@@ -176,11 +226,11 @@ html,body{max-width:100%;overflow-x:clip}
 </style>
 </head><body><main class="wrap"><header class="header">
 <nav aria-label="管理画面ナビゲーション" class="adminTopNav"><a class="adminBackBtn" href="study.html">← Study Logへ戻る</a><a class="adminBackBtn secondary" href="index.html">☁ カウントダウンへ</a></nav><p>高校受験生勉強会！！！</p><h1>🔐 Study Log 管理</h1><p>みんなの頑張りを確認しよう！</p></header><section class="panel loginPanel" id="loginPanel"><h2>🔐 アクセス状況</h2><p class="muted">adminsに登録されたUIDなら、Google認証・匿名認証のどちらでも閲覧できます。副管理者はいつものブラウザで開いてね。</p><button class="btn" id="login">Googleで管理者ログイン</button><button class="btn alt" id="signout" style="display:none">ログアウト</button><div class="status" id="status">ログイン状態を確認中…</div><div class="muted" id="accessInfo"></div><p class="muted" id="helpText">匿名認証で権限を付けてもらう場合は、いつも使っているLINE内ブラウザからStudy Logの管理者ページを開いてね。</p></section><div id="panel"><section class="panel usersPanel" id="usersSection"><div class="sectionHeading"><div><p class="eyebrow">STUDENTS</p><h2>👥 ユーザー一覧</h2></div><span class="smallNote" id="shownCount">準備中…</span></div>
-<p class="muted">一覧では名前・所属だけを取得するよ。勉強時間はユーザーを選択したときだけ読み込む仕組みだよ。自動更新はしないので、最新の情報が必要な場合は「一覧を更新」を押してね。</p>
+<p class="muted">ユーザーのカードを押すと、その場で編集できるよ。勉強時間は選択した人の分だけ取得するよ。最新の一覧が必要なら「一覧を更新」を押してね。</p>
 <div class="usersToolbar"><label class="searchField"><span aria-hidden="true">⌕</span><input aria-label="ニックネームで検索" id="userSearch" placeholder="ニックネームで検索" type="search"/></label><label class="filterField">所属 <select aria-label="所属オプチャで絞り込み" id="groupFilter"><option value="all">すべての所属</option></select></label><button class="btn alt" id="refreshDirectory" type="button">🔄 一覧を更新</button></div>
 <div aria-label="所属ごとの登録人数" class="groupUserSummary" id="groupUserSummary"></div>
-<div class="tableScroll"><table class="adminTable leanUserTable"><thead><tr><th>ニックネーム</th><th>所属オプチャ</th><th>状態</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div>
-<p class="muted" id="directoryNote">以前の登録者が一覧にいない場合は、本人がStudy Logを開くと表示用プロフィールが同期されるよ。</p></section><section class="panel selectedUserPanel" hidden="" id="selectedUserPanel">
+<div aria-label="ユーザー一覧" class="adminUserCards" id="rows"></div>
+<p class="muted" id="directoryNote">以前の登録者が一覧にいない場合は、本人がStudy Logを開くと表示用プロフィールが同期されるよ。</p><div hidden="" id="panelParking"></div></section><section class="panel selectedUserPanel" hidden="" id="selectedUserPanel">
 <div class="sectionHeading"><div><p class="eyebrow">SELECTED USER</p><h2 id="selectedTitle">ユーザー情報</h2></div><span class="smallNote" id="selectedState">選択中</span></div>
 <p class="muted" id="selectedGroup"></p>
 <p class="uidLabel" id="selectedUid"></p>
@@ -188,28 +238,18 @@ html,body{max-width:100%;overflow-x:clip}
 <div class="selectedStudyStats" hidden="" id="selectedStats">
 <div class="stat">今日<strong id="selectedToday">0分</strong></div><div class="stat">今週<strong id="selectedWeek">0分</strong></div><div class="stat">今月<strong id="selectedMonth">0分</strong></div><div class="stat">総計<strong id="selectedTotal">0分</strong></div>
 </div>
-<div class="selectedActions">
-<button class="btn alt" id="selectedEditUser" type="button">名前・所属を変更</button>
-<button class="btn alt" id="selectedEditTime" type="button">勉強時間を訂正</button>
-<button class="btn alt" id="selectedRefresh" type="button">🔄 この人の記録を更新</button>
-<button class="btn alt" hidden="" id="selectedBan" type="button">アクセス禁止</button>
-<button class="btn alt" hidden="" id="selectedRole" type="button">副管理者にする</button>
-</div>
-<div class="selectedDates" hidden="" id="selectedDates"><h3>📅 最近の勉強記録</h3><div class="selectedDayList" id="selectedDayList"></div></div>
-</section>
-<section class="panel" id="groupAdminPanel"><div class="sectionHeading"><div><p class="eyebrow">OPEN CHAT</p><h2>🏷 オプチャの管理</h2></div><span class="smallNote">管理者・副管理者が追加可能</span></div><p class="muted">名前と絵文字を登録すると、Study Logの所属先に表示されるよ。登録済みユーザーにも適用できるよ。</p><div class="groupAdminForm"><input aria-label="新しいオプチャの絵文字" id="newGroupEmoji" maxlength="12" placeholder="🩷"/><input aria-label="新しいオプチャの名前" id="newGroupName" maxlength="32" placeholder="オプチャ名"/><button class="btn" id="addGroup" type="button">＋ オプチャを追加</button></div><div class="groupAdminList" id="groupAdminList">読み込み中…</div></section></div><footer class="footer"><a class="adminBackBtn footerBack" href="study.html">← Study Logへ戻る</a></footer></main><dialog aria-labelledby="editUserTitle" class="editUserDialog" id="editUserDialog">
+<section class="inlineEditSection" id="inlineUserEditor">
 <div class="editUserModal">
-<h2 id="editUserTitle">ユーザー情報を変更</h2>
-<p class="editUserHelp">名前・所属の変更は、一般画面のLIVE・ランキングにも反映されるよ。</p>
+<h2 id="editUserTitle">✏️ 名前・所属を編集</h2>
+<p class="editUserHelp">このカードの中で名前・所属を変更できるよ。保存後は公開表示にも反映されるよ。</p>
 <label class="editField" id="editUserNameWrap">ニックネーム<input autocomplete="off" id="editUserName" maxlength="24"/></label>
 <label class="editField">所属オプチャ<select id="editUserGroup"></select></label>
 <p class="editUserFeedback" id="editUserFeedback" role="status"></p>
-<div class="editUserActions"><button class="roleBtn" id="editUserCancel" type="button">キャンセル</button><button class="roleBtn" id="editUserSave" type="button">変更を保存</button></div>
+<div class="editUserActions"><button class="roleBtn" id="editUserCancel" type="button">入力を元に戻す</button><button class="roleBtn" id="editUserSave" type="button">変更を保存</button></div>
 </div>
-</dialog>
-<dialog aria-labelledby="editStudyTimeTitle" class="editUserDialog" id="editStudyTimeDialog">
+</section><section class="inlineEditSection" id="inlineTimeEditor">
 <div class="editUserModal">
-<h2 id="editStudyTimeTitle">勉強時間を訂正</h2>
+<h2 id="editStudyTimeTitle">⏱️ 勉強時間を訂正</h2>
 <p class="editUserHelp">選んだ日付の合計時間を上書きするよ。過去の日付も訂正できるよ。</p>
 <label class="editField">訂正する日付<input id="editStudyTimeDate" type="date"/></label>
 <p class="editUserHelp" id="editStudyTimeCurrent">現在の記録：0分</p>
@@ -218,9 +258,16 @@ html,body{max-width:100%;overflow-x:clip}
 <label class="editField">分<input id="editStudyTimeMinutes" inputmode="numeric" max="59" min="0" step="1" type="number" value="0"/></label>
 </div>
 <p aria-live="polite" class="editUserFeedback" id="editStudyTimeFeedback" role="status"></p>
-<div class="editUserActions"><button class="roleBtn" id="editStudyTimeCancel" type="button">キャンセル</button><button class="roleBtn" id="editStudyTimeSave" type="button">訂正を保存</button></div>
+<div class="editUserActions"><button class="roleBtn" id="editStudyTimeCancel" type="button">入力を元に戻す</button><button class="roleBtn" id="editStudyTimeSave" type="button">訂正を保存</button></div>
 </div>
-</dialog>
+</section><div class="selectedActions"><button class="btn alt selectedCloseBtn" id="selectedClose" type="button">閉じる</button>
+<button class="btn alt" id="selectedRefresh" type="button">🔄 この人の記録を更新</button>
+<button class="btn alt" hidden="" id="selectedBan" type="button">アクセス禁止</button>
+<button class="btn alt" hidden="" id="selectedRole" type="button">副管理者にする</button>
+</div>
+<div class="selectedDates" hidden="" id="selectedDates"><h3>📅 最近の勉強記録</h3><div class="selectedDayList" id="selectedDayList"></div></div>
+</section>
+<section class="panel" id="groupAdminPanel"><div class="sectionHeading"><div><p class="eyebrow">OPEN CHAT</p><h2>🏷 オプチャの管理</h2></div><span class="smallNote">管理者・副管理者が追加可能</span></div><p class="muted">名前と絵文字を登録すると、Study Logの所属先に表示されるよ。登録済みユーザーにも適用できるよ。</p><div class="groupAdminForm"><input aria-label="新しいオプチャの絵文字" id="newGroupEmoji" maxlength="12" placeholder="🩷"/><input aria-label="新しいオプチャの名前" id="newGroupName" maxlength="32" placeholder="オプチャ名"/><button class="btn" id="addGroup" type="button">＋ オプチャを追加</button></div><div class="groupAdminList" id="groupAdminList">読み込み中…</div></section></div><footer class="footer"><a class="adminBackBtn footerBack" href="study.html">← Study Logへ戻る</a></footer></main>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
@@ -239,6 +286,7 @@ let selectedUid=null,selectedData=null,selectedBusy=false,directoryBusy=false,gr
 const groupById=()=>new Map(groups.map(g=>[g.id,g]));
 const status=message=>{$('status').textContent=message};
 const userProfile=uid=>profiles.get(uid)||{nickname:'',groupId:''};
+const selectedPanelEl=$('selectedUserPanel');
 const displayedName=(uid,profile=userProfile(uid))=>bannedIds.has(uid)?'UID: '+uid:String(profile.nickname||'（未登録）');
 function updateGroupOptions(){
  const el=$('groupFilter'),prior=el.value;el.replaceChildren();
@@ -260,15 +308,25 @@ function draw(){
  for(const g of parts){const b=document.createElement('button');b.type='button';b.className='groupCountChip';b.textContent=`${g.emoji} ${g.label} ${g.count}人`;b.setAttribute('aria-pressed',String(group===g.id));b.onclick=()=>{$('groupFilter').value=g.id;draw()};counts.append(b)}
  const host=$('rows');host.replaceChildren();
  for(const x of filtered){
-  const groupData=groupById().get(x.groupId),banned=bannedIds.has(x.uid);
-  const tr=document.createElement('tr');if(x.uid===selectedUid)tr.classList.add('isSelected');
-  const name=document.createElement('td');name.dataset.label='ニックネーム';name.textContent=displayedName(x.uid,x);
-  const grp=document.createElement('td');grp.dataset.label='所属オプチャ';grp.textContent=groupData?`${groupData.emoji} ${groupData.label}`:(x.groupId?'以前の所属':'未設定');
-  const state=document.createElement('td');state.dataset.label='状態';state.textContent=banned?'🔐 アクセス禁止中':'利用中';if(banned)state.className='userStateBan';
-  const action=document.createElement('td');action.dataset.label='操作';const button=document.createElement('button');button.type='button';button.className='btn alt leanSelectBtn';button.textContent=x.uid===selectedUid?'選択中':'この人を選択';button.onclick=()=>void selectUser(x.uid);action.append(button);
-  tr.append(name,grp,state,action);host.append(tr);
+  const g=groupById().get(x.groupId),banned=bannedIds.has(x.uid),chosen=x.uid===selectedUid;
+  const card=document.createElement('article');card.className='adminUserCard'+(chosen?' isSelected':'');
+  const toggle=document.createElement('button');toggle.type='button';toggle.className='userCardToggle';toggle.setAttribute('aria-expanded',String(chosen));
+  toggle.setAttribute('aria-label',displayedName(x.uid,x)+' の編集カードを'+(chosen?'閉じる':'開く'));
+  const texts=document.createElement('span');texts.className='userCardText';
+  const name=document.createElement('span');name.className='userCardName';name.textContent=displayedName(x.uid,x);
+  const sub=document.createElement('span');sub.className='userCardGroup';sub.textContent=g?`${g.emoji} ${g.label}`:(x.groupId?'以前の所属':'未設定');
+  texts.append(name,sub);
+  const state=document.createElement('span');state.className='userCardState'+(banned?' isBanned':'');state.textContent=banned?'🔐 BAN中':'利用中';
+  const arrow=document.createElement('span');arrow.className='userCardArrow';arrow.setAttribute('aria-hidden','true');arrow.textContent=chosen?'▴':'▾';
+  toggle.append(texts,state,arrow);toggle.onclick=()=>void selectUser(x.uid);
+  card.append(toggle);
+  if(chosen){const content=document.createElement('div');content.className='userCardContent';content.append(selectedPanelEl);selectedPanelEl.hidden=false;card.append(content)}
+  host.append(card);
  }
- if(!filtered.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=4;td.textContent=all.length?'条件に合うユーザーはいないよ。':'表示用プロフィールがまだないよ。ユーザーがStudy Logを開くと同期されるよ。';tr.append(td);host.append(tr)}
+ if(!filtered.length){const msg=document.createElement('p');msg.className='muted userCardsEmpty';msg.textContent=all.length?'条件に合うユーザーはいないよ。':'表示用プロフィールがまだないよ。ユーザーがStudy Logを開くと同期されるよ。';host.append(msg)}
+ // Keep the detail controls in the DOM even when a filter hides the selected user.
+ if(!selectedPanelEl.isConnected)$('panelParking').append(selectedPanelEl);
+
 }
 function paintGroups(){
  const host=$('groupAdminList');host.replaceChildren();
@@ -295,11 +353,17 @@ async function loadDirectory(epoch=sequence){
  finally{directoryBusy=false;$('refreshDirectory').disabled=false}
 }
 async function selectUser(uid){
- if(selectedBusy)return;
- selectedUid=uid;selectedData=null;draw();
- $('selectedUserPanel').hidden=false;$('selectedStats').hidden=true;$('selectedDates').hidden=true;
+ if(selectedBusy||editorBusy||correctingStudyTimeBusy||banBusy||roleBusy)return;
+ if(selectedUid===uid){closeSelected();return}
+ selectedUid=uid;selectedData=null;editingUser=null;correctingStudyTime=null;draw();
+ $('selectedStats').hidden=true;$('selectedDates').hidden=true;
  $('selectedFeedback').textContent='このユーザーの勉強時間を取得しています…';renderSelected();
+ prepareUserEditor();prepareStudyTimeEditor();
  await refreshSelected();
+}
+function closeSelected(){
+ if(selectedBusy||editorBusy||correctingStudyTimeBusy||banBusy||roleBusy)return;
+ selectedUid=null;selectedData=null;editingUser=null;correctingStudyTime=null;selectedPanelEl.hidden=true;draw();
 }
 async function refreshSelected(){
  if(!selectedUid||selectedBusy)return;
@@ -310,7 +374,7 @@ async function refreshSelected(){
   const snap=await getDoc(doc(db,'users',uid));
   if(epoch!==sequence||uid!==selectedUid)return;
   if(!snap.exists()){selectedData=null;throw Error('このユーザーの記録が見つからないよ。')}
-  selectedData=snap.data();renderSelected();$('selectedFeedback').textContent='このユーザーの記録を取得したよ！';
+  selectedData=snap.data();renderSelected();fillStudyTimeEditor();$('selectedFeedback').textContent='このユーザーの記録を取得したよ！';
  }catch(e){console.error('選択したユーザーの読み込み',e);if(epoch===sequence&&uid===selectedUid){$('selectedFeedback').textContent='記録を読み込めなかったよ：'+explainError(e);renderSelected()}}
  finally{selectedBusy=false;$('selectedRefresh').disabled=false}
 }
@@ -333,9 +397,11 @@ function renderSelected(){
  $('selectedState').textContent=bannedIds.has(uid)?'🔐 BAN中':'利用中';
  $('selectedGroup').textContent=`所属：${g?`${g.emoji} ${g.label}`:(profile.groupId?'以前の所属':'未設定')}`;
  $('selectedUid').textContent='UID：'+uid;
- $('selectedEditUser').hidden=protectedUser;
- $('selectedEditUser').textContent=owner?'ニックネーム・所属を変更':'所属を変更';
- $('selectedEditTime').disabled=!selectedData;
+ $('inlineUserEditor').hidden=protectedUser;
+ $('editUserTitle').textContent=owner?'✏️ 名前・所属を編集':'✏️ 所属を編集';
+ $('editUserSave').disabled=!selectedData||editorBusy;
+ $('inlineTimeEditor').classList.toggle('isLoading',!selectedData);
+ for(const id of ['editStudyTimeDate','editStudyTimeHours','editStudyTimeMinutes','editStudyTimeSave'])$(id).disabled=!selectedData||correctingStudyTimeBusy;
  $('selectedBan').hidden=!owner||protectedUser;
  $('selectedBan').textContent=bannedIds.has(uid)?'🔓 アクセス禁止を解除':'🔐 アクセス禁止';
  $('selectedRole').hidden=!owner||protectedUser;
@@ -353,7 +419,7 @@ function renderSelected(){
 }
 async function savePublicIdentity(uid,nickname,groupId){
  await setDoc(doc(db,'publicProfiles',uid),{nickname,groupId});
- profiles.set(uid,{nickname,groupId});draw();renderSelected();
+ profiles.set(uid,{nickname,groupId});draw();renderSelected();prepareUserEditor();
 }
 // User corrections read only the selected user's document; they do not query the ranking.
 let correctingStudyTime=null,correctingStudyTimeBusy=false;
@@ -364,17 +430,15 @@ function fillStudyTimeEditor(){
  $('editStudyTimeCurrent').textContent='現在の記録：'+fmt(total);
  $('editStudyTimeHours').value=String(Math.floor(total/60));$('editStudyTimeMinutes').value=String(total%60);
 }
-function openStudyTimeEditor(){
- if(!selectedUid||!selectedData)return;
+function prepareStudyTimeEditor(){
+ if(!selectedUid)return;
  const uid=selectedUid,profile=userProfile(uid);
  correctingStudyTime={uid,name:profile.nickname||uid};
- $('editStudyTimeTitle').textContent=displayedName(uid,profile)+' さんの勉強時間を訂正';
  $('editStudyTimeDate').value=today();$('editStudyTimeDate').max=today();
- $('editStudyTimeFeedback').textContent='';fillStudyTimeEditor();$('editStudyTimeDialog').showModal();
+ $('editStudyTimeFeedback').textContent='';fillStudyTimeEditor();
 }
 $('editStudyTimeDate').addEventListener('change',fillStudyTimeEditor);
-$('editStudyTimeCancel').onclick=()=>{if(!correctingStudyTimeBusy)$('editStudyTimeDialog').close()};
-$('editStudyTimeDialog').addEventListener('cancel',e=>{if(correctingStudyTimeBusy)e.preventDefault()});
+$('editStudyTimeCancel').onclick=()=>{if(!correctingStudyTimeBusy){$('editStudyTimeFeedback').textContent='';fillStudyTimeEditor()}};
 $('editStudyTimeSave').onclick=async()=>{
  if(correctingStudyTimeBusy||!correctingStudyTime||!auth.currentUser)return;
  const {uid,name}=correctingStudyTime,date=$('editStudyTimeDate').value;
@@ -395,32 +459,30 @@ $('editStudyTimeSave').onclick=async()=>{
   // Save to weeklyRankings by known document ID. No ranking documents are read here.
   try{
    await setDoc(doc(db,'weeklyRankings',week+'_'+uid),rankData,{merge:true});
-   feedback.textContent='訂正できたよ！';$('editStudyTimeDialog').close();status(name+' さんの勉強時間とランキングを更新したよ。');
+   feedback.textContent='✅ 訂正できたよ！';status(name+' さんの勉強時間とランキングを更新したよ。');
   }catch(rankError){console.error('ランキング更新に失敗',rankError);feedback.textContent='勉強時間は訂正できたよ！ただし公開ランキングの反映に失敗：'+explainError(rankError);status('勉強時間は訂正済み。ランキングのみ未反映だよ。')}
   await refreshSelected();
  }catch(e){console.error('勉強時間の訂正',e);feedback.textContent='勉強時間を訂正できなかったよ：'+explainError(e)}
- finally{correctingStudyTimeBusy=false;$('editStudyTimeSave').disabled=false;$('editStudyTimeCancel').disabled=false}
+ finally{correctingStudyTimeBusy=false;$('editStudyTimeSave').disabled=false;$('editStudyTimeCancel').disabled=false;if(selectedUid)renderSelected()}
 };
 let editingUser=null,editorBusy=false;
-function openUserEditor(){
- if(!selectedUid||!selectedData)return;
+function prepareUserEditor(){
+ if(!selectedUid)return;
  const uid=selectedUid,x=userProfile(uid),name=x.nickname,groupId=x.groupId||'';
  editingUser={uid,name,groupId};
- $('editUserTitle').textContent=displayedName(uid,x)+' さんの登録情報を変更';
  $('editUserName').value=name;$('editUserNameWrap').hidden=!owner;
  const selector=$('editUserGroup');selector.replaceChildren();
  for(const g of groups.filter(g=>g.active!==false||g.id===groupId)){const o=document.createElement('option');o.value=g.id;o.textContent=`${g.emoji} ${g.label}`;selector.append(o)}
  if(groupId&&!Array.from(selector.options).some(o=>o.value===groupId)){const o=document.createElement('option');o.value=groupId;o.textContent='以前の所属（'+groupId+'）';selector.append(o)}
- selector.value=groupId;$('editUserFeedback').textContent='';$('editUserDialog').showModal();
+ selector.value=groupId;$('editUserFeedback').textContent='';
 }
-$('editUserCancel').onclick=()=>{if(!editorBusy)$('editUserDialog').close()};
-$('editUserDialog').addEventListener('cancel',e=>{if(editorBusy)e.preventDefault()});
+$('editUserCancel').onclick=()=>{if(!editorBusy)prepareUserEditor()};
 $('editUserSave').onclick=async()=>{
  if(editorBusy||!editingUser||!auth.currentUser)return;
  const {uid,name,groupId}=editingUser;
  const nextName=owner?$('editUserName').value.normalize('NFKC').trim().toLowerCase():name,nextGroup=$('editUserGroup').value;
  const nameChanged=nextName!==name,groupChanged=nextGroup!==groupId;
- if(!nameChanged&&!groupChanged){$('editUserDialog').close();return}
+ if(!nameChanged&&!groupChanged){$('editUserFeedback').textContent='変更内容はまだないよ。';return}
  if(nameChanged&&(!nextName||[...nextName].length>24||nextName.includes('/')||['.','..','snow'].includes(nextName))){$('editUserFeedback').textContent='名前は1〜24文字。snow・/・「.」「..」は使えないよ。';return}
  if(groupChanged&&!groups.some(g=>g.id===nextGroup)){$('editUserFeedback').textContent='所属先を選択してね。';return}
  editorBusy=true;$('editUserSave').disabled=true;$('editUserCancel').disabled=true;$('editUserFeedback').textContent='保存しています…';
@@ -439,17 +501,17 @@ $('editUserSave').onclick=async()=>{
    });actualName=nextName;
   }
   if(groupChanged){await setDoc(doc(db,'users',uid),{groupId:nextGroup},{merge:true});actualGroup=nextGroup}
-  $('editUserDialog').close();
   try{await savePublicIdentity(uid,actualName,actualGroup)}catch(e){console.error('表示用プロフィールの同期',e);$('selectedFeedback').textContent='登録情報は変更したけど、公開表示の更新に失敗：'+explainError(e);await refreshSelected();return}
-  status('ユーザーの登録情報を変更したよ！');await refreshSelected();
+  $('editUserFeedback').textContent='✅ 登録情報を変更したよ！';status('ユーザーの登録情報を変更したよ！');await refreshSelected();
  }catch(e){console.error('登録情報の変更',e);$('editUserFeedback').textContent='変更できなかったよ：'+explainError(e)}
  finally{editorBusy=false;$('editUserSave').disabled=false;$('editUserCancel').disabled=false}
 };
+let banBusy=false,roleBusy=false;
 async function toggleBan(){
  const uid=selectedUid,p=userProfile(uid);if(!owner||!uid||uid===auth.currentUser?.uid||p.nickname==='snow')return;
  const banned=bannedIds.has(uid),name=displayedName(uid,p);
  if(!confirm(banned?`${name} のアクセス禁止を解除する？`: `${name} をアクセス禁止にする？\n過去の勉強記録は削除しないよ。`))return;
- $('selectedBan').disabled=true;
+ banBusy=true;$('selectedBan').disabled=true;
  try{
   const batch=writeBatch(db);
   if(banned){batch.delete(doc(db,'accessBans',uid));batch.delete(doc(db,'publicBanFlags',uid))}
@@ -459,19 +521,18 @@ async function toggleBan(){
   if(!banned){try{await deleteDoc(doc(db,'liveStudy',uid))}catch(e){console.warn('LIVE削除',e)}}
   draw();renderSelected();status(banned?'アクセス禁止を解除したよ！':'アクセス禁止にしたよ！');
  }catch(e){console.error('BAN',e);status('アクセス禁止を変更できなかったよ：'+explainError(e))}
- finally{$('selectedBan').disabled=false}
+ finally{banBusy=false;$('selectedBan').disabled=false}
 }
 async function changeRole(){
  const uid=selectedUid,name=userProfile(uid).nickname;if(!owner||!uid||uid===auth.currentUser?.uid||name==='snow')return;
  const enabled=adminIds.has(uid);
  if(!confirm(`${name} さんの副管理者権限を${enabled?'解除':'付与'}する？`))return;
- $('selectedRole').disabled=true;
+ roleBusy=true;$('selectedRole').disabled=true;
  try{const ref=doc(db,'admins',uid);if(enabled){await deleteDoc(ref);adminIds.delete(uid)}else{await setDoc(ref,{enabled:true});adminIds.add(uid)}renderSelected();status('副管理者権限を更新したよ！')}
  catch(e){status('副管理者権限を変更できなかったよ：'+explainError(e))}
- finally{$('selectedRole').disabled=false}
+ finally{roleBusy=false;$('selectedRole').disabled=false}
 }
-$('selectedEditUser').onclick=openUserEditor;
-$('selectedEditTime').onclick=openStudyTimeEditor;
+$('selectedClose').onclick=closeSelected;
 $('selectedBan').onclick=()=>void toggleBan();
 $('selectedRole').onclick=()=>void changeRole();
 $('selectedRefresh').onclick=()=>void refreshSelected();
@@ -496,7 +557,7 @@ $('signout').onclick=async()=>{if(!confirm('Googleアカウントからログア
 onAuthStateChanged(auth,async u=>{
  const epoch=++sequence;
  owner=false;adminIds=new Set();bannedIds=new Set();profiles=new Map();groups=[];selectedUid=null;selectedData=null;selectedBusy=false;directoryBusy=false;
- $('panel').style.display='none';$('selectedUserPanel').hidden=true;$('accessInfo').textContent='';
+ $('panel').style.display='none';selectedPanelEl.hidden=true;$('accessInfo').textContent='';
  $('loginPanel').classList.remove('isVerified');$('login').style.display='none';$('signout').style.display=u&&!u.isAnonymous?'inline-block':'none';
  if(!u){status('Study Logを開いてから管理者ページにアクセスしてね。snowはGoogle認証でログインしてね。');$('login').style.display='inline-block';return}
  try{
