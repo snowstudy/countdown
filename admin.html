@@ -117,6 +117,16 @@ html,body{max-width:100%;overflow-x:clip}
 .banUserBtn.isBanned{background:#fbe9ed;border-color:#d38a9a}
 .banUserBtn:disabled{opacity:.5;cursor:wait}
 @media(max-width:720px){.userNameWithGroup{flex-wrap:wrap}.banUserBtn{margin-left:0}}
+
+/* Administrators' study-time correction dialog and responsive action. */
+.adminTimeFields{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:0}
+.adminTimeFields > *{min-width:0}
+.editStudyTimeBtn{display:block;margin-top:8px;max-width:100%;white-space:normal;border:1px solid #dfacc7;background:#fff9fc;color:#934d75;padding:6px 9px;border-radius:9px;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.editStudyTimeBtn:hover{background:#fbe8f2}
+.editStudyTimeBtn:disabled{opacity:.5;cursor:default}
+#editStudyTimeDialog .editUserModal{min-width:0}
+#editStudyTimeDialog input{max-width:100%;box-sizing:border-box}
+
 </style><style>.adminTable{width:100%;border-collapse:collapse}.adminTable th,.adminTable td{padding:10px 8px;border-bottom:1px solid #f0c7d7;text-align:left}.adminTable th{color:#b34f78}.adminTable{font-size:14px}.adminTable td{word-break:break-word}#login,#signout{margin:10px 5px}#panel{display:none}#accessInfo{white-space:pre-wrap;word-break:break-all}a{color:#b34f78}.uidLabel{font-size:10px;color:#936e84;overflow-wrap:anywhere;display:block;margin-top:3px}.roleBtn{font-family:inherit;padding:6px 10px;border:1px solid #df9dbb;border-radius:12px;background:#fff2f8;color:#a34c72;cursor:pointer}.roleBtn:disabled{opacity:.5;cursor:not-allowed}.renameBtn{display:block;margin-top:6px;padding:4px 9px;font-size:12px;background:#fff8fb}
 .goalCell{min-width:170px;max-width:290px}.goalText{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;max-height:4.8em;overflow:hidden}.goalText.isOpen{max-height:none}.goalExpand{border:none;background:transparent;color:#a34c72;text-decoration:underline;cursor:pointer;font-family:inherit;margin-top:3px;padding:2px 0}.goalEmpty{font-size:12px;color:#9d8391}
 </style><style id="user-name-group-style">
@@ -162,6 +172,20 @@ html,body{max-width:100%;overflow-x:clip}
 <p class="editUserFeedback" id="editUserFeedback" role="status"></p>
 <div class="editUserActions"><button class="roleBtn" id="editUserCancel" type="button">キャンセル</button><button class="roleBtn" id="editUserSave" type="button">変更を保存</button></div>
 </div>
+</dialog>
+<dialog class="editUserDialog" id="editStudyTimeDialog" aria-labelledby="editStudyTimeTitle">
+  <div class="editUserModal">
+    <h2 id="editStudyTimeTitle">勉強時間を訂正</h2>
+    <p class="editUserHelp">選んだ日付の合計時間を上書きするよ。過去の日付も訂正できるよ。</p>
+    <label class="editField">訂正する日付<input type="date" id="editStudyTimeDate"/></label>
+    <p class="editUserHelp" id="editStudyTimeCurrent">現在の記録：0分</p>
+    <div class="adminTimeFields">
+      <label class="editField">時間<input type="number" min="0" max="24" step="1" inputmode="numeric" id="editStudyTimeHours" value="0"/></label>
+      <label class="editField">分<input type="number" min="0" max="59" step="1" inputmode="numeric" id="editStudyTimeMinutes" value="0"/></label>
+    </div>
+    <p class="editUserFeedback" id="editStudyTimeFeedback" role="status" aria-live="polite"></p>
+    <div class="editUserActions"><button class="roleBtn" id="editStudyTimeCancel" type="button">キャンセル</button><button class="roleBtn" id="editStudyTimeSave" type="button">訂正を保存</button></div>
+  </div>
 </dialog>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
@@ -273,7 +297,13 @@ function draw(records){
   const tdGroup=document.createElement('td');tdGroup.dataset.label='所属オプチャ';
   const groupInfo=groupById().get(x.groupId);tdGroup.textContent=groupInfo?`${groupInfo.emoji} ${groupInfo.label}`:(x.groupId?'旧所属・不明':'未設定');
   tr.append(tdGroup);
-  for(const [label,value] of [['今日',fmt(x.today)],['今週',fmt(x.week)],['今月',fmt(x.month)],['総計',fmt(x.total)]]){const td=document.createElement('td');td.dataset.label=label;td.textContent=value;tr.append(td)}
+  for(const [label,value] of [['今日',fmt(x.today)],['今週',fmt(x.week)],['今月',fmt(x.month)],['総計',fmt(x.total)]]){const td=document.createElement('td');td.dataset.label=label;td.textContent=value;
+    if(label==='今日'){
+      const adjust=document.createElement('button');adjust.type='button';adjust.className='editStudyTimeBtn';adjust.textContent='勉強時間を訂正';
+      adjust.setAttribute('aria-label',x.name+'さんの勉強時間を訂正');
+      adjust.onclick=()=>openStudyTimeEditor(x.uid,x.name);td.append(adjust);
+    }
+    tr.append(td)}
    const goalTd=document.createElement('td');goalTd.className='goalCell';goalTd.dataset.label='🎯 大きな目標';
    if(x.goal.trim()){
      const goalText=document.createElement('div');goalText.className='goalText';goalText.textContent=x.goal;
@@ -298,6 +328,65 @@ function draw(records){
  }
  if(!visible.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=owner?8:7;td.textContent=summary.length?'条件に合うユーザーはいません。':'登録された記録はまだありません。';tr.append(td);body.append(tr)}
 }
+// Administrative corrections can target any existing date. Edits also write that week's
+// public aggregate atomically, so the leaderboard updates when the student is offline.
+let correctingStudyTime=null,correctingStudyTimeBusy=false;
+function adminDayTotal(uid,date){
+ const found=lastRecords.find(d=>d.id===uid),days=found?.data()?.days||{};
+ return Math.max(0,Math.floor(Number(days[date])||0));
+}
+function fillStudyTimeEditor(){
+ if(!correctingStudyTime)return;
+ const date=$('editStudyTimeDate').value,total=adminDayTotal(correctingStudyTime.uid,date);
+ $('editStudyTimeCurrent').textContent='現在の記録：'+fmt(total);
+ $('editStudyTimeHours').value=String(Math.floor(total/60));
+ $('editStudyTimeMinutes').value=String(total%60);
+}
+function openStudyTimeEditor(uid,name){
+ correctingStudyTime={uid,name};
+ $('editStudyTimeTitle').textContent=name+' さんの勉強時間を訂正';
+ $('editStudyTimeDate').value=today();$('editStudyTimeDate').max=today();
+ $('editStudyTimeFeedback').textContent='';fillStudyTimeEditor();
+ $('editStudyTimeDialog').showModal();
+}
+$('editStudyTimeDate').addEventListener('change',fillStudyTimeEditor);
+$('editStudyTimeCancel').onclick=()=>{if(!correctingStudyTimeBusy)$('editStudyTimeDialog').close()};
+$('editStudyTimeDialog').addEventListener('cancel',e=>{if(correctingStudyTimeBusy)e.preventDefault()});
+$('editStudyTimeSave').onclick=async()=>{
+ if(correctingStudyTimeBusy||!correctingStudyTime||!auth.currentUser)return;
+ const {uid,name}=correctingStudyTime,date=$('editStudyTimeDate').value;
+ const h=Number($('editStudyTimeHours').value),m=Number($('editStudyTimeMinutes').value);
+ const feedback=$('editStudyTimeFeedback');
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>today()){
+  feedback.textContent='今日以前の日付を選んでね。';return;
+ }
+ if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||h>24||m<0||m>59||(h===24&&m!==0)){
+  feedback.textContent='0分〜24時間の範囲で入力してね。';return;
+ }
+ const newTotal=h*60+m;
+ if(!confirm(`${name} さんの ${date} の勉強時間を ${fmt(newTotal)} に訂正する？\n※その日の合計を上書きするよ。`))return;
+ correctingStudyTimeBusy=true;$('editStudyTimeSave').disabled=true;$('editStudyTimeCancel').disabled=true;
+ feedback.textContent='訂正しています…';
+ try{
+  const parts=date.split('-').map(Number),week=mondayOf(new Date(parts[0],parts[1]-1,parts[2]));
+  const userRef=doc(db,'users',uid),rankRef=doc(db,'weeklyRankings',week+'_'+uid);
+  await runTransaction(db,async tx=>{
+    const [userSnap,rankSnap]=await Promise.all([tx.get(userRef),tx.get(rankRef)]);
+    if(!userSnap.exists()||userSnap.data().nicknameLocked!==true)throw Error('ユーザー情報が見つからないよ。');
+    const userData=userSnap.data(),days={...(userData.days||{})};
+    if(newTotal===0)delete days[date];else days[date]=newTotal;
+    const total=Object.entries(days).filter(([key])=>/^\d{4}-\d{2}-\d{2}$/.test(key)&&mondayOf(new Date(+key.slice(0,4),+key.slice(5,7)-1,+key.slice(8,10)))===week)
+      .reduce((sum,[,value])=>sum+Math.max(0,Math.min(1440,Math.floor(Number(value)||0))),0);
+    tx.update(userRef,{days});
+    const rankData={uid,weekStart:week,nickname:userData.nickname,groupId:userData.groupId||'',minutes:total};
+    if(rankSnap.exists())tx.update(rankRef,{nickname:rankData.nickname,groupId:rankData.groupId,minutes:total});
+    else tx.set(rankRef,rankData);
+  });
+  feedback.textContent='訂正できたよ！';$('editStudyTimeDialog').close();
+  status(name+' さんの '+date+' の記録を '+fmt(newTotal)+' に訂正したよ。ランキングも更新したよ！');
+ }catch(e){console.error('勉強時間の管理者訂正',e);feedback.textContent='訂正できなかったよ：'+(e.message||'Firestoreルールを確認してね')}
+ finally{correctingStudyTimeBusy=false;$('editStudyTimeSave').disabled=false;$('editStudyTimeCancel').disabled=false}
+};
 function fallbackGroupEmoji(id){return id==='pink'?'🩷':id==='blue'?'💙':id?'💜':'❔'}
 let editingUser=null,editorBusy=false;
 function openUserEditor(uid,name,groupId){

@@ -128,6 +128,18 @@ body.studyBanned > main,body.studyVerifying > main{display:none!important}
 body.studyBanned #banNotice,body.studyVerifying #banNotice{display:block}
 #banNotice h2{margin:0 0 14px;color:#a33c6a}
 #banNotice p{line-height:1.8}
+
+/* Edit today's saved study minutes (separate from adding time). */
+.studyCorrection{box-sizing:border-box;margin-top:17px;padding:15px;border:1px solid #edcbdc;border-radius:15px;background:rgba(255,255,255,.76);max-width:100%}
+.studyCorrection h3{font-size:16px;margin:0 0 7px;color:var(--accent,#a4517a)}
+.studyCorrection p{margin:7px 0 10px}
+.studyCorrection .correctionInputs{align-items:center;gap:10px}
+.studyCorrection .correctionInputs .manualUnit{max-width:145px;min-width:0}
+.studyCorrection .correctionInputs input{width:74px;max-width:100%;box-sizing:border-box}
+.correctionFeedback{font-size:13px;font-weight:700;line-height:1.6;overflow-wrap:anywhere}
+.correctionFeedback.isError{color:#b42342}
+@media(max-width:480px){.studyCorrection{padding:12px}.studyCorrection .correctionInputs{gap:8px}.studyCorrection .correctionInputs button{width:100%}}
+
 </style></head><body><section id="banNotice" role="alert" aria-live="assertive"><h2>🔒 このアカウントは利用停止中です</h2><p>管理者によってStudy Logへのアクセスが制限されています。確認が必要な場合は、オプチャの管理者へ連絡してね。</p><p>過去の記録は削除されていません。</p></section><main class="wrap">
 <header class="header">
 <div class="topReturn"><a aria-label="カウントダウンページへ戻る" class="returnCountdown returnCountdownTop" href="index.html"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
@@ -146,7 +158,18 @@ body.studyBanned #banNotice,body.studyVerifying #banNotice{display:block}
 <section class="panel" id="goalPanel"><h2>🎯 大きな目標</h2><p class="muted">目指していることを書いておこう！目標は管理者にも表示されるよ。</p><textarea id="goal" maxlength="2000" placeholder="例：志望校に合格する！"></textarea><p><button class="btn alt" id="saveGoal" type="button">目標を保存</button></p></section>
 <div class="subgrid"><section class="panel"><h2>☑ 今日のToDo</h2><div class="formrow"><input id="newTodo" maxlength="120" placeholder="今日やること" type="text"/><button class="btn" id="addTodo">追加</button></div><div id="todoList" style="margin-top:12px"></div><p class="muted" id="todoProgress">0 / 0 完了</p><div class="bar"><div id="todoBar"></div></div></section></div>
 <section class="panel"><h2>📝 今日の振り返り</h2><div class="reflectionDateRow"><label for="reflectionDate">📅 振り返る日付 <input aria-label="振り返りを表示する日付" id="reflectionDate" type="date"/></label><button class="btn alt" id="reflectionToday" type="button">今日に戻す</button></div><p class="reflectionDateHint" id="reflectionDateHint">選択した日の記録を表示・編集できるよ。</p><label>今日できたこと<textarea id="good" placeholder="今日頑張れたことを書こう"></textarea></label><label>反省・明日の改善<textarea id="improve" placeholder="明日は何を意識する？"></textarea></label><p><button class="btn alt" id="saveReflection">振り返りを保存</button></p><p class="muted">振り返りは選択した日付ごとに、この端末内に保存されるよ。ToDoは今日の分を表示しているよ。</p></section>
-<section class="panel"><h2>📅 勉強時間の履歴</h2><div class="muted" id="history">記録はまだありません。</div></section>
+<section class="panel"><h2>📅 勉強時間の履歴</h2><div class="muted" id="history">記録はまだありません。</div>
+<div class="studyCorrection" aria-labelledby="todayCorrectionTitle">
+  <h3 id="todayCorrectionTitle">✏️ 今日の勉強時間を訂正</h3>
+  <p class="muted">今日の合計を入力し直せるよ。<strong id="correctTodayCurrent">現在 0分</strong></p>
+  <div class="formrow correctionInputs">
+    <label class="manualUnit"><input type="number" min="0" max="24" step="1" inputmode="numeric" id="correctTodayHours" aria-label="訂正後の時間" value="0"/><span>時間</span></label>
+    <label class="manualUnit"><input type="number" min="0" max="59" step="1" inputmode="numeric" id="correctTodayMinutes" aria-label="訂正後の分" value="0"/><span>分</span></label>
+    <button type="button" class="btn" id="correctTodaySave">今日の合計を訂正</button>
+  </div>
+  <p class="correctionFeedback" id="correctTodayFeedback" role="status" aria-live="polite"></p>
+  <p class="muted">本人が訂正できるのは当日分だけ。過去の記録の訂正は管理者にお願いしてね。</p>
+</div></section>
 <footer class="footer"><a class="returnCountdown" href="index.html"><span aria-hidden="true">←</span> カウントダウンに戻る</a></footer>
 </main>
 <script type="module">
@@ -264,10 +287,42 @@ const getDay=(d)=>{local.days??={};local.days[d]??={todos:[],good:'',improve:''}
 const persist=()=>localStorage.setItem(localKey,JSON.stringify(local));
 const setStatus=(msg,error=false)=>{$('status').textContent=msg;$('status').className='status'+(error?' error':'')};
 const dateKey=today();$('manualDate').value=dateKey;let reflectionDate=dateKey;$('reflectionDate').value=reflectionDate;
-function renderStats(){const days=remote.days||{},d=today(),now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),now.getDate());start.setDate(start.getDate()-((start.getDay()+6)%7));const weekStart=`${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}-${String(start.getDate()).padStart(2,'0')}`;const month=d.slice(0,7);$('todayTotal').textContent=fmt(days[d]);$('weekTotal').textContent=fmt(Object.entries(days).filter(([k])=>k>=weekStart&&k<=d).reduce((a,[,v])=>a+Number(v||0),0));$('monthTotal').textContent=fmt(Object.entries(days).filter(([k])=>k.startsWith(month)&&k<=d).reduce((a,[,v])=>a+Number(v||0),0));const rows=Object.entries(days).filter(([,v])=>Number(v)>0).sort(([a],[b])=>b.localeCompare(a)).slice(0,60);$('history').innerHTML=rows.length?`<table class="hist"><thead><tr><th>日付</th><th>勉強時間</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td>${k}</td><td>${fmt(v)}</td></tr>`).join('')}</tbody></table>`:'記録はまだありません。';}
+function renderStats(){const days=remote.days||{},d=today(),now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),now.getDate());start.setDate(start.getDate()-((start.getDay()+6)%7));const weekStart=`${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}-${String(start.getDate()).padStart(2,'0')}`;const month=d.slice(0,7);$('todayTotal').textContent=fmt(days[d]);$('weekTotal').textContent=fmt(Object.entries(days).filter(([k])=>k>=weekStart&&k<=d).reduce((a,[,v])=>a+Number(v||0),0));$('monthTotal').textContent=fmt(Object.entries(days).filter(([k])=>k.startsWith(month)&&k<=d).reduce((a,[,v])=>a+Number(v||0),0));const rows=Object.entries(days).filter(([,v])=>Number(v)>0).sort(([a],[b])=>b.localeCompare(a)).slice(0,60);$('history').innerHTML=rows.length?`<table class="hist"><thead><tr><th>日付</th><th>勉強時間</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td>${k}</td><td>${fmt(v)}</td></tr>`).join('')}</tbody></table>`:'記録はまだありません。';
+ const total=Math.max(0,Math.floor(Number(days[d])||0));
+ $('correctTodayCurrent').textContent='現在 '+fmt(total);
+ if(document.activeElement!==$('correctTodayHours')&&document.activeElement!==$('correctTodayMinutes')){
+  $('correctTodayHours').value=String(Math.floor(total/60));
+  $('correctTodayMinutes').value=String(total%60);
+ }
+}
 function renderLocal(){const d=getDay(today()),reflection=getDay(reflectionDate);$('goal').value=(typeof remote.goal==='string'?remote.goal:local.goal)||'';$('good').value=reflection.good||'';$('improve').value=reflection.improve||'';$('reflectionDateHint').textContent=reflectionDate===today()?'今日の記録を表示中。別の日を選ぶと過去の記録も見返せるよ。':reflectionDate+' の振り返りを表示中。編集して保存もできるよ。';const list=$('todoList');list.replaceChildren();d.todos.forEach((t,i)=>{const row=document.createElement('div');row.className='todo'+(t.done?' done':'');const check=document.createElement('input');check.type='checkbox';check.checked=!!t.done;check.addEventListener('change',()=>{t.done=check.checked;persist();renderLocal()});const span=document.createElement('span');span.textContent=t.text;const del=document.createElement('button');del.className='tiny';del.textContent='削除';del.addEventListener('click',()=>{d.todos.splice(i,1);persist();renderLocal()});row.append(check,span,del);list.append(row)});const done=d.todos.filter(t=>t.done).length;$('todoProgress').textContent=`${done} / ${d.todos.length} 完了`;$('todoBar').style.width=(d.todos.length?done/d.todos.length*100:0)+'%'}
 async function addTime(date,mins){if(!userRef)throw Error('準備ができるまで待ってね');if(!remote.nicknameLocked)throw Error('先にニックネームを登録してね');if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isSafeInteger(mins)||mins<1||mins>1440)throw Error('時間は1分〜24時間で入力してね');await runTransaction(db,async tx=>{const snap=await tx.get(userRef);const data=snap.exists()?snap.data():{};const days={...(data.days||{})};const already=Math.max(0,Math.floor(Number(days[date])||0));if(already+mins>1440){const remaining=Math.max(0,1440-already);throw Error(`1日に記録できる勉強時間は合計24時間までだよ！（あと${Math.floor(remaining/60)}時間${remaining%60}分追加できるよ）`)}days[date]=already+mins;tx.set(userRef,{days},{merge:true})})}
 async function guard(button,fn,feedbackId=null){if(busy)return;busy=true;button.disabled=true;const feedback=feedbackId?$(feedbackId):null;if(feedback){feedback.textContent='';feedback.className='timer-feedback'}try{await fn();if(feedback){feedback.textContent='保存できたよ！ ☁';feedback.className='timer-feedback'}else setStatus('保存できたよ！ ☁')}catch(e){console.error(e);if(feedback){feedback.textContent='保存できなかったよ：'+(e.message||'接続を確認してね');feedback.className='timer-feedback error'}else setStatus('保存できなかったよ：'+(e.message||'接続を確認してね'),true)}finally{busy=false;button.disabled=false}}
+// Same-day correction: replace today's total; past-date corrections are admin-only in the UI.
+$('correctTodaySave').onclick=async()=>{
+ const btn=$('correctTodaySave'),feedback=$('correctTodayFeedback');
+ if(busy)return;
+ const hours=Number($('correctTodayHours').value),minutes=Number($('correctTodayMinutes').value);
+ if(!Number.isInteger(hours)||!Number.isInteger(minutes)||hours<0||hours>24||minutes<0||minutes>59||(hours===24&&minutes!==0)){
+  feedback.textContent='0分〜24時間の範囲で入力してね（24時間の場合は0分）。';feedback.className='correctionFeedback isError';return;
+ }
+ if(!userRef||!remote.nicknameLocked){feedback.textContent='先にニックネームを登録してね。';feedback.className='correctionFeedback isError';return}
+ const editedDate=today(),newTotal=hours*60+minutes;
+ if(!confirm(`${editedDate} の勉強時間を ${fmt(newTotal)} に訂正する？\n※今回の時間を加算するのではなく、今日の合計を置き換えるよ。`))return;
+ busy=true;btn.disabled=true;feedback.textContent='訂正しています…';feedback.className='correctionFeedback';
+ try{
+  await runTransaction(db,async tx=>{
+   if(today()!==editedDate)throw Error('日付が変わったため、ページを更新してね。');
+   const snap=await tx.get(userRef);
+   if(!snap.exists()||snap.data().nicknameLocked!==true)throw Error('ユーザー情報が見つからないよ。');
+   const days={...(snap.data().days||{})};
+   if(newTotal===0)delete days[editedDate];else days[editedDate]=newTotal;
+   tx.update(userRef,{days});
+  });
+  feedback.textContent='今日の合計を訂正したよ！ランキングにも順次反映されるよ。';
+ }catch(e){console.error(e);feedback.textContent='訂正できなかったよ：'+(e.message||'通信状況を確認してね');feedback.className='correctionFeedback isError'}
+ finally{busy=false;btn.disabled=false}
+};
 $('saveName').onclick=()=>guard($('saveName'),async()=>{
  if(!userRef)throw Error('接続中だよ');
  const name=$('nickname').value.normalize('NFKC').trim().toLowerCase();
@@ -393,6 +448,7 @@ function startStudySession(u){
   $('nickname').readOnly=!!remote.nicknameLocked;
   $('saveName').style.display=remote.nicknameLocked?'none':'';
   $('addManual').disabled=!remote.nicknameLocked;
+  $('correctTodaySave').disabled=!remote.nicknameLocked;
    $('timerSave').disabled=!remote.nicknameLocked;
    $('saveGoal').disabled=!remote.nicknameLocked;
    renderLocal();
