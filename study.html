@@ -146,10 +146,10 @@ body.studyBanned #banNotice,body.studyVerifying #banNotice{display:block}
 <section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" maxlength="24" placeholder="ニックネーム（管理者に表示されます）" type="text"/><button class="btn" id="saveName">名前を保存</button></div><p class="muted" style="margin:7px 0 11px">🩷 ニックネームはオプチャで使っている名前と同じにしてね！</p><div class="groupRegister"><label for="groupSelect">🏷 所属オプチャ</label><select id="groupSelect"><option value="">オプチャを読み込み中…</option></select><p class="muted" id="groupHint">所属オプチャは初回登録時に選んでね。登録後の変更は管理者へお願いしてね！</p></div><div class="hint" id="snowVerify" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button class="btn alt" id="googleVerify" type="button">Googleで本人確認する</button></div><div class="status" id="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
 <section class="panel"><h2>📚 勉強時間のまとめ</h2><div class="grid"><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section>
 
-<section aria-label="みんなの勉強状況" class="panel" id="livePanel"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE</span></div><p class="liveIntro">タイマーを使っている人が表示されるよ！名前・所属オプチャの絵文字・計測時間が共有されるよ。</p><p aria-live="polite" class="liveCount" id="liveCount">確認中…</p><div class="liveMembers" id="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section><section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div class="timer" id="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button class="btn" id="timerStart">スタート</button><button class="btn alt" id="timerPause">一時停止</button><button class="btn" id="timerSave">記録して終了</button><button class="btn danger" id="timerReset">リセット</button></div><div aria-live="polite" class="timer-feedback" id="timerFeedback" role="status"></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"/></label><label class="manualUnit"><input aria-label="追加する時間" id="hours" inputmode="numeric" max="24" min="0" type="number" value="1"/><span>時間</span></label><label class="manualUnit"><input aria-label="追加する分" id="minutes" inputmode="numeric" max="59" min="0" type="number" value="0"/><span>分</span></label></div><p><button class="btn" id="addManual">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
+<section aria-label="みんなの勉強状況" class="panel" id="livePanel"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE（手動更新）</span></div><p class="liveIntro">読み取りを節約するため、LIVEは手動更新だよ！タイマーを使っている人の名前・所属・計測時間を表示するよ（状況の反映には数分かかる場合があるよ）。</p><button class="btn alt" id="liveRefresh" type="button">🔄 LIVEを更新</button><p aria-live="polite" class="liveCount" id="liveCount">確認中…</p><div class="liveMembers" id="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section><section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div class="timer" id="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button class="btn" id="timerStart">スタート</button><button class="btn alt" id="timerPause">一時停止</button><button class="btn" id="timerSave">記録して終了</button><button class="btn danger" id="timerReset">リセット</button></div><div aria-live="polite" class="timer-feedback" id="timerFeedback" role="status"></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"/></label><label class="manualUnit"><input aria-label="追加する時間" id="hours" inputmode="numeric" max="24" min="0" type="number" value="1"/><span>時間</span></label><label class="manualUnit"><input aria-label="追加する分" id="minutes" inputmode="numeric" max="59" min="0" type="number" value="0"/><span>分</span></label></div><p><button class="btn" id="addManual">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
 <section aria-label="みんなの週間勉強ランキング" class="panel" id="publicRanking">
 <div class="liveHeader"><h2 style="margin:0">🏆 週間勉強ランキング</h2><span class="rankLabel">WEEKLY RANKING</span></div>
-<p class="muted">月曜〜日曜の記録だよ！ニックネーム・所属の絵文字・合計勉強時間が表示されるよ。</p>
+<p class="muted">月曜〜日曜の記録だよ！通信節約のため、表示・更新はボタンを押したときだけ行うよ。</p><button class="btn alt" id="rankRefresh" type="button">🏆 ランキングを表示・更新</button>
 <div class="rankTools"><button class="btn alt" id="rankPrev" type="button">← 前の週</button><strong id="rankPeriod">今週</strong><button class="btn alt" id="rankNext" type="button">次の週 →</button>
 <select aria-label="所属オプチャでランキングを絞り込み" id="rankGroupFilter"><option value="all">すべての所属</option></select></div>
 <div aria-live="polite" class="rankRows" id="rankRows">ランキングを読み込み中…</div>
@@ -175,7 +175,7 @@ body.studyBanned #banNotice,body.studyVerifying #banNotice{display:block}
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, onSnapshot, runTransaction, setDoc, deleteDoc, collection, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, getDocs, onSnapshot, runTransaction, setDoc, deleteDoc, collection, query, where, orderBy, limit, Timestamp, serverTimestamp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
 const firebaseConfig={apiKey:'AIzaSyDAfU0ISnB1aAAsrNeB1vKCflqIQ-MiiGk',authDomain:'snowstudy-3fd16.firebaseapp.com',projectId:'snowstudy-3fd16',storageBucket:'snowstudy-3fd16.firebasestorage.app',messagingSenderId:'253202554905',appId:'1:253202554905:web:dd812c84a34e8b369dca88',measurementId:'G-2995QPBZKF'};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id),today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
@@ -190,6 +190,23 @@ function groupEmoji(id){return groupMap().get(id)?.emoji||(id?'💜':'❔')}
 function groupName(id){return groupMap().get(id)?.label||(id?'その他・以前の所属':'未設定')}
 // Minimal public identity map. The users collection stays private to administrators.
 let publicProfiles=new Map(),publicProfilesUnsub=null,profileSyncFingerprint='';
+// Fetch only profiles that are actually displayed (not the full membership list).
+let profileFetches=new Set(),profileFetched=new Set(),lastIdentityReload=0;
+function refreshPublicIdentityCache(){
+ if(Date.now()-lastIdentityReload<300000)return;
+ publicProfiles.clear();profileFetched.clear();lastIdentityReload=Date.now();
+}
+function fetchVisibleProfile(uid){
+ if(!uid || profileFetched.has(uid) || profileFetches.has(uid) || !auth.currentUser)return;
+ profileFetches.add(uid);
+ getDoc(doc(db,'publicProfiles',uid)).then(snap=>{
+  if(snap.exists())publicProfiles.set(uid,snap.data());
+  renderLive();renderPublicRanking();
+ }).catch(e=>console.error('表示中のニックネーム取得',e)).finally(()=>{
+  profileFetches.delete(uid);profileFetched.add(uid);
+ });
+}
+
 // A public UID-only ban marker keeps banned members out of LIVE and weekly rankings.
 let hiddenBanIds=new Set(),hiddenBanUnsub=null,hiddenBanReady=false;
 function attachHiddenBans(){
@@ -203,10 +220,7 @@ function attachHiddenBans(){
 function publicIdentity(uid,fallback){return publicProfiles.get(uid)||{nickname:fallback?.nickname||'',groupId:fallback?.groupId||''}}
 function attachPublicProfiles(){
  if(publicProfilesUnsub){publicProfilesUnsub();publicProfilesUnsub=null}
- publicProfilesUnsub=onSnapshot(collection(db,'publicProfiles'),snap=>{
-  publicProfiles=new Map(snap.docs.map(d=>[d.id,d.data()]));
-  renderLive();renderPublicRanking();
- },e=>console.error('公開プロフィール取得',e));
+ publicProfiles=new Map();profileFetched=new Set();profileFetches=new Set();lastIdentityReload=Date.now();
 }
 function ensureOwnPublicProfile(){
  if(!user?.uid||!remote.nicknameLocked||!remote.nickname)return;
@@ -214,6 +228,7 @@ function ensureOwnPublicProfile(){
  const fingerprint=[uid,nickname,groupId].join('|');
  if(profileSyncFingerprint===fingerprint)return;
  profileSyncFingerprint=fingerprint;
+ publicProfiles.set(uid,{nickname,groupId});profileFetched.add(uid);
  setDoc(doc(db,'publicProfiles',uid),{nickname,groupId})
   .catch(e=>{profileSyncFingerprint='';console.error('公開プロフィール同期',e)});
 }
@@ -247,7 +262,8 @@ function syncRecentRankings(){if(!user?.uid||!remote.nicknameLocked)return;const
  for(const week of weeks){const fingerprint=[user.uid,week,remote.nickname,remote.groupId,rankMinutes(remote.days,week)].join('|');if(rankSynced.has(fingerprint))continue;rankSynced.add(fingerprint);void syncRankForWeek(week)}
 }
 // Public weekly leaderboard: only nickname, group ID and aggregate minutes are read.
-let rankOffset=0,rankEntries=[],rankUnsub=null;
+let rankOffset=0,rankEntries=[],rankUnsub=null,rankLoaded=false,rankLoading=false,rankFetchEpoch=0;
+const rankCache=new Map(),RANK_COOLDOWN_MS=60000;
 function rankWeek(){const d=new Date();d.setDate(d.getDate()+7*rankOffset);return mondayOf(d)}
 function renderRankGroupOptions(){
  const el=$('rankGroupFilter'),old=el.value;el.replaceChildren();
@@ -258,12 +274,13 @@ function renderRankGroupOptions(){
 function renderPublicRanking(){
  const week=rankWeek(),end=parseLocalDay(week);end.setDate(end.getDate()+6);
  $('rankPeriod').textContent=`${week.slice(5).replace('-','/')}〜${String(end.getMonth()+1).padStart(2,'0')}/${String(end.getDate()).padStart(2,'0')}`;
- $('rankPrev').disabled=rankOffset<=-52;$('rankNext').disabled=rankOffset>=0;
+ $('rankPrev').disabled=rankLoading||rankOffset<=-52;$('rankNext').disabled=rankLoading||rankOffset>=0;
  const host=$('rankRows');host.replaceChildren();
+ if(!rankLoaded){host.textContent=rankLoading?'ランキングを取得中…':'読み取り節約のため「ランキングを表示・更新」を押してね！';return}
  const g=$('rankGroupFilter').value;
  const rows=(hiddenBanReady?rankEntries:[]).map(x=>({...x,...publicIdentity(x.uid,x)})).filter(x=>!hiddenBanIds.has(x.uid)&&x.weekStart===week&&Number(x.minutes)>0&&(g==='all'||x.groupId===g)).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja')).slice(0,5);
  if(!rows.length){const p=document.createElement('div');p.className='rankEmpty';p.textContent='この週の勉強記録はまだないよ！';host.append(p);return}
- rows.forEach((x,i)=>{const row=document.createElement('div');row.className='rankRow';
+ rows.forEach((x,i)=>{void fetchVisibleProfile(x.uid);const row=document.createElement('div');row.className='rankRow';
  const pos=document.createElement('span');pos.className='rankPosition';pos.textContent=i<3?['🥇','🥈','🥉'][i]:`${i+1}位`;
  const person=document.createElement('span');person.className='rankPerson';const g=groupMap().get(x.groupId);
  const name=document.createElement('strong');name.textContent=`${groupEmoji(x.groupId)} ${String(x.nickname||'未設定')}`;
@@ -271,12 +288,33 @@ function renderPublicRanking(){
  const time=document.createElement('span');time.className='rankTime';time.textContent=fmt(Number(x.minutes)||0);row.append(pos,person,time);host.append(row)})
 }
 function attachPublicRanking(){
- if(rankUnsub){rankUnsub();rankUnsub=null}rankEntries=[];renderPublicRanking();
- if(!auth.currentUser)return;
- rankUnsub=onSnapshot(query(collection(db,'weeklyRankings'),where('weekStart','==',rankWeek())),snap=>{rankEntries=snap.docs.map(d=>d.data());renderPublicRanking()},err=>{console.error('週間ランキング取得',err);$('rankRows').textContent='ランキングを取得できなかったよ。Firestoreルールを確認してね。'});
+ if(rankUnsub){rankUnsub();rankUnsub=null}
+ ++rankFetchEpoch;rankEntries=[];rankLoaded=false;rankLoading=false;renderPublicRanking();
 }
-$('rankPrev').onclick=()=>{rankOffset=Math.max(-52,rankOffset-1);attachPublicRanking()};
-$('rankNext').onclick=()=>{rankOffset=Math.min(0,rankOffset+1);attachPublicRanking()};
+async function loadPublicRanking(){
+ if(!auth.currentUser || rankLoading || !hiddenBanReady)return;
+ const week=rankWeek(),cached=rankCache.get(week);
+ if(cached && Date.now()-cached.time<RANK_COOLDOWN_MS){
+  rankEntries=cached.entries;rankLoaded=true;rankLoading=false;renderPublicRanking();return;
+ }
+ const epoch=++rankFetchEpoch;
+ rankLoading=true;rankLoaded=false;renderPublicRanking();$('rankRefresh').disabled=true;
+ try{
+  const snap=await getDocs(query(collection(db,'weeklyRankings'),where('weekStart','==',week)));
+  const entries=snap.docs.map(d=>d.data());rankCache.set(week,{entries,time:Date.now()});
+  if(rankFetchEpoch!==epoch)return;
+  refreshPublicIdentityCache();rankEntries=entries;rankLoaded=true;
+ }catch(e){
+  console.error('週間ランキング取得',e);
+  if(rankFetchEpoch===epoch)$('rankRows').textContent='ランキングを読み込めなかったよ。無料枠の回復後に試してね。';
+  return;
+ }finally{
+  if(rankFetchEpoch===epoch){rankLoading=false;$('rankRefresh').disabled=false;if(rankLoaded)renderPublicRanking()}
+ }
+}
+$('rankRefresh').onclick=loadPublicRanking;
+$('rankPrev').onclick=()=>{rankOffset=Math.max(-52,rankOffset-1);attachPublicRanking();void loadPublicRanking()};
+$('rankNext').onclick=()=>{rankOffset=Math.min(0,rankOffset+1);attachPublicRanking();void loadPublicRanking()};
 $('rankGroupFilter').onchange=renderPublicRanking;
 let local=safeParse(localStorage.getItem(localKey),{goal:'',days:{}}),remote={days:{},nickname:''},user=null,userRef=null,unsubscribe=null,busy=false;
 let pendingSnowLogin=false;
@@ -358,20 +396,24 @@ $('saveReflection').onclick=()=>{const d=getDay(reflectionDate);d.good=$('good')
 $('addTodo').onclick=()=>{const v=$('newTodo').value.trim();if(!v)return;getDay(today()).todos.push({text:v.slice(0,120),done:false});$('newTodo').value='';persist();renderLocal()};$('newTodo').addEventListener('keydown',e=>{if(e.key==='Enter')$('addTodo').click()});
 
 // Share only timer presence (not goals, reflections or private study records).
-const LIVE_TTL_MS=90000, LIVE_PING_MS=30000;
-let liveEntries=[], liveUnsubscribe=null, liveUid=null, liveWriteChain=Promise.resolve(),livePingInFlight=false;
+const LIVE_TTL_MS=480000, LIVE_PING_MS=180000;
+const LIVE_REFRESH_COOLDOWN_MS=60000,LIVE_MAX_RESULTS=50;
+let liveEntries=[], liveUnsubscribe=null, liveUid=null, liveWriteChain=Promise.resolve();
+let liveLoaded=false,liveLoading=false,lastLiveRead=0,lastLivePing=0;
 const liveCollection=collection(db,'liveStudy');
 function formatLiveTime(ms){
  const secs=Math.floor(Math.max(0,ms)/1000);
  return [Math.floor(secs/3600),Math.floor(secs%3600/60),secs%60].map(n=>String(n).padStart(2,'0')).join(':');
 }
 function renderLive(){
+ if(!liveLoaded){$('liveCount').textContent=liveLoading?'勉強中のみんなを取得中…':'読み取り節約モード：ボタンを押したときだけ更新するよ！';const host=$('liveMembers');host.replaceChildren();const note=document.createElement('div');note.className='liveNone';note.textContent='「LIVEを更新」を押すと、最近の勉強状況を確認できるよ。';host.append(note);return;}
  const now=Date.now(), valid=(hiddenBanReady?liveEntries:[]).filter(x=>!hiddenBanIds.has(x.id) && x.data && typeof x.data.lastSeen?.toMillis==='function' && now-x.data.lastSeen.toMillis()<LIVE_TTL_MS && now-x.data.lastSeen.toMillis()>-30000 && typeof x.data.nickname==='string');
  valid.sort((a,b)=>a.data.nickname.localeCompare(b.data.nickname,'ja'));
- $('liveCount').textContent=`現在 ${valid.length} 人が勉強中！`;
+ $('liveCount').textContent=`最終取得時点の勉強中：${valid.length}人${liveEntries.length>=LIVE_MAX_RESULTS?'（最大50人表示）':''}｜自動更新なし`; 
  const host=$('liveMembers');host.replaceChildren();
  if(!valid.length){const empty=document.createElement('div');empty.className='liveNone';empty.textContent='いま勉強中の人はいないみたい。最初の一歩を踏み出そう！';host.append(empty);return}
  for(const item of valid){
+  void fetchVisibleProfile(item.id);
   const d={...item.data,...publicIdentity(item.id,item.data)}, row=document.createElement('div');row.className='liveMember';
   const dot=document.createElement('span');dot.className='liveDot';dot.setAttribute('aria-hidden','true');
   const who=document.createElement('div');who.className='liveWho';
@@ -390,27 +432,42 @@ function queueLiveWrite(write){
 }
 function publishLive(){
  if(!user?.uid || !remote.nicknameLocked || !remote.nickname || !timer.startedAt)return Promise.resolve();
+ const now=Date.now();if(now-lastLivePing<LIVE_PING_MS-10000)return Promise.resolve();lastLivePing=now;
  const uid=user.uid, name=remote.nickname, start=timer.startedAt, base=timer.elapsed;
  // serverTimestamp gives a trusted freshness marker; other viewers draw locally every second.
  return queueLiveWrite(()=>setDoc(doc(db,'liveStudy',uid),{nickname:name,groupId:remote.groupId||'',startedAtMs:start,elapsedMs:Math.max(0,base),lastSeen:serverTimestamp()}));
 }
 function stopLive(){
+ lastLivePing=0;
  if(!user?.uid)return Promise.resolve();
  const uid=user.uid;
  return queueLiveWrite(()=>deleteDoc(doc(db,'liveStudy',uid)));
 }
 function attachLiveListener(){
- if(liveUnsubscribe)liveUnsubscribe();
- liveUnsubscribe=onSnapshot(liveCollection,snapshot=>{
-   liveEntries=snapshot.docs.map(d=>({id:d.id,data:d.data()}));renderLive();
- },e=>{
-   console.error('勉強中の表示を読み込めません',e);
-   $('liveCount').textContent='勉強中の人数を取得できなかったよ';
-   $('liveMembers').replaceChildren();
-   const note=document.createElement('div');note.className='liveNone';note.textContent='表示できない場合はFirestoreルールを確認してね。';$('liveMembers').append(note);
- });
+ if(liveUnsubscribe){liveUnsubscribe();liveUnsubscribe=null}
+ liveLoaded=false;liveLoading=false;liveEntries=[];lastLiveRead=0;renderLive();
 }
-// Keep presence current without writing once per second.
+async function refreshLive(){
+ if(!auth.currentUser || !hiddenBanReady || liveLoading)return;
+ if(Date.now()-lastLiveRead<LIVE_REFRESH_COOLDOWN_MS){renderLive();return}
+ lastLiveRead=Date.now();liveLoading=true;$('liveRefresh').disabled=true;renderLive();
+ try{
+  // Only query recently active sessions; old abandoned LIVE documents cost no reads.
+  const snap=await getDocs(query(liveCollection,
+   where('lastSeen','>=',Timestamp.fromMillis(Date.now()-LIVE_TTL_MS)),
+   orderBy('lastSeen','desc'),limit(LIVE_MAX_RESULTS)));
+  refreshPublicIdentityCache();liveEntries=snap.docs.map(d=>({id:d.id,data:d.data()}));liveLoaded=true;
+ }catch(e){
+  console.error('LIVEの取得',e);
+  $('liveCount').textContent='LIVEを取得できなかったよ。無料枠の回復後に試してね。';
+  return;
+ }finally{
+  liveLoading=false;$('liveRefresh').disabled=false;
+  if(liveLoaded)renderLive();
+ }
+}
+$('liveRefresh').onclick=refreshLive;
+// Presence is published every three minutes. LIVE is fetched only on request.
 setInterval(()=>{if(timer.startedAt && user?.uid && remote.nicknameLocked)void publishLive()},LIVE_PING_MS);
 setInterval(renderLive,1000);
 window.addEventListener('focus',()=>{if(timer.startedAt)void publishLive()});
