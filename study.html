@@ -167,6 +167,16 @@ function groupEmoji(id){return groupMap().get(id)?.emoji||(id?'💜':'❔')}
 function groupName(id){return groupMap().get(id)?.label||(id?'その他・以前の所属':'未設定')}
 // Minimal public identity map. The users collection stays private to administrators.
 let publicProfiles=new Map(),publicProfilesUnsub=null,profileSyncFingerprint='';
+// A public UID-only ban marker keeps banned members out of LIVE and weekly rankings.
+let hiddenBanIds=new Set(),hiddenBanUnsub=null,hiddenBanReady=false;
+function attachHiddenBans(){
+ if(hiddenBanUnsub){hiddenBanUnsub();hiddenBanUnsub=null}
+ hiddenBanReady=false;hiddenBanIds=new Set();renderLive();renderPublicRanking();
+ hiddenBanUnsub=onSnapshot(collection(db,'publicBanFlags'),snap=>{
+  hiddenBanIds=new Set(snap.docs.map(d=>d.id));hiddenBanReady=true;
+  renderLive();renderPublicRanking();
+ },e=>{hiddenBanReady=false;console.error('BAN表示設定の取得に失敗',e);renderLive();renderPublicRanking()});
+}
 function publicIdentity(uid,fallback){return publicProfiles.get(uid)||{nickname:fallback?.nickname||'',groupId:fallback?.groupId||''}}
 function attachPublicProfiles(){
  if(publicProfilesUnsub){publicProfilesUnsub();publicProfilesUnsub=null}
@@ -228,7 +238,7 @@ function renderPublicRanking(){
  $('rankPrev').disabled=rankOffset<=-52;$('rankNext').disabled=rankOffset>=0;
  const host=$('rankRows');host.replaceChildren();
  const g=$('rankGroupFilter').value;
- const rows=rankEntries.map(x=>({...x,...publicIdentity(x.uid,x)})).filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(g==='all'||x.groupId===g)).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja')).slice(0,5);
+ const rows=(hiddenBanReady?rankEntries:[]).map(x=>({...x,...publicIdentity(x.uid,x)})).filter(x=>!hiddenBanIds.has(x.uid)&&x.weekStart===week&&Number(x.minutes)>0&&(g==='all'||x.groupId===g)).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja')).slice(0,5);
  if(!rows.length){const p=document.createElement('div');p.className='rankEmpty';p.textContent='この週の勉強記録はまだないよ！';host.append(p);return}
  rows.forEach((x,i)=>{const row=document.createElement('div');row.className='rankRow';
  const pos=document.createElement('span');pos.className='rankPosition';pos.textContent=i<3?['🥇','🥈','🥉'][i]:`${i+1}位`;
@@ -301,7 +311,7 @@ function formatLiveTime(ms){
  return [Math.floor(secs/3600),Math.floor(secs%3600/60),secs%60].map(n=>String(n).padStart(2,'0')).join(':');
 }
 function renderLive(){
- const now=Date.now(), valid=liveEntries.filter(x=>x.data && typeof x.data.lastSeen?.toMillis==='function' && now-x.data.lastSeen.toMillis()<LIVE_TTL_MS && now-x.data.lastSeen.toMillis()>-30000 && typeof x.data.nickname==='string');
+ const now=Date.now(), valid=(hiddenBanReady?liveEntries:[]).filter(x=>!hiddenBanIds.has(x.id) && x.data && typeof x.data.lastSeen?.toMillis==='function' && now-x.data.lastSeen.toMillis()<LIVE_TTL_MS && now-x.data.lastSeen.toMillis()>-30000 && typeof x.data.nickname==='string');
  valid.sort((a,b)=>a.data.nickname.localeCompare(b.data.nickname,'ja'));
  $('liveCount').textContent=`現在 ${valid.length} 人が勉強中！`;
  const host=$('liveMembers');host.replaceChildren();
@@ -367,13 +377,14 @@ function stopSessionForBan(){
  if(groupUnsub){groupUnsub();groupUnsub=null}
  if(publicProfilesUnsub){publicProfilesUnsub();publicProfilesUnsub=null}
  if(rankUnsub){rankUnsub();rankUnsub=null}
+ if(hiddenBanUnsub){hiddenBanUnsub();hiddenBanUnsub=null}hiddenBanReady=false;hiddenBanIds=new Set();
  liveUid=null;user=null;userRef=null;
 }
 function startStudySession(u){
  if(sessionStarted)return;
  sessionStarted=true;
  document.body.classList.remove('studyBanned','studyVerifying');
- user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener();startGroups();attachPublicProfiles();attachPublicRanking()}
+ user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener();startGroups();attachPublicProfiles();attachHiddenBans();attachPublicRanking()}
  if(unsubscribe)unsubscribe();
  unsubscribe=onSnapshot(userRef,async snap=>{
   remote=snap.exists()?snap.data():{days:{},nickname:''};remote.days??={};renderGroupSelect();ensureOwnPublicProfile();syncRecentRankings();

@@ -172,7 +172,7 @@ const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const fmt=m=>{m=Math.floor(Number(m)||0);return m>=60?`${Math.floor(m/60)}時間${m%60?`${m%60}分`:''}`:`${m}分`};
-let unsub=null,unsubAdmins=null,unsubBans=null,sequence=0,owner=false,adminIds=new Set(),bannedIds=new Set(),lastRecords=[];
+let unsub=null,unsubAdmins=null,unsubBans=null,unsubPublicBans=null,sequence=0,owner=false,adminIds=new Set(),bannedIds=new Set(),publicBannedIds=new Set(),lastRecords=[];
 let groupsUnsub=null,groups=[],groupAdminLock=false;const groupById=()=>new Map(groups.map(g=>[g.id,g]));
 // Cache public display profiles so changes made by admins can be reflected immediately.
 let publicProfilesAdmin=new Map(),publicProfilesAdminUnsub=null,profileRepairRunning=false;
@@ -393,9 +393,15 @@ async function toggleBan(uid,name,currentlyBanned,btn){
  btn.disabled=true;
  try{
   const ref=doc(db,'accessBans',uid);
-  if(currentlyBanned){await deleteDoc(ref);status(`${name} さんのアクセス禁止を解除したよ！`)}
-  else{
-   await setDoc(ref,{bannedAt:serverTimestamp()});
+  const batch=writeBatch(db);
+   if(currentlyBanned){
+    batch.delete(ref);batch.delete(doc(db,'publicBanFlags',uid));
+    await batch.commit();status(`${name} さんのアクセス禁止を解除したよ！`);
+   }
+   else{
+    batch.set(ref,{bannedAt:serverTimestamp()});
+    batch.set(doc(db,'publicBanFlags',uid),{banned:true});
+    await batch.commit();
    // Clear an existing live card promptly; historic records are retained.
    try{await deleteDoc(doc(db,'liveStudy',uid))}catch(e){console.warn('LIVE表示の削除に失敗',e)}
    status(`${name} さんをアクセス禁止にしたよ！`);
@@ -459,7 +465,7 @@ async function renameUser(uid,displayName,btn){
   const host=$('rankRows');host.replaceChildren();
   const filter=$('rankGroupFilter').value;
   const userMap=new Map(lastRecords.map(d=>[d.id,d.data()]));
-   const entries=rankEntries.map(x=>({...x,...adminIdentity(x.uid,x),...(userMap.has(x.uid)?{nickname:userMap.get(x.uid).nickname,groupId:userMap.get(x.uid).groupId||''}:{})})).filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(filter==='all'||(filter==='unassigned'?!groupById().has(x.groupId):x.groupId===filter))).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja')).slice(0,5);
+   const entries=rankEntries.filter(x=>!publicBannedIds.has(x.uid)).map(x=>({...x,...adminIdentity(x.uid,x),...(userMap.has(x.uid)?{nickname:userMap.get(x.uid).nickname,groupId:userMap.get(x.uid).groupId||''}:{})})).filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(filter==='all'||(filter==='unassigned'?!groupById().has(x.groupId):x.groupId===filter))).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja')).slice(0,5);
   if(!entries.length){const empty=document.createElement('div');empty.className='adminRankEmpty';empty.textContent='この週・所属の勉強記録はまだないよ';host.append(empty);return}
   entries.forEach((d,i)=>{
    const row=document.createElement('div');row.className='adminRankRow';const pos=document.createElement('span');pos.className='adminRankPosition';pos.textContent=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}位`;
@@ -484,9 +490,9 @@ $('login').onclick=async()=>{
 $('signout').onclick=async()=>{if(!confirm('Googleアカウントからログアウトする？'))return;await signOut(auth);location.href='study.html'};
 onAuthStateChanged(auth,async u=>{
  const id=++sequence;
- if(unsub){unsub();unsub=null}if(unsubAdmins){unsubAdmins();unsubAdmins=null}if(unsubBans){unsubBans();unsubBans=null}if(groupsUnsub){groupsUnsub();groupsUnsub=null}if(rankUnsub){rankUnsub();rankUnsub=null}if(publicProfilesAdminUnsub){publicProfilesAdminUnsub();publicProfilesAdminUnsub=null}publicProfilesAdmin=new Map();
+ if(unsub){unsub();unsub=null}if(unsubAdmins){unsubAdmins();unsubAdmins=null}if(unsubBans){unsubBans();unsubBans=null}if(unsubPublicBans){unsubPublicBans();unsubPublicBans=null}if(groupsUnsub){groupsUnsub();groupsUnsub=null}if(rankUnsub){rankUnsub();rankUnsub=null}if(publicProfilesAdminUnsub){publicProfilesAdminUnsub();publicProfilesAdminUnsub=null}publicProfilesAdmin=new Map();
  $('loginPanel').classList.remove('isVerified');
- owner=false;adminIds=new Set();bannedIds=new Set();lastRecords=[];$('panel').style.display='none';$('accessInfo').textContent='';$('permissionHeader').style.display='none';
+ owner=false;adminIds=new Set();bannedIds=new Set();publicBannedIds=new Set();lastRecords=[];$('panel').style.display='none';$('accessInfo').textContent='';$('permissionHeader').style.display='none';
  $('login').style.display='none';$('signout').style.display=u&&!u.isAnonymous?'inline-block':'none';
  if(!u){status('まずStudy Logを開いて、同じブラウザで管理者ページにアクセスしてね。snowはGoogle認証でログインしてね。');$('login').style.display='inline-block';return}
  try{
@@ -501,6 +507,10 @@ onAuthStateChanged(auth,async u=>{
   owner=!u.isAnonymous&&u.providerData.some(p=>p.providerId==='google.com')&&userSnap.exists()&&userSnap.data()?.nickname==='snow';
   $('permissionHeader').style.display=owner?'':'none';
   $('panel').style.display='block';startGroupAdmin();attachAdminRanking();
+   unsubPublicBans=onSnapshot(collection(db,'publicBanFlags'),snap=>{
+    if(id!==sequence)return;
+    publicBannedIds=new Set(snap.docs.map(d=>d.id));renderAdminRanking();
+   },e=>{console.error('ランキングBAN情報の取得',e);status('BAN情報が取得できないよ。Firestoreルールを確認してね。')});
   publicProfilesAdminUnsub=onSnapshot(collection(db,'publicProfiles'),snap=>{if(id!==sequence)return;publicProfilesAdmin=new Map(snap.docs.map(d=>[d.id,d.data()]));renderAdminRanking();void repairPublicProfiles()},e=>console.error('公開プロフィール一覧',e));
   // Synchronize the two official default OpenChats on owner login. Old demo groups are archived, not deleted.
   if(owner){
@@ -524,7 +534,11 @@ onAuthStateChanged(auth,async u=>{
   $('loginPanel').classList.add('isVerified');
   status(owner?'snow（最高管理者）としてログインできたよ！':'管理者としてログインできたよ！');
   unsub=onSnapshot(collection(db,'users'),snap=>{if(id===sequence){lastRecords=snap.docs;draw(lastRecords);renderAdminRanking();void repairPublicProfiles()}},err=>status('データを取得できません：'+err.message));
-  if(owner){unsubBans=onSnapshot(collection(db,'accessBans'),snap=>{if(id===sequence){bannedIds=new Set(snap.docs.map(d=>d.id));draw(lastRecords)}},err=>status('アクセス禁止一覧を取得できないよ：'+err.message));}
+  if(owner){unsubBans=onSnapshot(collection(db,'accessBans'),snap=>{if(id===sequence){bannedIds=new Set(snap.docs.map(d=>d.id));draw(lastRecords);renderAdminRanking();
+    // Repair older bans created before public visibility markers were introduced.
+    for(const uid of bannedIds){if(!publicBannedIds.has(uid)){
+      setDoc(doc(db,'publicBanFlags',uid),{banned:true}).catch(e=>console.error('既存BANの公開表示同期',uid,e));
+    }}}},err=>status('アクセス禁止一覧を取得できないよ：'+err.message));}
   if(owner){unsubAdmins=onSnapshot(collection(db,'admins'),snap=>{if(id===sequence){adminIds=new Set(snap.docs.filter(d=>d.data()?.enabled===true).map(d=>d.id));draw(lastRecords)}},err=>status('管理者一覧を取得できないよ。Firestoreルールを確認してね：'+err.message))}
  }catch(e){status('権限を確認できません：'+e.message)}
 });
