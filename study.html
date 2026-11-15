@@ -123,13 +123,18 @@ body[data-study-theme="other"] main.wrap button.btn:not(#timerStart):not(#timerP
 /* Full-width timer and manual log below LIVE, with responsive controls. */
 #timerPanel, #timerPanel .formrow, main.wrap section:has(#addManual){min-width:0}
 #timerPanel .formrow{flex-wrap:wrap}
-</style></head><body><main class="wrap">
+body.studyBanned > main,body.studyVerifying > main{display:none!important}
+#banNotice{display:none;max-width:550px;margin:8vh auto;padding:28px 24px;background:white;border:2px solid #e2b4c8;border-radius:20px;text-align:center;box-shadow:0 10px 30px #b89aaa33;color:#683c51}
+body.studyBanned #banNotice,body.studyVerifying #banNotice{display:block}
+#banNotice h2{margin:0 0 14px;color:#a33c6a}
+#banNotice p{line-height:1.8}
+</style></head><body><section id="banNotice" role="alert" aria-live="assertive"><h2>🔒 このアカウントは利用停止中です</h2><p>管理者によってStudy Logへのアクセスが制限されています。確認が必要な場合は、オプチャの管理者へ連絡してね。</p><p>過去の記録は削除されていません。</p></section><main class="wrap">
 <header class="header">
 <div class="topReturn"><a aria-label="カウントダウンページへ戻る" class="returnCountdown returnCountdownTop" href="index.html"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
 <section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" maxlength="24" placeholder="ニックネーム（管理者に表示されます）" type="text"/><button class="btn" id="saveName">名前を保存</button></div><p class="muted" style="margin:7px 0 11px">🩷 ニックネームはオプチャで使っている名前と同じにしてね！</p><div class="groupRegister"><label for="groupSelect">🏷 所属オプチャ</label><select id="groupSelect"><option value="">オプチャを読み込み中…</option></select><p class="muted" id="groupHint">所属オプチャは初回登録時に選んでね。登録後の変更は管理者へお願いしてね！</p></div><div class="hint" id="snowVerify" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button class="btn alt" id="googleVerify" type="button">Googleで本人確認する</button></div><div class="status" id="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
 <section class="panel"><h2>📚 勉強時間のまとめ</h2><div class="grid"><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section>
 
-<section aria-label="みんなの勉強状況" class="panel" id="livePanel"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE</span></div><p class="liveIntro">タイマーを使っている人が表示されるよ！名前・所属オプチャの絵文字・計測時間が共有されるよ。</p><p aria-live="polite" class="liveCount" id="liveCount">確認中…</p><div class="liveMembers" id="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section><section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div class="timer" id="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button class="btn" id="timerStart">スタート</button><button class="btn alt" id="timerPause">一時停止</button><button class="btn" id="timerSave">記録して終了</button><button class="btn danger" id="timerReset">リセット</button></div><div aria-live="polite" class="timer-feedback" id="timerFeedback" role="status"></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"/></label><label class="manualUnit"><input aria-label="追加する時間" id="hours" inputmode="numeric" max="23" min="0" type="number" value="1"/><span>時間</span></label><label class="manualUnit"><input aria-label="追加する分" id="minutes" inputmode="numeric" max="59" min="0" type="number" value="0"/><span>分</span></label></div><p><button class="btn" id="addManual">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
+<section aria-label="みんなの勉強状況" class="panel" id="livePanel"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE</span></div><p class="liveIntro">タイマーを使っている人が表示されるよ！名前・所属オプチャの絵文字・計測時間が共有されるよ。</p><p aria-live="polite" class="liveCount" id="liveCount">確認中…</p><div class="liveMembers" id="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section><section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div class="timer" id="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button class="btn" id="timerStart">スタート</button><button class="btn alt" id="timerPause">一時停止</button><button class="btn" id="timerSave">記録して終了</button><button class="btn danger" id="timerReset">リセット</button></div><div aria-live="polite" class="timer-feedback" id="timerFeedback" role="status"></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"/></label><label class="manualUnit"><input aria-label="追加する時間" id="hours" inputmode="numeric" max="24" min="0" type="number" value="1"/><span>時間</span></label><label class="manualUnit"><input aria-label="追加する分" id="minutes" inputmode="numeric" max="59" min="0" type="number" value="0"/><span>分</span></label></div><p><button class="btn" id="addManual">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
 <section aria-label="みんなの週間勉強ランキング" class="panel" id="publicRanking">
 <div class="liveHeader"><h2 style="margin:0">🏆 週間勉強ランキング</h2><span class="rankLabel">WEEKLY RANKING</span></div>
 <p class="muted">月曜〜日曜の記録だよ！ニックネーム・所属の絵文字・合計勉強時間が表示されるよ。</p>
@@ -223,7 +228,7 @@ function renderPublicRanking(){
  $('rankPrev').disabled=rankOffset<=-52;$('rankNext').disabled=rankOffset>=0;
  const host=$('rankRows');host.replaceChildren();
  const g=$('rankGroupFilter').value;
- const rows=rankEntries.map(x=>({...x,...publicIdentity(x.uid,x)})).filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(g==='all'||x.groupId===g)).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja'));
+ const rows=rankEntries.map(x=>({...x,...publicIdentity(x.uid,x)})).filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(g==='all'||x.groupId===g)).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja')).slice(0,5);
  if(!rows.length){const p=document.createElement('div');p.className='rankEmpty';p.textContent='この週の勉強記録はまだないよ！';host.append(p);return}
  rows.forEach((x,i)=>{const row=document.createElement('div');row.className='rankRow';
  const pos=document.createElement('span');pos.className='rankPosition';pos.textContent=i<3?['🥇','🥈','🥉'][i]:`${i+1}位`;
@@ -251,7 +256,7 @@ const setStatus=(msg,error=false)=>{$('status').textContent=msg;$('status').clas
 const dateKey=today();$('manualDate').value=dateKey;let reflectionDate=dateKey;$('reflectionDate').value=reflectionDate;
 function renderStats(){const days=remote.days||{},d=today(),now=new Date(),start=new Date(now.getFullYear(),now.getMonth(),now.getDate());start.setDate(start.getDate()-((start.getDay()+6)%7));const weekStart=`${start.getFullYear()}-${String(start.getMonth()+1).padStart(2,'0')}-${String(start.getDate()).padStart(2,'0')}`;const month=d.slice(0,7);$('todayTotal').textContent=fmt(days[d]);$('weekTotal').textContent=fmt(Object.entries(days).filter(([k])=>k>=weekStart&&k<=d).reduce((a,[,v])=>a+Number(v||0),0));$('monthTotal').textContent=fmt(Object.entries(days).filter(([k])=>k.startsWith(month)&&k<=d).reduce((a,[,v])=>a+Number(v||0),0));const rows=Object.entries(days).filter(([,v])=>Number(v)>0).sort(([a],[b])=>b.localeCompare(a)).slice(0,60);$('history').innerHTML=rows.length?`<table class="hist"><thead><tr><th>日付</th><th>勉強時間</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td>${k}</td><td>${fmt(v)}</td></tr>`).join('')}</tbody></table>`:'記録はまだありません。';}
 function renderLocal(){const d=getDay(today()),reflection=getDay(reflectionDate);$('goal').value=(typeof remote.goal==='string'?remote.goal:local.goal)||'';$('good').value=reflection.good||'';$('improve').value=reflection.improve||'';$('reflectionDateHint').textContent=reflectionDate===today()?'今日の記録を表示中。別の日を選ぶと過去の記録も見返せるよ。':reflectionDate+' の振り返りを表示中。編集して保存もできるよ。';const list=$('todoList');list.replaceChildren();d.todos.forEach((t,i)=>{const row=document.createElement('div');row.className='todo'+(t.done?' done':'');const check=document.createElement('input');check.type='checkbox';check.checked=!!t.done;check.addEventListener('change',()=>{t.done=check.checked;persist();renderLocal()});const span=document.createElement('span');span.textContent=t.text;const del=document.createElement('button');del.className='tiny';del.textContent='削除';del.addEventListener('click',()=>{d.todos.splice(i,1);persist();renderLocal()});row.append(check,span,del);list.append(row)});const done=d.todos.filter(t=>t.done).length;$('todoProgress').textContent=`${done} / ${d.todos.length} 完了`;$('todoBar').style.width=(d.todos.length?done/d.todos.length*100:0)+'%'}
-async function addTime(date,mins){if(!userRef)throw Error('準備ができるまで待ってね');if(!remote.nicknameLocked)throw Error('先にニックネームを登録してね');if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isSafeInteger(mins)||mins<1||mins>1440)throw Error('時間は1分〜24時間で入力してね');await runTransaction(db,async tx=>{const snap=await tx.get(userRef);const data=snap.exists()?snap.data():{};const days={...(data.days||{})};days[date]=Math.min(1000000,Math.max(0,Math.floor(Number(days[date])||0))+mins);tx.set(userRef,{days},{merge:true})})}
+async function addTime(date,mins){if(!userRef)throw Error('準備ができるまで待ってね');if(!remote.nicknameLocked)throw Error('先にニックネームを登録してね');if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isSafeInteger(mins)||mins<1||mins>1440)throw Error('時間は1分〜24時間で入力してね');await runTransaction(db,async tx=>{const snap=await tx.get(userRef);const data=snap.exists()?snap.data():{};const days={...(data.days||{})};const already=Math.max(0,Math.floor(Number(days[date])||0));if(already+mins>1440){const remaining=Math.max(0,1440-already);throw Error(`1日に記録できる勉強時間は合計24時間までだよ！（あと${Math.floor(remaining/60)}時間${remaining%60}分追加できるよ）`)}days[date]=already+mins;tx.set(userRef,{days},{merge:true})})}
 async function guard(button,fn,feedbackId=null){if(busy)return;busy=true;button.disabled=true;const feedback=feedbackId?$(feedbackId):null;if(feedback){feedback.textContent='';feedback.className='timer-feedback'}try{await fn();if(feedback){feedback.textContent='保存できたよ！ ☁';feedback.className='timer-feedback'}else setStatus('保存できたよ！ ☁')}catch(e){console.error(e);if(feedback){feedback.textContent='保存できなかったよ：'+(e.message||'接続を確認してね');feedback.className='timer-feedback error'}else setStatus('保存できなかったよ：'+(e.message||'接続を確認してね'),true)}finally{busy=false;button.disabled=false}}
 $('saveName').onclick=()=>guard($('saveName'),async()=>{
  if(!userRef)throw Error('接続中だよ');
@@ -271,7 +276,7 @@ $('saveName').onclick=()=>guard($('saveName'),async()=>{
  $('nickname').value=name;pendingSnowLogin=false;updateSnowVerify();
 });
 
-$('addManual').onclick=()=>guard($('addManual'),async()=>{const h=Number($('hours').value),m=Number($('minutes').value);if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||h>23||m<0||m>59||h*60+m===0)throw Error('0〜23時間、0〜59分で入力してね');await addTime($('manualDate').value,h*60+m)});
+$('addManual').onclick=()=>guard($('addManual'),async()=>{const h=Number($('hours').value),m=Number($('minutes').value);if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||h>24||m<0||m>59||(h===24&&m!==0)||h*60+m===0)throw Error('1分〜24時間で入力してね（24時間の場合は0分）');await addTime($('manualDate').value,h*60+m)});
 $('saveGoal').onclick=()=>guard($('saveGoal'),async()=>{
  if(!userRef||!remote.nicknameLocked)throw Error('先にニックネームを登録してね');
  const goal=$('goal').value.slice(0,2000);
@@ -352,8 +357,22 @@ $('timerStart').onclick=()=>{if(timer.startedAt)return;timer.startedAt=Date.now(
 $('timerReset').onclick=()=>{if(!confirm('タイマーをリセットする？まだ記録していない時間は消えるよ。'))return;timer={elapsed:0,startedAt:null};saveTimer();drawTimer();void stopLive()};
 $('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),mins=Math.round(ms/60000);if(mins<1)throw Error('1分以上計測してから保存してね');if(mins>1440)throw Error('24時間を超えたよ。タイマーを確認してね');if(timer.startedAt){timer.elapsed=ms;timer.startedAt=null;saveTimer()}await addTime(today(),mins);timer={elapsed:0,startedAt:null};saveTimer();drawTimer();void stopLive()},'timerFeedback');
 renderLocal();renderStats();
-onAuthStateChanged(auth,async u=>{
- if(!u){try{await signInAnonymously(auth)}catch(e){setStatus('読み込みに失敗したよ。ページを再読み込みしてね。',true)}return}
+let banUnsubscribe=null,banEpoch=0,sessionStarted=false;
+function stopSessionForBan(){
+ document.body.classList.remove('studyVerifying');document.body.classList.add('studyBanned');sessionStarted=false;
+ const title=document.querySelector('#banNotice h2');if(title)title.textContent='🔒 このアカウントは利用停止中です';
+ const desc=document.querySelector('#banNotice p');if(desc)desc.textContent='管理者によってStudy Logへのアクセスが制限されています。確認が必要な場合は、オプチャの管理者へ連絡してね。';
+ if(unsubscribe){unsubscribe();unsubscribe=null}
+ if(liveUnsubscribe){liveUnsubscribe();liveUnsubscribe=null}
+ if(groupUnsub){groupUnsub();groupUnsub=null}
+ if(publicProfilesUnsub){publicProfilesUnsub();publicProfilesUnsub=null}
+ if(rankUnsub){rankUnsub();rankUnsub=null}
+ liveUid=null;user=null;userRef=null;
+}
+function startStudySession(u){
+ if(sessionStarted)return;
+ sessionStarted=true;
+ document.body.classList.remove('studyBanned','studyVerifying');
  user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener();startGroups();attachPublicProfiles();attachPublicRanking()}
  if(unsubscribe)unsubscribe();
  unsubscribe=onSnapshot(userRef,async snap=>{
@@ -373,5 +392,29 @@ onAuthStateChanged(auth,async u=>{
     try{const a=await getDoc(doc(db,'admins',u.uid));if(auth.currentUser?.uid===u.uid&&a.exists()&&a.data()?.enabled===true)$('adminLink').style.display='block'}catch(e){console.error(e)}
   }
  },err=>{console.error(err);setStatus('データの読み込みに失敗したよ。Firestoreのルールを確認してね。',true)});
+ }
+onAuthStateChanged(auth,async u=>{
+ const epoch=++banEpoch;
+ if(banUnsubscribe){banUnsubscribe();banUnsubscribe=null}
+ if(unsubscribe){unsubscribe();unsubscribe=null}
+ sessionStarted=false;
+ if(!u){
+  try{await signInAnonymously(auth)}catch(e){setStatus('ログインできなかったよ。再読み込みしてね。',true)}
+  return;
+ }
+ document.body.classList.remove('studyBanned');document.body.classList.add('studyVerifying');
+ const pendingTitle=document.querySelector('#banNotice h2');if(pendingTitle)pendingTitle.textContent='🔐 アクセスを確認中…';
+ const pendingDesc=document.querySelector('#banNotice p');if(pendingDesc)pendingDesc.textContent='登録情報を確認しているよ。';
+ banUnsubscribe=onSnapshot(doc(db,'accessBans',u.uid),snap=>{
+  if(epoch!==banEpoch)return;
+  if(snap.exists()){stopSessionForBan()}
+  else if(!sessionStarted){startStudySession(u)}
+ },e=>{
+  if(epoch!==banEpoch)return;
+  console.error('アクセス状態の確認',e);
+  stopSessionForBan();
+  const notice=document.querySelector('#banNotice p');
+  if(notice)notice.textContent='利用状態を確認できませんでした。ページを再読み込みするか、管理者に連絡してね。';
+ });
 });
 </script></body></html>

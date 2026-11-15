@@ -111,6 +111,12 @@ html,body{max-width:100%;overflow-x:clip}
  .adminRankWho{flex:1 1 130px}
 }
 @media(max-width:380px){.adminStats{grid-template-columns:repeat(2,minmax(0,1fr))}.adminRankTime{font-size:12px}.adminTopNav{flex-wrap:wrap}.adminTopNav a{flex:1 1 100%}}
+/* Owner-only access control buttons, kept compact inside responsive user rows */
+.banUserBtn{border:1px solid #e3a7ad;background:white;color:#a63c52;border-radius:10px;padding:7px 9px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.banUserBtn:hover{background:#fff0f2}
+.banUserBtn.isBanned{background:#fbe9ed;border-color:#d38a9a}
+.banUserBtn:disabled{opacity:.5;cursor:wait}
+@media(max-width:720px){.userNameWithGroup{flex-wrap:wrap}.banUserBtn{margin-left:0}}
 </style><style>.adminTable{width:100%;border-collapse:collapse}.adminTable th,.adminTable td{padding:10px 8px;border-bottom:1px solid #f0c7d7;text-align:left}.adminTable th{color:#b34f78}.adminTable{font-size:14px}.adminTable td{word-break:break-word}#login,#signout{margin:10px 5px}#panel{display:none}#accessInfo{white-space:pre-wrap;word-break:break-all}a{color:#b34f78}.uidLabel{font-size:10px;color:#936e84;overflow-wrap:anywhere;display:block;margin-top:3px}.roleBtn{font-family:inherit;padding:6px 10px;border:1px solid #df9dbb;border-radius:12px;background:#fff2f8;color:#a34c72;cursor:pointer}.roleBtn:disabled{opacity:.5;cursor:not-allowed}.renameBtn{display:block;margin-top:6px;padding:4px 9px;font-size:12px;background:#fff8fb}
 .goalCell{min-width:170px;max-width:290px}.goalText{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;max-height:4.8em;overflow:hidden}.goalText.isOpen{max-height:none}.goalExpand{border:none;background:transparent;color:#a34c72;text-decoration:underline;cursor:pointer;font-family:inherit;margin-top:3px;padding:2px 0}.goalEmpty{font-size:12px;color:#9d8391}
 </style><style id="user-name-group-style">
@@ -160,13 +166,13 @@ html,body{max-width:100%;overflow-x:clip}
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, collection, query, where, getDocs, writeBatch, onSnapshot, setDoc, deleteDoc, runTransaction } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, collection, query, where, getDocs, writeBatch, onSnapshot, setDoc, deleteDoc, runTransaction, serverTimestamp } from 'https://www.gstatic.com/firebasejs/13.3.0/firebase-firestore.js';
 const firebaseConfig={apiKey:'AIzaSyDAfU0ISnB1aAAsrNeB1vKCflqIQ-MiiGk',authDomain:'snowstudy-3fd16.firebaseapp.com',projectId:'snowstudy-3fd16',storageBucket:'snowstudy-3fd16.firebasestorage.app',messagingSenderId:'253202554905',appId:'1:253202554905:web:dd812c84a34e8b369dca88',measurementId:'G-2995QPBZKF'};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const fmt=m=>{m=Math.floor(Number(m)||0);return m>=60?`${Math.floor(m/60)}時間${m%60?`${m%60}分`:''}`:`${m}分`};
-let unsub=null,unsubAdmins=null,sequence=0,owner=false,adminIds=new Set(),lastRecords=[];
+let unsub=null,unsubAdmins=null,unsubBans=null,sequence=0,owner=false,adminIds=new Set(),bannedIds=new Set(),lastRecords=[];
 let groupsUnsub=null,groups=[],groupAdminLock=false;const groupById=()=>new Map(groups.map(g=>[g.id,g]));
 // Cache public display profiles so changes made by admins can be reflected immediately.
 let publicProfilesAdmin=new Map(),publicProfilesAdminUnsub=null,profileRepairRunning=false;
@@ -251,6 +257,15 @@ function draw(records){
    edit.textContent=owner?'名前・所属を変更':'所属を変更';
    edit.setAttribute('aria-label',x.name+'さんの'+(owner?'ニックネームと所属':'所属')+'を変更');
    edit.onclick=()=>openUserEditor(x.uid,x.name,x.groupId);nameRow.append(edit);
+  }
+  if(owner && x.uid!==auth.currentUser?.uid && x.name!=='snow'){
+   const isBanned=bannedIds.has(x.uid);
+   const banBtn=document.createElement('button');banBtn.type='button';
+   banBtn.className='banUserBtn'+(isBanned?' isBanned':'');
+   banBtn.textContent=isBanned?'禁止を解除':'アクセス禁止';
+   banBtn.title=isBanned?'このユーザーの利用を再開':'このユーザーのStudy Log利用を停止';
+   banBtn.onclick=()=>toggleBan(x.uid,x.name,isBanned,banBtn);
+   nameRow.append(banBtn);
   }
   tdName.append(nameRow);
   if(owner){const uid=document.createElement('span');uid.className='uidLabel';uid.textContent='UID: '+x.uid;tdName.append(uid)}
@@ -369,6 +384,25 @@ async function changeUserGroup(uid,name,current,btn){
  }catch(e){console.error(e);status('所属先を更新できなかったよ：'+(e.message||'Firestoreルールを確認してね'))}
  finally{btn.disabled=false}
 }
+async function toggleBan(uid,name,currentlyBanned,btn){
+ if(!owner||!auth.currentUser||uid===auth.currentUser.uid||name==='snow')return;
+ const message=currentlyBanned
+  ?`${name} さんのアクセス禁止を解除する？\n勉強記録はそのまま残っているよ。`
+  :`${name} さんをアクセス禁止にする？\nStudy Logの読み書きと管理画面の利用を停止するよ。\n過去の勉強記録は削除しないよ。`;
+ if(!confirm(message))return;
+ btn.disabled=true;
+ try{
+  const ref=doc(db,'accessBans',uid);
+  if(currentlyBanned){await deleteDoc(ref);status(`${name} さんのアクセス禁止を解除したよ！`)}
+  else{
+   await setDoc(ref,{bannedAt:serverTimestamp()});
+   // Clear an existing live card promptly; historic records are retained.
+   try{await deleteDoc(doc(db,'liveStudy',uid))}catch(e){console.warn('LIVE表示の削除に失敗',e)}
+   status(`${name} さんをアクセス禁止にしたよ！`);
+  }
+ }catch(e){console.error(e);status('アクセス禁止を変更できなかったよ：'+(e.message||'Firestoreルールを確認してね'))}
+ finally{btn.disabled=false}
+}
 async function changeRole(uid,name,currentlyEnabled,btn){
  if(!owner || uid===auth.currentUser?.uid)return;
  const action=currentlyEnabled?'解除':'付与';
@@ -425,7 +459,7 @@ async function renameUser(uid,displayName,btn){
   const host=$('rankRows');host.replaceChildren();
   const filter=$('rankGroupFilter').value;
   const userMap=new Map(lastRecords.map(d=>[d.id,d.data()]));
-   const entries=rankEntries.map(x=>({...x,...adminIdentity(x.uid,x),...(userMap.has(x.uid)?{nickname:userMap.get(x.uid).nickname,groupId:userMap.get(x.uid).groupId||''}:{})})).filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(filter==='all'||(filter==='unassigned'?!groupById().has(x.groupId):x.groupId===filter))).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja'));
+   const entries=rankEntries.map(x=>({...x,...adminIdentity(x.uid,x),...(userMap.has(x.uid)?{nickname:userMap.get(x.uid).nickname,groupId:userMap.get(x.uid).groupId||''}:{})})).filter(x=>x.weekStart===week&&Number(x.minutes)>0&&(filter==='all'||(filter==='unassigned'?!groupById().has(x.groupId):x.groupId===filter))).sort((a,b)=>Number(b.minutes)-Number(a.minutes)||String(a.nickname).localeCompare(String(b.nickname),'ja')).slice(0,5);
   if(!entries.length){const empty=document.createElement('div');empty.className='adminRankEmpty';empty.textContent='この週・所属の勉強記録はまだないよ';host.append(empty);return}
   entries.forEach((d,i)=>{
    const row=document.createElement('div');row.className='adminRankRow';const pos=document.createElement('span');pos.className='adminRankPosition';pos.textContent=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}位`;
@@ -450,9 +484,9 @@ $('login').onclick=async()=>{
 $('signout').onclick=async()=>{if(!confirm('Googleアカウントからログアウトする？'))return;await signOut(auth);location.href='study.html'};
 onAuthStateChanged(auth,async u=>{
  const id=++sequence;
- if(unsub){unsub();unsub=null}if(unsubAdmins){unsubAdmins();unsubAdmins=null}if(groupsUnsub){groupsUnsub();groupsUnsub=null}if(rankUnsub){rankUnsub();rankUnsub=null}if(publicProfilesAdminUnsub){publicProfilesAdminUnsub();publicProfilesAdminUnsub=null}publicProfilesAdmin=new Map();
+ if(unsub){unsub();unsub=null}if(unsubAdmins){unsubAdmins();unsubAdmins=null}if(unsubBans){unsubBans();unsubBans=null}if(groupsUnsub){groupsUnsub();groupsUnsub=null}if(rankUnsub){rankUnsub();rankUnsub=null}if(publicProfilesAdminUnsub){publicProfilesAdminUnsub();publicProfilesAdminUnsub=null}publicProfilesAdmin=new Map();
  $('loginPanel').classList.remove('isVerified');
- owner=false;adminIds=new Set();lastRecords=[];$('panel').style.display='none';$('accessInfo').textContent='';$('permissionHeader').style.display='none';
+ owner=false;adminIds=new Set();bannedIds=new Set();lastRecords=[];$('panel').style.display='none';$('accessInfo').textContent='';$('permissionHeader').style.display='none';
  $('login').style.display='none';$('signout').style.display=u&&!u.isAnonymous?'inline-block':'none';
  if(!u){status('まずStudy Logを開いて、同じブラウザで管理者ページにアクセスしてね。snowはGoogle認証でログインしてね。');$('login').style.display='inline-block';return}
  try{
@@ -490,6 +524,7 @@ onAuthStateChanged(auth,async u=>{
   $('loginPanel').classList.add('isVerified');
   status(owner?'snow（最高管理者）としてログインできたよ！':'管理者としてログインできたよ！');
   unsub=onSnapshot(collection(db,'users'),snap=>{if(id===sequence){lastRecords=snap.docs;draw(lastRecords);renderAdminRanking();void repairPublicProfiles()}},err=>status('データを取得できません：'+err.message));
+  if(owner){unsubBans=onSnapshot(collection(db,'accessBans'),snap=>{if(id===sequence){bannedIds=new Set(snap.docs.map(d=>d.id));draw(lastRecords)}},err=>status('アクセス禁止一覧を取得できないよ：'+err.message));}
   if(owner){unsubAdmins=onSnapshot(collection(db,'admins'),snap=>{if(id===sequence){adminIds=new Set(snap.docs.filter(d=>d.data()?.enabled===true).map(d=>d.id));draw(lastRecords)}},err=>status('管理者一覧を取得できないよ。Firestoreルールを確認してね：'+err.message))}
  }catch(e){status('権限を確認できません：'+e.message)}
 });
