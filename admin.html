@@ -613,7 +613,7 @@ onAuthStateChanged(auth,async u=>{
  if(!u){status('Study Logを開いてから管理者ページにアクセスしてね。snowはGoogle認証でログインしてね。');$('login').style.display='inline-block';return}
  try{
   const role=await getDoc(doc(db,'admins',u.uid));if(epoch!==sequence)return;
-  if(!role.exists()||role.data()?.enabled!==true){status('このアカウントには管理者権限がないよ。');$('accessInfo').textContent='今のFirebase UID：\n'+u.uid;if(!u.isAnonymous)$('login').style.display='inline-block';return}
+  if(!role.exists()||role.data()?.enabled!==true){status('このアカウントには管理者権限がないよ。');$('accessInfo').textContent='今のFirebase UID：\n'+u.uid;$('login').style.display='inline-block';return}
   const own=await getDoc(doc(db,'users',u.uid));if(epoch!==sequence)return;
   owner=!u.isAnonymous&&u.providerData.some(p=>p.providerId==='google.com')&&own.exists()&&own.data()?.nickname==='snow';
   $('panel').style.display='block';$('loginPanel').classList.add('isVerified');
