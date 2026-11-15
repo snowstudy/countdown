@@ -370,21 +370,36 @@ $('editStudyTimeSave').onclick=async()=>{
  try{
   const parts=date.split('-').map(Number),week=mondayOf(new Date(parts[0],parts[1]-1,parts[2]));
   const userRef=doc(db,'users',uid),rankRef=doc(db,'weeklyRankings',week+'_'+uid);
-  await runTransaction(db,async tx=>{
-    const [userSnap,rankSnap]=await Promise.all([tx.get(userRef),tx.get(rankRef)]);
+  // Save the actual study history first. A missing/outdated ranking rule must NOT
+  // roll back a legitimate admin correction to the user's study history.
+  const rankData=await runTransaction(db,async tx=>{
+    const userSnap=await tx.get(userRef);
     if(!userSnap.exists()||userSnap.data().nicknameLocked!==true)throw Error('ユーザー情報が見つからないよ。');
     const userData=userSnap.data(),days={...(userData.days||{})};
     if(newTotal===0)delete days[date];else days[date]=newTotal;
     const total=Object.entries(days).filter(([key])=>/^\d{4}-\d{2}-\d{2}$/.test(key)&&mondayOf(new Date(+key.slice(0,4),+key.slice(5,7)-1,+key.slice(8,10)))===week)
       .reduce((sum,[,value])=>sum+Math.max(0,Math.min(1440,Math.floor(Number(value)||0))),0);
     tx.update(userRef,{days});
-    const rankData={uid,weekStart:week,nickname:userData.nickname,groupId:userData.groupId||'',minutes:total};
-    if(rankSnap.exists())tx.update(rankRef,{nickname:rankData.nickname,groupId:rankData.groupId,minutes:total});
-    else tx.set(rankRef,rankData);
+    return {uid,weekStart:week,nickname:userData.nickname,groupId:userData.groupId||'',minutes:total};
   });
+  // Ranking is a separate write so an incompatible ranking permission cannot
+  // prevent the correction from being saved. Report partial success explicitly.
+  try{
+    await setDoc(rankRef,rankData,{merge:true});
+  }catch(rankError){
+    console.error('勉強時間訂正後のランキング同期',rankError);
+    const reason=rankError.code==='permission-denied'?'Firestoreルールでランキングの更新が許可されていないよ。ZIP内の新しいルールをFirebase Consoleで公開してね。':(rankError.message||'通信エラー');
+    feedback.textContent='勉強時間は訂正できたよ！ただしランキングの同期に失敗：'+reason;
+    status(name+' さんの '+date+' の記録は '+fmt(newTotal)+' に訂正済み。ランキングのみ未反映。');
+    return;
+  }
   feedback.textContent='訂正できたよ！';$('editStudyTimeDialog').close();
   status(name+' さんの '+date+' の記録を '+fmt(newTotal)+' に訂正したよ。ランキングも更新したよ！');
- }catch(e){console.error('勉強時間の管理者訂正',e);feedback.textContent='訂正できなかったよ：'+(e.message||'Firestoreルールを確認してね')}
+ }catch(e){
+  console.error('勉強時間の管理者訂正',e);
+  const reason=e.code==='permission-denied'?'管理者による勉強時間の変更がFirestoreルールで拒否されているよ。ZIPの最新ルールをFirebase Consoleへ貼り付け、「公開」してね。':(e.message||'通信状況を確認してね');
+  feedback.textContent='勉強時間を訂正できなかったよ：'+reason;
+ }
  finally{correctingStudyTimeBusy=false;$('editStudyTimeSave').disabled=false;$('editStudyTimeCancel').disabled=false}
 };
 function fallbackGroupEmoji(id){return id==='pink'?'🩷':id==='blue'?'💙':id?'💜':'❔'}
