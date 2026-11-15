@@ -223,9 +223,23 @@ html,body{max-width:100%;overflow-x:clip}
 .editUserActions .roleBtn{min-width:unset;width:auto;margin:0;padding:10px 15px;cursor:pointer}
 .editUserActions #editUserSave{background:#c95d95;color:white}
 @media(max-width:720px){.userNameWithGroup .editUserBtn{margin-left:auto}.editUserModal{padding:18px}.editUserActions .roleBtn{flex:1}}
+
+#maintenanceAdminPanel[hidden]{display:none!important}
+.maintenanceAdminLabel{display:block;font-size:13px;font-weight:bold;color:#9d5274;margin:16px 0 7px}
+#maintenanceAdminMessage{box-sizing:border-box;width:100%;resize:vertical;padding:12px 13px;border-radius:12px;border:1px solid #e9bdd2;background:white;font:inherit;color:#654056;min-height:75px}
+.maintenanceAdminActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:13px}
+.maintenanceAdminActions button{max-width:100%}
+#maintenanceAdminFeedback{min-height:24px;overflow-wrap:anywhere}
 </style>
 </head><body><main class="wrap"><header class="header">
-<nav aria-label="管理画面ナビゲーション" class="adminTopNav"><a class="adminBackBtn" href="study.html">← Study Logへ戻る</a><a class="adminBackBtn secondary" href="index.html">☁ カウントダウンへ</a></nav><p>高校受験生勉強会！！！</p><h1>🔐 Study Log 管理</h1><p>みんなの頑張りを確認しよう！</p></header><section class="panel loginPanel" id="loginPanel"><h2>🔐 アクセス状況</h2><p class="muted">adminsに登録されたUIDなら、Google認証・匿名認証のどちらでも閲覧できます。副管理者はいつものブラウザで開いてね。</p><button class="btn" id="login">Googleで管理者ログイン</button><button class="btn alt" id="signout" style="display:none">ログアウト</button><div class="status" id="status">ログイン状態を確認中…</div><div class="muted" id="accessInfo"></div><p class="muted" id="helpText">匿名認証で権限を付けてもらう場合は、いつも使っているLINE内ブラウザからStudy Logの管理者ページを開いてね。</p></section><div id="panel"><section class="panel usersPanel" id="usersSection"><div class="sectionHeading"><div><p class="eyebrow">STUDENTS</p><h2>👥 ユーザー一覧</h2></div><span class="smallNote" id="shownCount">準備中…</span></div>
+<nav aria-label="管理画面ナビゲーション" class="adminTopNav"><a class="adminBackBtn" href="study.html">← Study Logへ戻る</a><a class="adminBackBtn secondary" href="index.html">☁ カウントダウンへ</a></nav><p>高校受験生勉強会！！！</p><h1>🔐 Study Log 管理</h1><p>みんなの頑張りを確認しよう！</p></header><section class="panel loginPanel" id="loginPanel"><h2>🔐 アクセス状況</h2><p class="muted">adminsに登録されたUIDなら、Google認証・匿名認証のどちらでも閲覧できます。副管理者はいつものブラウザで開いてね。</p><button class="btn" id="login">Googleで管理者ログイン</button><button class="btn alt" id="signout" style="display:none">ログアウト</button><div class="status" id="status">ログイン状態を確認中…</div><div class="muted" id="accessInfo"></div><p class="muted" id="helpText">匿名認証で権限を付けてもらう場合は、いつも使っているLINE内ブラウザからStudy Logの管理者ページを開いてね。</p></section><div id="panel"><section class="panel" id="maintenanceAdminPanel" hidden>
+  <div class="sectionHeading"><div><p class="eyebrow">SITE SETTINGS</p><h2>🛠️ Study Logの公開設定</h2></div><span class="smallNote" id="maintenanceAdminState">確認中…</span></div>
+  <p class="muted">最高管理者専用。切り替えると一般ユーザーのStudy Logはメンテナンス画面になり、記録やLIVEの通常通信を停止するよ。勉強記録は削除されないよ。</p>
+  <label class="maintenanceAdminLabel" for="maintenanceAdminMessage">メンテナンス中に表示するメッセージ</label>
+  <textarea id="maintenanceAdminMessage" rows="3" maxlength="300" placeholder="使いやすくするための調整を行っています。" aria-label="メンテナンスのお知らせ"></textarea>
+  <div class="maintenanceAdminActions"><button type="button" id="maintenanceAdminToggle" class="btn" disabled>公開状態を読み込み中…</button><button type="button" id="maintenanceAdminRefresh" class="btn alt">🔄 状態を確認</button></div>
+  <p class="muted" id="maintenanceAdminFeedback" role="status" aria-live="polite"></p>
+</section><section class="panel usersPanel" id="usersSection"><div class="sectionHeading"><div><p class="eyebrow">STUDENTS</p><h2>👥 ユーザー一覧</h2></div><span class="smallNote" id="shownCount">準備中…</span></div>
 <p class="muted">ユーザーのカードを押すと、その場で編集できるよ。勉強時間は選択した人の分だけ取得するよ。最新の一覧が必要なら「一覧を更新」を押してね。</p>
 <div class="usersToolbar"><label class="searchField"><span aria-hidden="true">⌕</span><input aria-label="ニックネームで検索" id="userSearch" placeholder="ニックネームで検索" type="search"/></label><label class="filterField">所属 <select aria-label="所属オプチャで絞り込み" id="groupFilter"><option value="all">すべての所属</option></select></label><button class="btn alt" id="refreshDirectory" type="button">🔄 一覧を更新</button></div>
 <div aria-label="所属ごとの登録人数" class="groupUserSummary" id="groupUserSummary"></div>
@@ -283,6 +297,43 @@ const fallbackGroupEmoji=id=>id==='pink'?'🩷':id==='blue'?'💙':id?'💜':'�
 const explainError=e=>e?.code==='resource-exhausted'?'Firestoreの利用上限に達している可能性があるよ。無料枠がリセットされたら再試行してね。':e?.code==='permission-denied'?'Firestoreルールにより操作が拒否されたよ。公開中のルールを確認してね。':e?.message||'通信を確認してね。';
 let sequence=0,owner=false,adminIds=new Set(),bannedIds=new Set(),profiles=new Map(),groups=[];
 let selectedUid=null,selectedData=null,selectedBusy=false,directoryBusy=false,groupAdminLock=false;
+let maintenanceValue=false,maintenanceBusy=false,maintenanceKnown=false;
+const maintenanceSettingRef=doc(db,'settings','studyLog');
+function renderMaintenanceAdmin(){
+ $('maintenanceAdminPanel').hidden=!owner;
+ const btn=$('maintenanceAdminToggle');
+ $('maintenanceAdminState').textContent=maintenanceKnown?(maintenanceValue?'🔧 メンテナンス中':'✅ 通常公開中'):'確認中…';
+ btn.textContent=maintenanceValue?'✅ Study Logを再公開する':'🛠️ メンテナンスを開始する';
+ btn.disabled=!owner||!maintenanceKnown||maintenanceBusy;
+ $('maintenanceAdminRefresh').disabled=!owner||maintenanceBusy;
+}
+async function loadMaintenanceAdmin(){
+ if(!owner)return;
+ maintenanceBusy=true;renderMaintenanceAdmin();
+ try{
+  const snap=await getDoc(maintenanceSettingRef);
+  if(!owner)return;
+  maintenanceValue=snap.exists()&&snap.data()?.maintenance===true;
+  maintenanceKnown=true;
+  $('maintenanceAdminMessage').value=snap.exists()&&typeof snap.data()?.message==='string'?snap.data().message:'使いやすくするための調整を行っています。勉強記録は削除されないので安心してね！';
+  $('maintenanceAdminFeedback').textContent='現在の公開状態を確認できたよ。';
+ }catch(e){maintenanceKnown=false;$('maintenanceAdminFeedback').textContent='公開状態を取得できなかったよ：'+explainError(e)}
+ finally{maintenanceBusy=false;renderMaintenanceAdmin()}
+}
+$('maintenanceAdminRefresh').onclick=()=>void loadMaintenanceAdmin();
+$('maintenanceAdminToggle').onclick=async()=>{
+ if(!owner||!maintenanceKnown||maintenanceBusy)return;
+ const next=!maintenanceValue;
+ if(!confirm(next?'Study Logをメンテナンス画面に切り替える？\n一般ユーザーのページに反映されるよ。':'Study Logを再公開する？\n一般ユーザーが再び記録を利用できるようになるよ。'))return;
+ maintenanceBusy=true;renderMaintenanceAdmin();
+ try{
+  const message=$('maintenanceAdminMessage').value.trim().slice(0,300)||'使いやすくするための調整を行っています。勉強記録は削除されないので安心してね！';
+  await setDoc(maintenanceSettingRef,{maintenance:next,message,updatedAt:serverTimestamp()});
+  maintenanceValue=next;
+  $('maintenanceAdminFeedback').textContent=next?'メンテナンスモードに切り替えたよ。':'Study Logを再公開したよ！';
+ }catch(e){$('maintenanceAdminFeedback').textContent='切り替えに失敗したよ：'+explainError(e)}
+ finally{maintenanceBusy=false;renderMaintenanceAdmin()}
+};
 const groupById=()=>new Map(groups.map(g=>[g.id,g]));
 const status=message=>{$('status').textContent=message};
 const userProfile=uid=>profiles.get(uid)||{nickname:'',groupId:''};
@@ -556,7 +607,7 @@ $('login').onclick=async()=>{
 $('signout').onclick=async()=>{if(!confirm('Googleアカウントからログアウトする？'))return;await signOut(auth);location.href='study.html'};
 onAuthStateChanged(auth,async u=>{
  const epoch=++sequence;
- owner=false;adminIds=new Set();bannedIds=new Set();profiles=new Map();groups=[];selectedUid=null;selectedData=null;selectedBusy=false;directoryBusy=false;
+ owner=false;maintenanceKnown=false;maintenanceBusy=false;renderMaintenanceAdmin();adminIds=new Set();bannedIds=new Set();profiles=new Map();groups=[];selectedUid=null;selectedData=null;selectedBusy=false;directoryBusy=false;
  $('panel').style.display='none';selectedPanelEl.hidden=true;$('accessInfo').textContent='';
  $('loginPanel').classList.remove('isVerified');$('login').style.display='none';$('signout').style.display=u&&!u.isAnonymous?'inline-block':'none';
  if(!u){status('Study Logを開いてから管理者ページにアクセスしてね。snowはGoogle認証でログインしてね。');$('login').style.display='inline-block';return}
@@ -567,6 +618,8 @@ onAuthStateChanged(auth,async u=>{
   owner=!u.isAnonymous&&u.providerData.some(p=>p.providerId==='google.com')&&own.exists()&&own.data()?.nickname==='snow';
   $('panel').style.display='block';$('loginPanel').classList.add('isVerified');
   status(owner?'snow（最高管理者）としてログインできたよ！':'管理者としてログインできたよ！');
+  renderMaintenanceAdmin();
+  if(owner)void loadMaintenanceAdmin();
   // One-shot reads, never onSnapshot. No all-users collection read or rankings query.
   await Promise.all([loadGroups(epoch),loadDirectory(epoch)]);
  }catch(e){if(epoch===sequence)status('管理画面を読み込めなかったよ：'+explainError(e))}

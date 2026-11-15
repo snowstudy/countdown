@@ -140,7 +140,22 @@ body.studyBanned #banNotice,body.studyVerifying #banNotice{display:block}
 .correctionFeedback.isError{color:#b42342}
 @media(max-width:480px){.studyCorrection{padding:12px}.studyCorrection .correctionInputs{gap:8px}.studyCorrection .correctionInputs button{width:100%}}
 
-</style></head><body><section id="banNotice" role="alert" aria-live="assertive"><h2>🔒 このアカウントは利用停止中です</h2><p>管理者によってStudy Logへのアクセスが制限されています。確認が必要な場合は、オプチャの管理者へ連絡してね。</p><p>過去の記録は削除されていません。</p></section><main class="wrap">
+
+body.studyMaintenance > main{display:none!important}
+#maintenanceNotice{display:none;box-sizing:border-box;max-width:570px;margin:10vh auto 3vh;padding:38px 25px;border-radius:28px;text-align:center;color:#865474;border:1.5px solid #ebbed3;background:rgba(255,255,255,.94);box-shadow:0 18px 50px rgba(177,118,151,.16)}
+body.studyMaintenance #maintenanceNotice{display:block}
+#maintenanceNotice .maintenanceIcon{font-size:48px;line-height:1.4}
+#maintenanceNotice h2{color:#ad5c83;font-size:clamp(20px,4.5vw,28px);line-height:1.45;margin:12px 0 18px}
+#maintenanceNotice p{line-height:1.9;font-size:15px}
+#maintenanceNotice .maintenanceSmall{font-size:12px;color:#a07e93;margin:20px auto}
+#maintenanceNotice .maintenanceReturn{display:inline-flex;justify-content:center;align-items:center;border:1px solid #dbacbf;background:white;color:#a45983;border-radius:999px;padding:10px 20px;text-decoration:none;font-weight:bold;margin-top:12px}
+@media(max-width:620px){#maintenanceNotice{margin:12vh 15px 20px;padding:30px 18px}}
+</style></head><body class="studyVerifying"><section id="banNotice" role="alert" aria-live="assertive"><h2>🔒 このアカウントは利用停止中です</h2><p>管理者によってStudy Logへのアクセスが制限されています。確認が必要な場合は、オプチャの管理者へ連絡してね。</p><p>過去の記録は削除されていません。</p></section><section id="maintenanceNotice" role="status" aria-live="polite" aria-label="Study Logメンテナンスのお知らせ">
+<div class="maintenanceIcon" aria-hidden="true">☁️</div><h2>Study Logはただいまメンテナンス中です</h2>
+<p id="maintenanceMessage">使いやすくするための調整を行っています。勉強記録は削除されないので安心してね！</p>
+<p class="maintenanceSmall">再開後にページを開くと、いつもどおり利用できるよ。</p>
+<a class="maintenanceReturn" href="index.html">☁ カウントダウンへ戻る</a>
+</section><main class="wrap">
 <header class="header">
 <div class="topReturn"><a aria-label="カウントダウンページへ戻る" class="returnCountdown returnCountdownTop" href="index.html"><span aria-hidden="true">←</span> カウントダウンに戻る</a></div><p>高校受験生勉強会！！！</p><h1>☁ Study Log ☁</h1><p>今日の頑張りを記録しよう！</p></header>
 <section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" maxlength="24" placeholder="ニックネーム（管理者に表示されます）" type="text"/><button class="btn" id="saveName">名前を保存</button></div><p class="muted" style="margin:7px 0 11px">🩷 ニックネームはオプチャで使っている名前と同じにしてね！</p><div class="groupRegister"><label for="groupSelect">🏷 所属オプチャ</label><select id="groupSelect"><option value="">オプチャを読み込み中…</option></select><p class="muted" id="groupHint">所属オプチャは初回登録時に選んでね。登録後の変更は管理者へお願いしてね！</p></div><div class="hint" id="snowVerify" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button class="btn alt" id="googleVerify" type="button">Googleで本人確認する</button></div><div class="status" id="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
@@ -197,7 +212,7 @@ function refreshPublicIdentityCache(){
  publicProfiles.clear();profileFetched.clear();lastIdentityReload=Date.now();
 }
 function fetchVisibleProfile(uid){
- if(!uid || profileFetched.has(uid) || profileFetches.has(uid) || !auth.currentUser)return;
+ if(maintenanceActive || !uid || profileFetched.has(uid) || profileFetches.has(uid) || !auth.currentUser)return;
  profileFetches.add(uid);
  getDoc(doc(db,'publicProfiles',uid)).then(snap=>{
   if(snap.exists())publicProfiles.set(uid,snap.data());
@@ -250,6 +265,7 @@ function mondayOf(date){const d=new Date(date.getFullYear(),date.getMonth(),date
 function parseLocalDay(key){const [y,m,d]=key.split('-').map(Number);return new Date(y,m-1,d)}
 function rankMinutes(days,week){return Object.entries(days||{}).filter(([d])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&mondayOf(parseLocalDay(d))===week).reduce((sum,[,v])=>sum+(Number.isFinite(Number(v))?Math.max(0,Number(v)):0),0)}
 function syncRankForWeek(week){
+ if(maintenanceActive)return Promise.resolve();
  if(!user?.uid||!remote.nicknameLocked||!remote.nickname)return Promise.resolve();
  const uid=user.uid,nickname=remote.nickname,groupId=remote.groupId||'',minutes=rankMinutes(remote.days||{},week);
  // Public leaderboard exposes only nickname, group and aggregated study minutes.
@@ -292,7 +308,7 @@ function attachPublicRanking(){
  ++rankFetchEpoch;rankEntries=[];rankLoaded=false;rankLoading=false;renderPublicRanking();
 }
 async function loadPublicRanking(){
- if(!auth.currentUser || rankLoading || !hiddenBanReady)return;
+ if(maintenanceActive || !auth.currentUser || rankLoading || !hiddenBanReady)return;
  const week=rankWeek(),cached=rankCache.get(week);
  if(cached && Date.now()-cached.time<RANK_COOLDOWN_MS){
   rankEntries=cached.entries;rankLoaded=true;rankLoading=false;renderPublicRanking();return;
@@ -334,12 +350,12 @@ function renderStats(){const days=remote.days||{},d=today(),now=new Date(),start
  }
 }
 function renderLocal(){const d=getDay(today()),reflection=getDay(reflectionDate);$('goal').value=(typeof remote.goal==='string'?remote.goal:local.goal)||'';$('good').value=reflection.good||'';$('improve').value=reflection.improve||'';$('reflectionDateHint').textContent=reflectionDate===today()?'今日の記録を表示中。別の日を選ぶと過去の記録も見返せるよ。':reflectionDate+' の振り返りを表示中。編集して保存もできるよ。';const list=$('todoList');list.replaceChildren();d.todos.forEach((t,i)=>{const row=document.createElement('div');row.className='todo'+(t.done?' done':'');const check=document.createElement('input');check.type='checkbox';check.checked=!!t.done;check.addEventListener('change',()=>{t.done=check.checked;persist();renderLocal()});const span=document.createElement('span');span.textContent=t.text;const del=document.createElement('button');del.className='tiny';del.textContent='削除';del.addEventListener('click',()=>{d.todos.splice(i,1);persist();renderLocal()});row.append(check,span,del);list.append(row)});const done=d.todos.filter(t=>t.done).length;$('todoProgress').textContent=`${done} / ${d.todos.length} 完了`;$('todoBar').style.width=(d.todos.length?done/d.todos.length*100:0)+'%'}
-async function addTime(date,mins){if(!userRef)throw Error('準備ができるまで待ってね');if(!remote.nicknameLocked)throw Error('先にニックネームを登録してね');if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isSafeInteger(mins)||mins<1||mins>1440)throw Error('時間は1分〜24時間で入力してね');await runTransaction(db,async tx=>{const snap=await tx.get(userRef);const data=snap.exists()?snap.data():{};const days={...(data.days||{})};const already=Math.max(0,Math.floor(Number(days[date])||0));if(already+mins>1440){const remaining=Math.max(0,1440-already);throw Error(`1日に記録できる勉強時間は合計24時間までだよ！（あと${Math.floor(remaining/60)}時間${remaining%60}分追加できるよ）`)}days[date]=already+mins;tx.set(userRef,{days},{merge:true})})}
-async function guard(button,fn,feedbackId=null){if(busy)return;busy=true;button.disabled=true;const feedback=feedbackId?$(feedbackId):null;if(feedback){feedback.textContent='';feedback.className='timer-feedback'}try{await fn();if(feedback){feedback.textContent='保存できたよ！ ☁';feedback.className='timer-feedback'}else setStatus('保存できたよ！ ☁')}catch(e){console.error(e);if(feedback){feedback.textContent='保存できなかったよ：'+(e.message||'接続を確認してね');feedback.className='timer-feedback error'}else setStatus('保存できなかったよ：'+(e.message||'接続を確認してね'),true)}finally{busy=false;button.disabled=false}}
+async function addTime(date,mins){if(maintenanceActive)throw Error('現在はメンテナンス中だよ');if(!userRef)throw Error('準備ができるまで待ってね');if(!remote.nicknameLocked)throw Error('先にニックネームを登録してね');if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isSafeInteger(mins)||mins<1||mins>1440)throw Error('時間は1分〜24時間で入力してね');await runTransaction(db,async tx=>{const snap=await tx.get(userRef);const data=snap.exists()?snap.data():{};const days={...(data.days||{})};const already=Math.max(0,Math.floor(Number(days[date])||0));if(already+mins>1440){const remaining=Math.max(0,1440-already);throw Error(`1日に記録できる勉強時間は合計24時間までだよ！（あと${Math.floor(remaining/60)}時間${remaining%60}分追加できるよ）`)}days[date]=already+mins;tx.set(userRef,{days},{merge:true})})}
+async function guard(button,fn,feedbackId=null){if(maintenanceActive||busy)return;busy=true;button.disabled=true;const feedback=feedbackId?$(feedbackId):null;if(feedback){feedback.textContent='';feedback.className='timer-feedback'}try{await fn();if(feedback){feedback.textContent='保存できたよ！ ☁';feedback.className='timer-feedback'}else setStatus('保存できたよ！ ☁')}catch(e){console.error(e);if(feedback){feedback.textContent='保存できなかったよ：'+(e.message||'接続を確認してね');feedback.className='timer-feedback error'}else setStatus('保存できなかったよ：'+(e.message||'接続を確認してね'),true)}finally{busy=false;button.disabled=false}}
 // Same-day correction: replace today's total; past-date corrections are admin-only in the UI.
 $('correctTodaySave').onclick=async()=>{
  const btn=$('correctTodaySave'),feedback=$('correctTodayFeedback');
- if(busy)return;
+ if(maintenanceActive||busy)return;
  const hours=Number($('correctTodayHours').value),minutes=Number($('correctTodayMinutes').value);
  if(!Number.isInteger(hours)||!Number.isInteger(minutes)||hours<0||hours>24||minutes<0||minutes>59||(hours===24&&minutes!==0)){
   feedback.textContent='0分〜24時間の範囲で入力してね（24時間の場合は0分）。';feedback.className='correctionFeedback isError';return;
@@ -431,13 +447,14 @@ function queueLiveWrite(write){
  return liveWriteChain;
 }
 function publishLive(){
- if(!user?.uid || !remote.nicknameLocked || !remote.nickname || !timer.startedAt)return Promise.resolve();
+ if(maintenanceActive || document.hidden || !user?.uid || !remote.nicknameLocked || !remote.nickname || !timer.startedAt)return Promise.resolve();
  const now=Date.now();if(now-lastLivePing<LIVE_PING_MS-10000)return Promise.resolve();lastLivePing=now;
  const uid=user.uid, name=remote.nickname, start=timer.startedAt, base=timer.elapsed;
  // serverTimestamp gives a trusted freshness marker; other viewers draw locally every second.
  return queueLiveWrite(()=>setDoc(doc(db,'liveStudy',uid),{nickname:name,groupId:remote.groupId||'',startedAtMs:start,elapsedMs:Math.max(0,base),lastSeen:serverTimestamp()}));
 }
 function stopLive(){
+ if(maintenanceActive)return Promise.resolve();
  lastLivePing=0;
  if(!user?.uid)return Promise.resolve();
  const uid=user.uid;
@@ -448,7 +465,7 @@ function attachLiveListener(){
  liveLoaded=false;liveLoading=false;liveEntries=[];lastLiveRead=0;renderLive();
 }
 async function refreshLive(){
- if(!auth.currentUser || !hiddenBanReady || liveLoading)return;
+ if(maintenanceActive || !auth.currentUser || !hiddenBanReady || liveLoading)return;
  if(Date.now()-lastLiveRead<LIVE_REFRESH_COOLDOWN_MS){renderLive();return}
  lastLiveRead=Date.now();liveLoading=true;$('liveRefresh').disabled=true;renderLive();
  try{
@@ -480,6 +497,40 @@ $('timerReset').onclick=()=>{if(!confirm('タイマーをリセットする？�
 $('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),mins=Math.round(ms/60000);if(mins<1)throw Error('1分以上計測してから保存してね');if(mins>1440)throw Error('24時間を超えたよ。タイマーを確認してね');if(timer.startedAt){timer.elapsed=ms;timer.startedAt=null;saveTimer()}await addTime(today(),mins);timer={elapsed:0,startedAt:null};saveTimer();drawTimer();void stopLive()},'timerFeedback');
 renderLocal();renderStats();
 let banUnsubscribe=null,banEpoch=0,sessionStarted=false;
+let maintenanceReady=false,maintenanceActive=false,authReady=false,latestAuthUser=null;
+const maintenanceRef=doc(db,'settings','studyLog');
+function stopSessionForMaintenance(message){
+ ++banEpoch;
+ if(banUnsubscribe){banUnsubscribe();banUnsubscribe=null}
+ if(unsubscribe){unsubscribe();unsubscribe=null}
+ if(liveUnsubscribe){liveUnsubscribe();liveUnsubscribe=null}
+ if(groupUnsub){groupUnsub();groupUnsub=null}
+ if(publicProfilesUnsub){publicProfilesUnsub();publicProfilesUnsub=null}
+ if(rankUnsub){rankUnsub();rankUnsub=null}
+ if(hiddenBanUnsub){hiddenBanUnsub();hiddenBanUnsub=null}
+ ++rankFetchEpoch;hiddenBanReady=false;hiddenBanIds=new Set();
+ sessionStarted=false;liveUid=null;user=null;userRef=null;
+ document.body.classList.remove('studyVerifying','studyBanned');
+ document.body.classList.add('studyMaintenance');
+ $('maintenanceMessage').textContent=message||'使いやすくするための調整を行っています。勉強記録は削除されないので安心してね！';
+}
+function restartAfterMaintenance(){
+ document.body.classList.remove('studyMaintenance');
+ document.body.classList.add('studyVerifying');
+ if(authReady)beginAuthSession(latestAuthUser);
+}
+// Only the one configuration document remains subscribed while maintenance is active.
+onSnapshot(maintenanceRef,snap=>{
+ const enabled=snap.exists()&&snap.data()?.maintenance===true;
+ const first=!maintenanceReady,changed=enabled!==maintenanceActive;
+ maintenanceReady=true;maintenanceActive=enabled;
+ if(enabled){if(first||changed)stopSessionForMaintenance(snap.data()?.message);else $('maintenanceMessage').textContent=snap.data()?.message||'使いやすくするための調整を行っています。勉強記録は削除されないので安心してね！';}
+ else if(first||changed)restartAfterMaintenance();
+},err=>{
+ console.error('メンテナンス状態の取得',err);
+ maintenanceReady=true;maintenanceActive=true;
+ stopSessionForMaintenance('現在、接続状況を確認できません。しばらくしてから再読み込みしてね。');
+});
 function stopSessionForBan(){
  document.body.classList.remove('studyVerifying');document.body.classList.add('studyBanned');sessionStarted=false;
  const title=document.querySelector('#banNotice h2');if(title)title.textContent='🔒 このアカウントは利用停止中です';
@@ -493,12 +544,13 @@ function stopSessionForBan(){
  liveUid=null;user=null;userRef=null;
 }
 function startStudySession(u){
- if(sessionStarted)return;
+ if(maintenanceActive||sessionStarted)return;
  sessionStarted=true;
  document.body.classList.remove('studyBanned','studyVerifying');
  user=u;userRef=doc(db,'users',u.uid);if(liveUid!==u.uid){liveUid=u.uid;attachLiveListener();startGroups();attachPublicProfiles();attachHiddenBans();attachPublicRanking()}
  if(unsubscribe)unsubscribe();
  unsubscribe=onSnapshot(userRef,async snap=>{
+  if(maintenanceActive)return;
   remote=snap.exists()?snap.data():{days:{},nickname:''};remote.days??={};renderGroupSelect();ensureOwnPublicProfile();syncRecentRankings();
   $('nickname').value=remote.nickname||(pendingSnowLogin?'snow':'');
   updateSnowVerify();
@@ -517,7 +569,8 @@ function startStudySession(u){
   }
  },err=>{console.error(err);setStatus('データの読み込みに失敗したよ。Firestoreのルールを確認してね。',true)});
  }
-onAuthStateChanged(auth,async u=>{
+async function beginAuthSession(u){
+ if(!maintenanceReady||maintenanceActive)return;
  const epoch=++banEpoch;
  if(banUnsubscribe){banUnsubscribe();banUnsubscribe=null}
  if(unsubscribe){unsubscribe();unsubscribe=null}
@@ -530,15 +583,19 @@ onAuthStateChanged(auth,async u=>{
  const pendingTitle=document.querySelector('#banNotice h2');if(pendingTitle)pendingTitle.textContent='🔐 アクセスを確認中…';
  const pendingDesc=document.querySelector('#banNotice p');if(pendingDesc)pendingDesc.textContent='登録情報を確認しているよ。';
  banUnsubscribe=onSnapshot(doc(db,'accessBans',u.uid),snap=>{
-  if(epoch!==banEpoch)return;
+  if(maintenanceActive||epoch!==banEpoch)return;
   if(snap.exists()){stopSessionForBan()}
   else if(!sessionStarted){startStudySession(u)}
  },e=>{
-  if(epoch!==banEpoch)return;
+  if(maintenanceActive||epoch!==banEpoch)return;
   console.error('アクセス状態の確認',e);
   stopSessionForBan();
   const notice=document.querySelector('#banNotice p');
   if(notice)notice.textContent='利用状態を確認できませんでした。ページを再読み込みするか、管理者に連絡してね。';
  });
+}
+onAuthStateChanged(auth,u=>{
+ latestAuthUser=u;authReady=true;
+ if(maintenanceReady&&!maintenanceActive)void beginAuthSession(u);
 });
 </script></body></html>
