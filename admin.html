@@ -231,6 +231,22 @@ html,body{max-width:100%;overflow-x:clip}
 .maintenanceAdminActions button{max-width:100%}
 #maintenanceAdminFeedback{min-height:24px;overflow-wrap:anywhere}
 </style>
+
+<style id="compact-inline-editors">
+/* Keep each editor in normal flow; do not reserve space for empty feedback. */
+.inlineEditSection .editUserModal{gap:10px;height:auto;min-height:0;justify-content:flex-start}
+.inlineEditSection .editUserModal h2{margin:0!important}
+.inlineEditSection .editUserHelp{margin:0;line-height:1.6}
+.inlineEditSection .editField{margin:0;gap:6px}
+.inlineEditSection .editUserFeedback{margin:0;min-height:0}
+.inlineEditSection .editUserFeedback:empty{display:none}
+.inlineEditSection .editUserActions{margin-top:2px}
+.inlineEditSection .editUserActions .roleBtn{min-height:44px}
+#inlineTimeEditor .editUserModal{gap:8px}
+#inlineTimeEditor #editStudyTimeCurrent{margin:-2px 0 0;line-height:1.5}
+#inlineTimeEditor .adminTimeFields{gap:12px;margin:0}
+#inlineTimeEditor .editUserActions{margin-top:4px}
+</style>
 </head><body><main class="wrap"><header class="header">
 <nav aria-label="管理画面ナビゲーション" class="adminTopNav"><a class="adminBackBtn" href="study.html">← Study Logへ戻る</a><a class="adminBackBtn secondary" href="index.html">☁ カウントダウンへ</a></nav><p>高校受験生勉強会！！！</p><h1>🔐 Study Log 管理</h1><p>みんなの頑張りを確認しよう！</p></header><section class="panel loginPanel" id="loginPanel"><h2>🔐 アクセス状況</h2><p class="muted">adminsに登録されたUIDなら、Google認証・匿名認証のどちらでも閲覧できます。副管理者はいつものブラウザで開いてね。</p><button class="btn" id="login">Googleで管理者ログイン</button><button class="btn alt" id="signout" style="display:none">ログアウト</button><div class="status" id="status">ログイン状態を確認中…</div><div class="muted" id="accessInfo"></div><p class="muted" id="helpText">匿名認証で権限を付けてもらう場合は、いつも使っているLINE内ブラウザからStudy Logの管理者ページを開いてね。</p></section><div id="panel"><section class="panel" id="maintenanceAdminPanel" hidden>
   <div class="sectionHeading"><div><p class="eyebrow">SITE SETTINGS</p><h2>🛠️ Study Logの公開設定</h2></div><span class="smallNote" id="maintenanceAdminState">確認中…</span></div>
