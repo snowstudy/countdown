@@ -568,7 +568,7 @@ function startStudySession(u){
   renderStats();
   if(remote.nicknameLocked){setStatus('準備ができたよ！ ☁');if(timer.startedAt)void publishLive()}else{setStatus('最初にニックネームを登録してね！')}
   if(remote.nicknameLocked){
-    try{const a=await getDoc(doc(db,'admins',u.uid));if(auth.currentUser?.uid===u.uid&&a.exists()&&a.data()?.enabled===true)$('adminLink').style.display='block'}catch(e){console.error(e)}
+    try{const a=await getDoc(doc(db,'admins',u.uid));if(auth.currentUser?.uid===u.uid&&(u.uid==='1F68OS96afV7SiQdz3NzrKyRWJ03'||(a.exists()&&a.data()?.enabled===true)))$('adminLink').style.display='block'}catch(e){console.error(e)}
   }
  },err=>{console.error(err);setStatus('データの読み込みに失敗したよ。Firestoreのルールを確認してね。',true)});
  }
