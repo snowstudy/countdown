@@ -125,7 +125,9 @@ body[data-study-theme="other"] main.wrap button.btn:not(#timerStart):not(#timerP
 #timerPanel .formrow{flex-wrap:wrap}
 body.studyBanned > main,body.studyVerifying > main{display:none!important}
 #banNotice{display:none;max-width:550px;margin:8vh auto;padding:28px 24px;background:white;border:2px solid #e2b4c8;border-radius:20px;text-align:center;box-shadow:0 10px 30px #b89aaa33;color:#683c51}
-body.studyBanned #banNotice,body.studyVerifying #banNotice{display:block}
+body.studyBanned #banNotice{display:block}
+#accessLoadingNotice{display:none;max-width:550px;margin:8vh auto;padding:28px 24px;background:white;border:2px solid #e2b4c8;border-radius:20px;text-align:center;box-shadow:0 10px 30px #b89aaa33;color:#683c51}
+body.studyVerifying #accessLoadingNotice{display:block}
 #banNotice h2{margin:0 0 14px;color:#a33c6a}
 #banNotice p{line-height:1.8}
 
@@ -150,7 +152,7 @@ body.studyMaintenance #maintenanceNotice{display:block}
 #maintenanceNotice .maintenanceSmall{font-size:12px;color:#a07e93;margin:20px auto}
 #maintenanceNotice .maintenanceReturn{display:inline-flex;justify-content:center;align-items:center;border:1px solid #dbacbf;background:white;color:#a45983;border-radius:999px;padding:10px 20px;text-decoration:none;font-weight:bold;margin-top:12px}
 @media(max-width:620px){#maintenanceNotice{margin:12vh 15px 20px;padding:30px 18px}}
-</style></head><body class="studyVerifying"><section id="banNotice" role="alert" aria-live="assertive"><h2>🔒 このアカウントは利用停止中です</h2><p>管理者によってStudy Logへのアクセスが制限されています。確認が必要な場合は、オプチャの管理者へ連絡してね。</p><p>過去の記録は削除されていません。</p></section><section id="maintenanceNotice" role="status" aria-live="polite" aria-label="Study Logメンテナンスのお知らせ">
+</style></head><body class="studyVerifying"><section id="accessLoadingNotice" role="status" aria-live="polite"><h2>☁️ 読み込み中…</h2><p>勉強記録を開く準備をしているよ。少し待ってね！</p></section><section id="banNotice" role="alert" aria-live="assertive"><h2>🔒 このアカウントは利用停止中です</h2><p>管理者によってStudy Logへのアクセスが制限されています。確認が必要な場合は、オプチャの管理者へ連絡してね。</p><p>過去の記録は削除されていません。</p></section><section id="maintenanceNotice" role="status" aria-live="polite" aria-label="Study Logメンテナンスのお知らせ">
 <div class="maintenanceIcon" aria-hidden="true">☁️</div><h2>Study Logはただいまメンテナンス中です</h2>
 <p id="maintenanceMessage">使いやすくするための調整を行っています。勉強記録は削除されないので安心してね！</p>
 <p class="maintenanceSmall">再開後にページを開くと、いつもどおり利用できるよ。</p>
@@ -577,12 +579,13 @@ async function beginAuthSession(u){
  if(unsubscribe){unsubscribe();unsubscribe=null}
  sessionStarted=false;
  if(!u){
-  try{await signInAnonymously(auth)}catch(e){setStatus('ログインできなかったよ。再読み込みしてね。',true)}
+  document.body.classList.remove('studyBanned');document.body.classList.add('studyVerifying');
+  try{await signInAnonymously(auth)}catch(e){document.querySelector('#accessLoadingNotice h2').textContent='接続を確認できませんでした';document.querySelector('#accessLoadingNotice p').textContent='ページを再読み込みしてね。'}
   return;
  }
  document.body.classList.remove('studyBanned');document.body.classList.add('studyVerifying');
- const pendingTitle=document.querySelector('#banNotice h2');if(pendingTitle)pendingTitle.textContent='🔐 アクセスを確認中…';
- const pendingDesc=document.querySelector('#banNotice p');if(pendingDesc)pendingDesc.textContent='登録情報を確認しているよ。';
+ const pendingTitle=document.querySelector('#accessLoadingNotice h2');if(pendingTitle)pendingTitle.textContent='🔐 アクセスを確認中…';
+ const pendingDesc=document.querySelector('#accessLoadingNotice p');if(pendingDesc)pendingDesc.textContent='登録情報を確認しているよ。';
  banUnsubscribe=onSnapshot(doc(db,'accessBans',u.uid),snap=>{
   if(maintenanceActive||epoch!==banEpoch)return;
   if(snap.exists()){stopSessionForBan()}
@@ -591,6 +594,7 @@ async function beginAuthSession(u){
   if(maintenanceActive||epoch!==banEpoch)return;
   console.error('アクセス状態の確認',e);
   stopSessionForBan();
+  document.querySelector('#banNotice h2').textContent='接続を確認できませんでした';
   const notice=document.querySelector('#banNotice p');
   if(notice)notice.textContent='利用状態を確認できませんでした。ページを再読み込みするか、管理者に連絡してね。';
  });
