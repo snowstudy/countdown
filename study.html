@@ -112,9 +112,9 @@ main.wrap button.btn:focus-visible{outline:2px solid #e989b0;outline-offset:2px}
 main.wrap button.btn:disabled{opacity:.5;box-shadow:none}
 /* One-shot actions return to white immediately after the click.
    Start and pause retain their existing pressed/focused styling; save and reset return to white. */
-main.wrap button.btn:not(#timerStart):not(#timerPause):focus:not(:active),
-body[data-study-theme="blue"] main.wrap button.btn:not(#timerStart):not(#timerPause):focus:not(:active),
-body[data-study-theme="other"] main.wrap button.btn:not(#timerStart):not(#timerPause):focus:not(:active){
+main.wrap button.btn:not(#timerStart):not(#timerPause):not(.recordTab):focus:not(:active),
+body[data-study-theme="blue"] main.wrap button.btn:not(#timerStart):not(#timerPause):not(.recordTab):focus:not(:active),
+body[data-study-theme="other"] main.wrap button.btn:not(#timerStart):not(#timerPause):not(.recordTab):focus:not(:active){
   background:#fff !important;
   color:#ad5b81 !important;
   border-color:#e7bfd2 !important;
@@ -152,6 +152,30 @@ body.studyMaintenance #maintenanceNotice{display:block}
 #maintenanceNotice .maintenanceSmall{font-size:12px;color:#a07e93;margin:20px auto}
 #maintenanceNotice .maintenanceReturn{display:inline-flex;justify-content:center;align-items:center;border:1px solid #dbacbf;background:white;color:#a45983;border-radius:999px;padding:10px 20px;text-decoration:none;font-weight:bold;margin-top:12px}
 @media(max-width:620px){#maintenanceNotice{margin:12vh 15px 20px;padding:30px 18px}}
+
+/* Add time already studied to the unsaved timer total. */
+.timerAdjustment{margin:12px 0 16px;padding:15px;border:2px solid #e3a4c2;border-radius:16px;background:#fff1f7;box-shadow:0 3px 12px #a9557a12}
+.timerAdjustment h3{display:flex;align-items:center;gap:8px;margin:0;color:#a4517a;font-size:16px;line-height:1.6}
+.timerAddMark{display:inline-flex;align-items:center;justify-content:center;flex:none;width:26px;height:26px;border-radius:50%;background:#e989b0;color:#fff;font-family:sans-serif;font-size:19px}
+.timerAdjustment .timerAddLead{margin:7px 0 0;font-size:13px;line-height:1.7;color:#955477}
+@media(max-width:480px){#timerPanel .timerAdjustment #timerAdd{flex-basis:100%;min-height:44px}.timerAdjustment{padding:13px}.timerAdjustment h3{font-size:15px}}
+#timerPanel .timerAdjustment .formrow{justify-content:center;gap:10px;margin-top:12px;align-items:center}
+#timerPanel .timerAdjustment .manualUnit input{width:74px;max-width:100%}
+.timerAdjustment .muted{font-size:12px;line-height:1.7;margin:9px 0 0}
+
+/* Timer and direct entry share one card; switching views never alters timing. */
+#studyRecordPanel [hidden]{display:none!important}
+.recordTabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:15px 0 16px}
+#studyRecordPanel .recordTabs .recordTab{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;min-height:46px;margin:0;padding:11px 8px}
+main.wrap #studyRecordPanel .recordTabs .recordTab[aria-selected="true"]{background:#e989b0!important;color:#fff!important;border-color:#d873a0!important}
+main.wrap #studyRecordPanel .recordTabs .recordTab[aria-selected="false"]{background:#fff!important;color:#ad5b81!important;border-color:#e7bfd2!important}
+.recordTimerStatus{display:inline-block;font-size:10px;line-height:1.5;padding:2px 6px;border:1px solid currentColor;border-radius:999px;white-space:nowrap}
+.recordModeHint{font-size:12px;line-height:1.7;padding:9px 11px;margin:0 0 13px;border:1px solid #edcbdc;border-radius:11px;background:rgba(255,255,255,.72)}
+.recordIntro{margin:0 0 12px;font-size:13px}
+#manualPanel .formrow{gap:10px;min-width:0;align-items:center;flex-wrap:wrap}
+#manualPanel input[type="date"]{max-width:100%;min-width:0;box-sizing:border-box}
+.recordPane{min-width:0}
+@media(max-width:430px){#manualPanel .formrow>label:first-child{flex-basis:100%}#studyRecordPanel .recordTabs .recordTab{font-size:13px}}
 </style></head><body class="studyVerifying"><section id="accessLoadingNotice" role="status" aria-live="polite"><h2>☁️ 読み込み中…</h2><p>勉強記録を開く準備をしているよ。少し待ってね！</p></section><section id="banNotice" role="alert" aria-live="assertive"><h2>🔒 このアカウントは利用停止中です</h2><p>管理者によってStudy Logへのアクセスが制限されています。確認が必要な場合は、オプチャの管理者へ連絡してね。</p><p>過去の記録は削除されていません。</p></section><section id="maintenanceNotice" role="status" aria-live="polite" aria-label="Study Logメンテナンスのお知らせ">
 <div class="maintenanceIcon" aria-hidden="true">☁️</div><h2>Study Logはただいまメンテナンス中です</h2>
 <p id="maintenanceMessage">使いやすくするための調整を行っています。勉強記録は削除されないので安心してね！</p>
@@ -164,7 +188,20 @@ body.studyMaintenance #maintenanceNotice{display:block}
 <section class="panel"><h2>🌷 わたしの記録</h2><div class="formrow"><input id="nickname" maxlength="24" placeholder="ニックネーム（管理者に表示されます）" type="text"/><button class="btn" id="saveName">名前を保存</button></div><p class="muted" style="margin:7px 0 11px">🩷 ニックネームはオプチャで使っている名前と同じにしてね！</p><div class="groupRegister"><label for="groupSelect">🏷 所属オプチャ</label><select id="groupSelect"><option value="">オプチャを読み込み中…</option></select><p class="muted" id="groupHint">所属オプチャは初回登録時に選んでね。登録後の変更は管理者へお願いしてね！</p></div><div class="hint" id="snowVerify" style="display:none;margin-top:10px"><p>🔐 「snow」は管理者専用だよ。Googleアカウントで本人確認してから登録してね。</p><button class="btn alt" id="googleVerify" type="button">Googleで本人確認する</button></div><div class="status" id="status">読み込み中…</div><p class="muted">ニックネームは重複不可で、登録後は変更できません。通常は匿名認証なので、ブラウザのデータを消したり端末を変えると記録を引き継げない場合があります。</p><div id="adminLink" style="display:none;margin-top:12px"><a class="btn" href="admin.html">🔐 管理者ページを開く</a></div></section>
 <section class="panel"><h2>📚 勉強時間のまとめ</h2><div class="grid"><div class="stat">今日<strong id="todayTotal">0分</strong></div><div class="stat">今週<strong id="weekTotal">0分</strong></div><div class="stat">今月<strong id="monthTotal">0分</strong></div></div></section>
 
-<section aria-label="みんなの勉強状況" class="panel" id="livePanel"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE（手動更新）</span></div><p class="liveIntro">読み取りを節約するため、LIVEは手動更新だよ！タイマーを使っている人の名前・所属・計測時間を表示するよ（状況の反映には数分かかる場合があるよ）。</p><button class="btn alt" id="liveRefresh" type="button">🔄 LIVEを更新</button><p aria-live="polite" class="liveCount" id="liveCount">確認中…</p><div class="liveMembers" id="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section><section class="panel timer-panel" id="timerPanel"><h2>⏱ タイマーで記録</h2><div class="timer" id="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button class="btn" id="timerStart">スタート</button><button class="btn alt" id="timerPause">一時停止</button><button class="btn" id="timerSave">記録して終了</button><button class="btn danger" id="timerReset">リセット</button></div><div aria-live="polite" class="timer-feedback" id="timerFeedback" role="status"></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p></section><section class="panel"><h2>✏️ 手動で記録</h2><div class="formrow"><label>日付 <input id="manualDate" type="date"/></label><label class="manualUnit"><input aria-label="追加する時間" id="hours" inputmode="numeric" max="24" min="0" type="number" value="1"/><span>時間</span></label><label class="manualUnit"><input aria-label="追加する分" id="minutes" inputmode="numeric" max="59" min="0" type="number" value="0"/><span>分</span></label></div><p><button class="btn" id="addManual">勉強時間を追加</button></p><p class="muted">指定した日の合計時間に加算されるよ！</p></section>
+<section aria-label="みんなの勉強状況" class="panel" id="livePanel"><div class="liveHeader"><h2 style="margin:0">📖 いま勉強中のみんな</h2><span class="liveMark">● LIVE（手動更新）</span></div><p class="liveIntro">読み取りを節約するため、LIVEは手動更新だよ！タイマーを使っている人の名前・所属・計測時間を表示するよ（状況の反映には数分かかる場合があるよ）。</p><button class="btn alt" id="liveRefresh" type="button">🔄 LIVEを更新</button><p aria-live="polite" class="liveCount" id="liveCount">確認中…</p><div class="liveMembers" id="liveMembers"><div class="liveNone">勉強中の人を確認しているよ…</div></div></section><section class="panel recording-panel" id="studyRecordPanel" aria-labelledby="studyRecordTitle">
+<h2 id="studyRecordTitle">📚 勉強時間を記録</h2>
+<div class="recordTabs" role="tablist" aria-label="勉強時間の記録方法">
+<button class="btn recordTab" id="recordTimerTab" type="button" role="tab" aria-selected="true" aria-controls="timerPanel" tabindex="0">タイマー<span class="recordTimerStatus" id="recordTimerStatus" hidden>計測中</span></button>
+<button class="btn recordTab" id="recordManualTab" type="button" role="tab" aria-selected="false" aria-controls="manualPanel" tabindex="-1">手動入力</button>
+</div>
+<p class="muted recordModeHint" id="recordModeHint" role="status" aria-live="polite" hidden></p>
+<div class="timer-panel recordPane" id="timerPanel" role="tabpanel" aria-labelledby="recordTimerTab">
+<div class="timer" id="timer">00:00:00</div><div class="formrow" style="justify-content:center"><button class="btn" id="timerStart">スタート</button><button class="btn alt" id="timerPause">一時停止</button><button class="btn" id="timerSave">記録して終了</button><button class="btn danger" id="timerReset">リセット</button></div><section class="timerAdjustment" id="timerAdjustment" aria-labelledby="timerAddTitle"><h3 id="timerAddTitle"><span class="timerAddMark" aria-hidden="true">＋</span>すでに勉強した時間を追加</h3><p class="timerAddLead">先に勉強した分や、計り忘れた分はここからタイマーに足せるよ！</p><div class="formrow"><label class="manualUnit"><input id="timerAddHours" type="number" min="0" max="24" step="1" inputmode="numeric" value="0" aria-label="タイマーに追加する時間"/><span>時間</span></label><label class="manualUnit"><input id="timerAddMinutes" type="number" min="0" max="59" step="1" inputmode="numeric" value="0" aria-label="タイマーに追加する分"/><span>分</span></label><button class="btn alt" id="timerAdd" type="button">タイマーに追加</button></div><p class="muted">スタート前・計測中・一時停止中もOK。「記録して終了」でまとめて保存します。すでに記録した分は追加しないでね。</p><div id="timerAddFeedback" class="timer-feedback" role="status" aria-live="polite"></div></section><div aria-live="polite" class="timer-feedback" id="timerFeedback" role="status"></div><p class="muted">タイマーはブラウザを閉じても再開できるよう、この端末に状態を保存するよ。記録すると今日の勉強時間に追加されるよ。</p>
+</div>
+<div class="recordPane" id="manualPanel" role="tabpanel" aria-labelledby="recordManualTab" hidden>
+<p class="muted recordIntro">すでに勉強した時間を入力して記録できるよ。過去の日付も選べます。</p>
+<div class="formrow"><label>日付 <input id="manualDate" type="date"/></label><label class="manualUnit"><input aria-label="追加する時間" id="hours" inputmode="numeric" max="24" min="0" type="number" value="1"/><span>時間</span></label><label class="manualUnit"><input aria-label="追加する分" id="minutes" inputmode="numeric" max="59" min="0" type="number" value="0"/><span>分</span></label></div><p><button class="btn" id="addManual">勉強時間を追加</button></p><div class="timer-feedback" id="manualFeedback" role="status" aria-live="polite"></div><p class="muted">指定した日の合計時間に加算されるよ！タイマーとは別に直接保存します。</p>
+</div></section>
 <section aria-label="みんなの週間勉強ランキング" class="panel" id="publicRanking">
 <div class="liveHeader"><h2 style="margin:0">🏆 週間勉強ランキング</h2><span class="rankLabel">WEEKLY RANKING</span></div>
 <p class="muted">月曜〜日曜の記録だよ！通信節約のため、表示・更新はボタンを押したときだけ行うよ。</p><button class="btn alt" id="rankRefresh" type="button">🏆 ランキングを表示・更新</button>
@@ -398,7 +435,7 @@ $('saveName').onclick=()=>guard($('saveName'),async()=>{
  $('nickname').value=name;pendingSnowLogin=false;updateSnowVerify();
 });
 
-$('addManual').onclick=()=>guard($('addManual'),async()=>{const h=Number($('hours').value),m=Number($('minutes').value);if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||h>24||m<0||m>59||(h===24&&m!==0)||h*60+m===0)throw Error('1分〜24時間で入力してね（24時間の場合は0分）');await addTime($('manualDate').value,h*60+m)});
+$('addManual').onclick=()=>guard($('addManual'),async()=>{const h=Number($('hours').value),m=Number($('minutes').value);if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||h>24||m<0||m>59||(h===24&&m!==0)||h*60+m===0)throw Error('1分〜24時間で入力してね（24時間の場合は0分）');await addTime($('manualDate').value,h*60+m)},'manualFeedback');
 $('saveGoal').onclick=()=>guard($('saveGoal'),async()=>{
  if(!userRef||!remote.nicknameLocked)throw Error('先にニックネームを登録してね');
  const goal=$('goal').value.slice(0,2000);
@@ -492,12 +529,54 @@ setInterval(()=>{if(timer.startedAt && user?.uid && remote.nicknameLocked)void p
 setInterval(renderLive,1000);
 window.addEventListener('focus',()=>{if(timer.startedAt)void publishLive()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden && timer.startedAt)void publishLive()});
-let timer=safeParse(localStorage.getItem(timerKey),{elapsed:0,startedAt:null});if(!Number.isFinite(timer.elapsed)||timer.elapsed<0)timer={elapsed:0,startedAt:null};const elapsed=()=>Math.max(0,timer.elapsed+(timer.startedAt?Date.now()-timer.startedAt:0));const saveTimer=()=>localStorage.setItem(timerKey,JSON.stringify(timer));const drawTimer=()=>{const secs=Math.floor(elapsed()/1000);$('timer').textContent=[Math.floor(secs/3600),Math.floor(secs%3600/60),secs%60].map(n=>String(n).padStart(2,'0')).join(':');$('timerStart').disabled=!!timer.startedAt;$('timerPause').disabled=!timer.startedAt};setInterval(drawTimer,1000);
+const recordModes=[{name:'timer',tab:'recordTimerTab',pane:'timerPanel'},{name:'manual',tab:'recordManualTab',pane:'manualPanel'}];
+let recordMode='timer';
+function updateRecordModeStatus(){
+ const running=!!timer.startedAt;$('recordTimerStatus').hidden=!running;
+ const hint=$('recordModeHint'),message=running&&recordMode==='manual'?'タイマーは計測を続けています。停止やタイマーの保存は「タイマー」から行ってね。':'';
+ hint.hidden=!message;if(hint.textContent!==message)hint.textContent=message;
+}
+function selectRecordMode(name,focus=false){
+ if(!recordModes.some(m=>m.name===name))return;
+ recordMode=name;
+ for(const mode of recordModes){const selected=mode.name===name;$(mode.tab).setAttribute('aria-selected',String(selected));$(mode.tab).tabIndex=selected?0:-1;$(mode.pane).hidden=!selected}
+ updateRecordModeStatus();if(focus)$(recordModes.find(m=>m.name===name).tab).focus();
+}
+for(const [index,mode] of recordModes.entries()){
+ $(mode.tab).onclick=()=>selectRecordMode(mode.name);
+ $(mode.tab).addEventListener('keydown',e=>{
+  let next;if(e.key==='ArrowRight')next=(index+1)%recordModes.length;else if(e.key==='ArrowLeft')next=(index+recordModes.length-1)%recordModes.length;else if(e.key==='Home')next=0;else if(e.key==='End')next=recordModes.length-1;else return;
+  e.preventDefault();selectRecordMode(recordModes[next].name,true);
+ });
+}
+let timer=safeParse(localStorage.getItem(timerKey),{elapsed:0,startedAt:null});if(!Number.isFinite(timer.elapsed)||timer.elapsed<0)timer={elapsed:0,startedAt:null};const elapsed=()=>Math.max(0,timer.elapsed+(timer.startedAt?Date.now()-timer.startedAt:0));const saveTimer=()=>localStorage.setItem(timerKey,JSON.stringify(timer));const drawTimer=()=>{const secs=Math.floor(elapsed()/1000);$('timer').textContent=[Math.floor(secs/3600),Math.floor(secs%3600/60),secs%60].map(n=>String(n).padStart(2,'0')).join(':');$('timerStart').disabled=!!timer.startedAt;$('timerPause').disabled=!timer.startedAt;updateRecordModeStatus()};setInterval(drawTimer,1000);
 // The sky follows real local time whether the timer is running or paused.
 drawTimer();
 $('timerStart').onclick=()=>{if(timer.startedAt)return;timer.startedAt=Date.now();saveTimer();drawTimer();void publishLive()};$('timerPause').onclick=()=>{if(!timer.startedAt)return;timer.elapsed=elapsed();timer.startedAt=null;saveTimer();drawTimer();void stopLive()};
-$('timerReset').onclick=()=>{if(!confirm('タイマーをリセットする？まだ記録していない時間は消えるよ。'))return;timer={elapsed:0,startedAt:null};saveTimer();drawTimer();void stopLive()};
-$('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),mins=Math.round(ms/60000);if(mins<1)throw Error('1分以上計測してから保存してね');if(mins>1440)throw Error('24時間を超えたよ。タイマーを確認してね');if(timer.startedAt){timer.elapsed=ms;timer.startedAt=null;saveTimer()}await addTime(today(),mins);timer={elapsed:0,startedAt:null};saveTimer();drawTimer();void stopLive()},'timerFeedback');
+$('timerReset').onclick=()=>{if(!confirm('タイマーをリセットする？まだ記録していない時間は消えるよ。'))return;timer={elapsed:0,startedAt:null};saveTimer();drawTimer();$('timerAddFeedback').textContent='';void stopLive()};
+function addElapsedToTimer(){
+ const feedback=$('timerAddFeedback');feedback.textContent='';feedback.className='timer-feedback';
+ if(maintenanceActive)return;
+ if(busy){feedback.textContent='記録の保存が終わるまで待ってね。';return}
+ const h=Number($('timerAddHours').value),m=Number($('timerAddMinutes').value);
+ if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||h>24||m<0||m>59||(h===24&&m!==0)||h*60+m<1){
+  feedback.textContent='1分〜24時間で入力してね（24時間の場合は0分）。';feedback.className='timer-feedback error';return;
+ }
+ const addedMs=(h*60+m)*60000;
+ if(elapsed()+addedMs>86400000){feedback.textContent='追加後のタイマーは24時間以内にしてね。';feedback.className='timer-feedback error';return}
+ const previous={...timer};
+ try{
+  // Keep startedAt intact so an active timer continues without counting time twice.
+  timer={...timer,elapsed:timer.elapsed+addedMs};saveTimer();drawTimer();
+  $('timerAddHours').value='0';$('timerAddMinutes').value='0';
+  $('timerFeedback').textContent='';
+  feedback.textContent=`${h?String(h)+'時間':''}${m?String(m)+'分':''}をタイマーに追加したよ！記録への保存は「記録して終了」を押してね。`;
+ }catch(e){timer=previous;drawTimer();console.error(e);feedback.textContent='追加した時間を端末に保存できなかったよ。設定を確認して、もう一度試してね。';feedback.className='timer-feedback error'}
+}
+$('timerAdd').onclick=addElapsedToTimer;
+for(const id of ['timerAddHours','timerAddMinutes'])$(id).addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing){e.preventDefault();addElapsedToTimer()}});
+$('timerSave').onclick=()=>guard($('timerSave'),async()=>{const ms=elapsed(),mins=Math.round(ms/60000);if(mins<1)throw Error('1分以上計測してから保存してね');if(mins>1440)throw Error('24時間を超えたよ。タイマーを確認してね');if(timer.startedAt){timer.elapsed=ms;timer.startedAt=null;saveTimer()}await addTime(today(),mins);timer={elapsed:0,startedAt:null};saveTimer();drawTimer();$('timerAddFeedback').textContent='';void stopLive()},'timerFeedback');
+selectRecordMode('timer');
 renderLocal();renderStats();
 let banUnsubscribe=null,banEpoch=0,sessionStarted=false;
 let maintenanceReady=false,maintenanceActive=false,authReady=false,latestAuthUser=null;
