@@ -64,18 +64,49 @@ footer{font-size:clamp(14px,4.1vw,25px);font-weight:900;color:#fff;text-align:ce
 .history-day{margin-top:16px;padding-top:14px;border-top:1px dashed rgba(190,91,130,.25)}
 .history-day-title{text-align:center;font-size:17px;font-weight:900;color:#a84d72;margin-bottom:11px}
 @media(max-width:430px){.date-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-#toggle.meanings-hidden{background:#df5e91;color:#fff;border-color:#df5e91}</style></head>
+#toggle.meanings-hidden{background:#df5e91;color:#fff;border-color:#df5e91}
+#historyBtn.history-open{background:#df5e91;color:#fff;border-color:#df5e91}
+/* Japanese-to-English quiz; existing learning records keep their original keys. */
+[hidden]{display:none!important}
+body.quizzing #words,body.quizzing #mastery,body.quizzing #toggle,body.quizzing #shuffle{display:none!important}
+body.quizzing #wordActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+body.quizzing #wordActions button{min-height:44px;padding:10px 7px}
+#historyButtonSlot:empty{display:none}
+.quiz-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.quiz-title{font-size:20px;margin:0;color:#a84d72}.quiz-source{font-size:12px;color:#9b7081;margin:8px 0}
+.quiz-progress{font-size:13px;color:#a66a82;margin:12px 0 6px}
+.quiz-prompt{font-size:clamp(21px,5.5vw,30px);font-weight:900;text-align:center;padding:22px 8px;line-height:1.65;overflow-wrap:anywhere}
+.quiz-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.quiz-option{font-family:'Times New Roman',Times,Georgia,serif;font-size:21px;min-height:64px;background:rgba(255,255,255,.9);color:#a84d72;border:2px solid #efabc5;border-radius:16px;overflow-wrap:anywhere;white-space:normal;padding:12px 8px}
+.quiz-option:disabled{cursor:default;opacity:1}.quiz-option.is-correct{background:#e6f3e7;border-color:#729e78;color:#365f3c}.quiz-option.is-wrong{background:#ffe6ec;border-color:#ce718c;color:#9c3555}
+.quiz-feedback{line-height:1.8;margin:14px 0 0;color:#8f4966;white-space:pre-wrap;overflow-wrap:anywhere}
+.quiz-bottom{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px;align-items:center}
+.quiz-score{text-align:center;font-size:26px;font-weight:bold;color:#b34f78;margin:22px 0 12px}
+.quiz-review{margin:15px 0;padding:0;list-style:none}.quiz-review li{padding:12px 0;border-bottom:1px dashed #e4b4c8;line-height:1.7;overflow-wrap:anywhere}.quiz-review .en{display:block;font-size:20px;margin:3px 0}
+.quiz-note{font-size:12px;line-height:1.8;color:#9b7081;margin:10px 0 0}
+button:focus-visible{outline:3px solid #b34f78;outline-offset:3px}.quiz-head .ghost{min-height:44px}
+@media(max-width:400px){.quiz-options{gap:8px}.quiz-option{font-size:19px}.quiz-head{align-items:flex-start}}
+</style></head>
 <body><main class="wrap">
 <header><div class="badge">高校入試対策</div><div class="community">高校受験生勉強会！！！</div><h1>今日の英単語20</h1><div class="sub">高校入試に向けて、毎日20語ずつコツコツ覚えよう</div></header>
-<section class="card">
+<section class="card" id="dailyWordsCard">
 <div class="topline"><div class="date" id="today"></div><div class="progress" id="progress"></div></div>
-<div class="actions">
+<div class="actions" id="wordActions">
       <button class="ghost" id="toggle">意味を隠す</button>
       <button class="ghost" id="shuffle">シャッフル</button>
+      <button class="ghost" id="quizStart" type="button">日本語→英語クイズ</button>
     </div>
     <div class="mastery" id="mastery"></div>
 <div class="words" id="words"></div>
-<div class="history-actions"><button class="ghost" id="historyBtn">これまでに出た単語を見る</button></div>
+<div class="history-actions" id="historyButtonSlot"><button class="ghost" id="historyBtn" type="button" aria-controls="historyCard" aria-expanded="false">これまでに出た単語を見る</button></div>
+</section>
+
+<section class="card" id="quizCard" hidden aria-labelledby="quizTitle">
+ <div class="quiz-head"><h2 class="quiz-title" id="quizTitle" tabindex="-1">日本語→英語クイズ</h2></div>
+ <p class="quiz-source" id="quizSource"></p>
+ <div id="quizPlay"><div class="quiz-progress" id="quizProgress"></div><div class="quiz-prompt" id="quizPrompt"></div><div class="quiz-options" id="quizOptions" role="group" aria-labelledby="quizPrompt"></div><p class="quiz-feedback" id="quizFeedback" role="status" aria-live="polite"></p><div class="quiz-bottom"><button class="ghost" id="quizNext" type="button" hidden>次の問題へ</button></div></div>
+ <div id="quizResult" hidden><div class="quiz-score" id="quizScore"></div><p class="quiz-note">この結果で「覚えた！」のチェックは変更されません。</p><ul class="quiz-review" id="quizReview"></ul><div class="quiz-bottom"><button id="quizRetryWrong" type="button">間違えた問題だけもう一度</button><button class="ghost" id="quizRetryAll" type="button">同じ20語でもう一度</button></div></div>
+ <p class="quiz-note">日本語に合う英単語を4つの中から選んでね！同じ意味を持つ単語が複数ある場合は、この単語帳の訳を基準に出題します。</p>
 </section>
 <section class="card history-card" id="historyCard" style="display:none">
   <div class="history-head"><b>これまでに出た単語</b><span id="historyCount"></span></div>
@@ -83,6 +114,7 @@ footer{font-size:clamp(14px,4.1vw,25px);font-weight:900;color:#fff;text-align:ce
   <div class="date-grid" id="dateGrid"></div>
   <div class="history-day" id="historyDay" style="display:none">
     <div class="history-day-title" id="historyDayTitle"></div>
+    <div class="history-actions" style="margin:0 0 14px"><button class="ghost" id="historyQuizStart" type="button">この日の20語でクイズ</button></div>
     <div class="history-list" id="historyList"></div>
   </div>
 </section>
@@ -103,6 +135,7 @@ const SEEN_KEY="word20_seen_words_v1";
 function tokyoISO(){return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}
 function dayIndex(iso){const a=new Date(START+"T00:00:00+09:00"),b=new Date(iso+"T00:00:00+09:00");return Math.max(0,Math.floor((b-a)/86400000))}
 let current=[];
+let selectedQuizDay=null;
 function render(){
  const iso=tokyoISO(), idx=dayIndex(iso), totalDays=Math.ceil(WORDS.length/20), page=idx%totalDays, start=page*20;
  current=WORDS.slice(start,start+20); if(current.length<20) current=current.concat(WORDS.slice(0,20-current.length));
@@ -167,6 +200,7 @@ function drawDateGrid(){
  grid.querySelectorAll(".date-btn").forEach(b=>b.onclick=()=>showHistoryDay(Number(b.dataset.day),b));
 }
 function showHistoryDay(d,btn){
+ selectedQuizDay=d;
  document.querySelectorAll(".date-btn").forEach(x=>x.classList.remove("active"));
  btn.classList.add("active");
  const arr=dayWords(d), box=document.getElementById("historyDay");
@@ -179,10 +213,86 @@ function showHistoryDay(d,btn){
    const nb=document.querySelector(`.date-btn[data-day="${d}"]`); if(nb)showHistoryDay(d,nb);
  });
 }
-document.getElementById("historyBtn").onclick=()=>{
- const card=document.getElementById("historyCard"), opening=card.style.display==="none";
- card.style.display=opening?"block":"none";
- document.getElementById("historyBtn").textContent=opening?"履歴を閉じる":"これまでに出た単語を見る";
- if(opening){drawDateGrid();document.getElementById("historyDay").style.display="none";}
+
+
+// Quiz state is separate from mastery and history storage.
+let quizState=null,quizOrigin=null;
+const qel=id=>document.getElementById(id);
+function shuffled(items){const out=[...items];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
+function meaningParts(value){return new Set(String(value).split(/[／/、;；]/).map(v=>v.trim()).filter(Boolean))}
+function quizChoices(answer){
+ const parts=meaningParts(answer.m),seen=new Set([answer.w.toLowerCase()]);
+ const candidates=shuffled(WORDS).filter(x=>{
+  const key=x.w.toLowerCase();if(seen.has(key)||x.m===answer.m)return false;
+  if([...meaningParts(x.m)].some(v=>parts.has(v)))return false;
+  seen.add(key);return true;
+ });
+ return shuffled([answer,...candidates.slice(0,3)]);
+}
+function startQuiz(items,label,origin=qel('quizStart')){
+ if(!items.length)return;
+ quizOrigin=origin;quizState={all:[...items],label,questions:shuffled(items),index:0,correct:0,wrong:[],answered:false};
+ qel('historyCard').style.display='none';
+ syncWordNavigation();qel('quizSource').textContent=label;
+ qel('quizResult').hidden=true;qel('quizPlay').hidden=false;showQuizQuestion();
+ qel('dailyWordsCard').scrollIntoView({behavior:'smooth',block:'start'});qel('quizTitle').focus({preventScroll:true});
+}
+function showQuizQuestion(){
+ const st=quizState;if(!st)return;st.answered=false;
+ qel('quizProgress').textContent=`${st.index+1} / ${st.questions.length}問　正解 ${st.correct}問`;
+ const answer=st.questions[st.index];qel('quizPrompt').textContent=answer.m;
+ qel('quizFeedback').textContent='';qel('quizNext').hidden=true;
+ const host=qel('quizOptions');host.replaceChildren();
+ for(const option of quizChoices(answer)){
+  const button=document.createElement('button');button.type='button';button.className='quiz-option';button.textContent=option.w;
+  button.onclick=()=>answerQuiz(option,button);host.append(button);
+ }
+}
+function answerQuiz(chosen,button){
+ const st=quizState;if(!st||st.answered)return;st.answered=true;
+ const answer=st.questions[st.index],correct=chosen.w===answer.w;
+ if(correct)st.correct++;else st.wrong.push(answer);
+ for(const b of qel('quizOptions').children){b.disabled=true;if(b.textContent===answer.w)b.classList.add('is-correct')}
+ if(!correct)button.classList.add('is-wrong');
+ qel('quizFeedback').textContent=(correct?'正解！':'おしい！ 正解は '+answer.w)+'\n'+answer.w+'：'+answer.m;
+ qel('quizNext').textContent=st.index+1===st.questions.length?'結果を見る':'次の問題へ';qel('quizNext').hidden=false;qel('quizNext').focus();
+}
+function finishQuiz(){
+ const st=quizState;qel('quizPlay').hidden=true;qel('quizResult').hidden=false;
+ qel('quizScore').textContent=`${st.questions.length}問中 ${st.correct}問正解！`;
+ const list=qel('quizReview');list.replaceChildren();
+ if(!st.wrong.length){const li=document.createElement('li');li.textContent='全問正解！この調子で続けよう！';list.append(li)}
+ for(const x of st.wrong){const li=document.createElement('li'),jp=document.createElement('div'),en=document.createElement('span');jp.textContent=x.m;en.className='en';en.textContent=x.w;li.append(jp,en);list.append(li)}
+ qel('quizRetryWrong').hidden=!st.wrong.length;qel('quizRetryAll').textContent=`同じ${st.all.length}語でもう一度`;
+ qel('quizTitle').focus({preventScroll:true});qel('quizCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+qel('quizStart').onclick=()=>{if(quizState)closeQuiz();else startQuiz(current,'今日の20語')};
+qel('historyQuizStart').onclick=()=>{if(selectedQuizDay!==null)startQuiz(dayWords(selectedQuizDay),dateForDay(selectedQuizDay)+' の20語',qel('historyQuizStart'))};
+qel('quizNext').onclick=()=>{if(!quizState?.answered)return;if(++quizState.index<quizState.questions.length){showQuizQuestion();qel('quizTitle').focus({preventScroll:true})}else finishQuiz()};
+qel('quizRetryAll').onclick=()=>{const {all,label}=quizState;startQuiz(all,label,quizOrigin)};
+qel('quizRetryWrong').onclick=()=>{const {wrong,label}=quizState;if(wrong.length)startQuiz(wrong,label+'（解き直し）',quizOrigin)};
+function syncWordNavigation(){
+ const active=!!quizState,historyOpen=qel('historyCard').style.display!=='none';
+ document.body.classList.toggle('quizzing',active);
+ qel('quizStart').textContent=active?'一覧に戻る':'日本語→英語クイズ';
+ const slot=active?qel('wordActions'):qel('historyButtonSlot');
+ if(qel('historyBtn').parentElement!==slot)slot.append(qel('historyBtn'));
+ qel('historyBtn').textContent=active?(historyOpen?'クイズに戻る':'これまでの単語'):(historyOpen?'履歴を閉じる':'これまでに出た単語を見る');
+ qel('historyBtn').classList.toggle('history-open',historyOpen);
+ qel('historyBtn').setAttribute('aria-expanded',String(historyOpen));
+ qel('quizCard').hidden=!active||historyOpen;
+}
+function closeQuiz(){
+ quizState=null;qel('historyCard').style.display='none';syncWordNavigation();
+ qel('quizStart').focus();qel('dailyWordsCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+qel('historyBtn').onclick=()=>{
+ const opening=qel('historyCard').style.display==='none';
+ qel('historyCard').style.display=opening?'block':'none';
+ if(opening){drawDateGrid();qel('historyDay').style.display='none';selectedQuizDay=null;}
+ syncWordNavigation();
+ if(quizState)qel('dailyWordsCard').scrollIntoView({behavior:'smooth',block:'start'});
 };
+syncWordNavigation();
+
 </script></body></html>
